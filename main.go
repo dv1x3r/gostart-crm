@@ -1,40 +1,29 @@
 package main
 
 import (
-	"io"
 	"net/http"
-	"text/template"
+	"w2go/views"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
-
 func main() {
 	e := echo.New()
 
 	e.Debug = true
-	e.Renderer = &Template{
-		templates: template.Must(template.ParseGlob("public/views/*.html")),
-	}
 
 	e.Use(middleware.Logger())
 
+	e.Static("/static", "static")
+
 	e.GET("/", func(c echo.Context) error {
-		// return c.String(http.StatusOK, "Hello, World!")
-		// c.Logger().Debug("yes")
-		return c.Render(http.StatusOK, "hello", "World")
+		component := views.Index("root")
+		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start("localhost:1323"))
 }
 
 func getUser(c echo.Context) error {

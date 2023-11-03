@@ -21,6 +21,9 @@
 # Go workspace file
 go.work
 
+# Compiled go templates
+*_templ.go
+
 # Environment files
 .env
 

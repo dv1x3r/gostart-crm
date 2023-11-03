@@ -4,13 +4,16 @@ APP_NAME ?= main
 GOOSE=goose -dir=./migrations ${GOOSE_DRIVER} ${GOOSE_DBSTRING}
 
 build:
-	go build -o bin/$(APP_NAME)
+	templ generate && go build -o bin/$(APP_NAME)
 
 run:
-	go build -o ./bin/$(APP_NAME) && ./bin/$(APP_NAME)
+	templ generate && go build -o ./bin/$(APP_NAME) && ./bin/$(APP_NAME)
 
 test:
-	go test -v ./...
+	templ generate && go test -v ./...
+
+templ:
+	templ generate
 
 db-up:
 	$(GOOSE) up
@@ -41,10 +44,11 @@ db-create:
 
 go-tools:
 	go install golang.org/x/tools/gopls@latest
-	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/go-delve/delve/cmd/dlv@latest
+	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/a-h/templ/cmd/templ@latest
 
-.PHONY: build compile run test
+.PHONY: build compile run test templ
 .PHONY: db-up db-up-by-one db-up-to db-down db-down-to
 .PHONY: db-reset db-status db-create
 .PHONY: go-install
