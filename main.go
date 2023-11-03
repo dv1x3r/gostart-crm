@@ -23,6 +23,10 @@ func main() {
 	})
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
+	e.GET("/todos", func(c echo.Context) error {
+		component := views.Todos()
+		return component.Render(c.Request().Context(), c.Response().Writer)
+	})
 	e.Logger.Fatal(e.Start("localhost:1323"))
 }
 
