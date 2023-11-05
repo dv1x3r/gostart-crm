@@ -3,6 +3,7 @@
 #
 # Binaries for programs and plugins
 /bin
+/tmp
 *.exe
 *.exe~
 *.dll
@@ -23,6 +24,10 @@ go.work
 
 # Compiled go templates
 *_templ.go
+
+# Node
+node_modules
+/dist
 
 # Environment files
 .env

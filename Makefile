@@ -15,6 +15,9 @@ test:
 templ:
 	templ generate
 
+watch:
+	air
+
 db-up:
 	$(GOOSE) up
 
@@ -47,6 +50,7 @@ go-tools:
 	go install github.com/go-delve/delve/cmd/dlv@latest
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/a-h/templ/cmd/templ@latest
+	go install github.com/cosmtrek/air@latest
 
 .PHONY: build compile run test templ
 .PHONY: db-up db-up-by-one db-up-to db-down db-down-to

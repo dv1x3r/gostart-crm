@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"w2go/views"
+	"w2go/pkg/views"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -14,19 +14,22 @@ func main() {
 	e.Debug = true
 
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	e.Static("/static", "static")
+	e.Static("/assets", "dist")
 
 	e.GET("/", func(c echo.Context) error {
 		component := views.Index("root")
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
+
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
 	e.GET("/todos", func(c echo.Context) error {
 		component := views.Todos()
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
+
 	e.Logger.Fatal(e.Start("localhost:1323"))
 }
 
