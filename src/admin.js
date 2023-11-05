@@ -1,7 +1,7 @@
-import './htmx-1.9.6.min.js'
-import './w2ui-2.0.min.css'
+import 'w2ui/w2ui-2.0.min.css'
+import { w2ui, w2layout, w2toolbar, w2sidebar, w2grid, query, w2utils } from 'w2ui/w2ui-2.0.es6'
 
-import { w2layout, w2toolbar, w2sidebar, w2grid, query } from './w2ui-2.0.es6.min.js'
+window.w2ui = w2ui
 
 let config = {
   layout: {
@@ -16,9 +16,9 @@ let config = {
   toolbar: {
     name: 'toolbar',
     items: [
-      { type: 'button', id: 'todos', text: 'Todos', icon: 'w2ui-icon-colors', onClick: () => { action('load', 'main', 'todos'); grid.render('#grid'); } },
+      { type: 'button', id: 'todos', text: 'Todos', icon: 'w2ui-icon-colors', onClick: showTodos },
       { type: 'break' },
-      { type: 'button', id: 'info', text: 'Info', icon: 'w2ui-icon-info', onClick: () => action('html', 'left', 'Sidebar!') },
+      { type: 'button', id: 'info', text: 'Info', icon: 'w2ui-icon-info', onClick: () => { action('html', 'left', 'Sidebar!'); grid.render('#grid'); } },
       { type: 'break' },
       { type: 'button', id: 'settings', text: 'Settings', icon: 'w2ui-icon-settings', onClick: () => action('html', 'left', 'Settings!') },
       { type: 'spacer' },
@@ -27,17 +27,14 @@ let config = {
   },
 }
 
-let layout = new w2layout(config.layout)
-layout.html('top', new w2toolbar(config.toolbar))
-
-window.action = function(method, param1, param2) {
-  layout[method](param1, param2)
+async function showTodos() {
+  await layout.load('main', 'todos')
+  grid.render('#grid')
+  grid.load('data')
 }
-
 
 let grid = new w2grid({
   name: 'grid',
-  // box: '#grid',
   header: 'List of Names',
   reorderRows: false,
   show: {
@@ -63,14 +60,8 @@ let grid = new w2grid({
     query('#' + event.detail.box_id).html('<div style="padding: 10px; height: 100px">Expanded content</div>')
   }
 })
-// grid.load('data/list.json')
 
+let layout = new w2layout(config.layout)
+layout.html('top', new w2toolbar(config.toolbar))
+showTodos()
 
-// window.action = function (param1) {
-//     if (param1 == 'reorderRows') {
-//         grid.reorderRows = !grid.reorderRows
-//     } else {
-//         grid.show[param1] = !grid.show[param1]
-//     }
-//     grid.refresh()
-// }
