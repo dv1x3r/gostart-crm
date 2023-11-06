@@ -10,7 +10,6 @@ import (
 
 func main() {
 	e := echo.New()
-
 	e.Debug = true
 
 	e.Use(middleware.Logger())
@@ -19,32 +18,38 @@ func main() {
 	e.Static("/assets", "dist")
 
 	e.GET("/", func(c echo.Context) error {
-		component := views.Index("root")
+		component := views.Index("w2go - index")
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
-	e.GET("/todos", func(c echo.Context) error {
-		component := views.Todos()
+
+	admin := e.Group("/admin")
+
+	admin.GET("", func(c echo.Context) error {
+		component := views.Admin("w2go - admin")
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
-	e.GET("/api/todo", func(c echo.Context) error {
-		var todos = []Todo{
-			{ID: 1, Name: "Test", Description: "Some text"},
-			{ID: 1, Name: "Test", Description: "Some text"},
-		}
-
-		for i := 0; i < 10000; i++ {
-			todos = append(todos, Todo{ID: int64(i), Name: "New", Description: "desc"})
-
-		}
-
-		return c.JSON(http.StatusOK, todos)
+	admin.GET("/todo", func(c echo.Context) error {
+		component := views.AdminTodo()
+		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
+	admin.GET("/todo/data", getAdminTodo)
+
 	e.Logger.Fatal(e.Start("localhost:1323"))
+}
+
+func getAdminTodo(c echo.Context) error {
+	var todos = []Todo{}
+
+	for i := 0; i < 100; i++ {
+		todos = append(todos, Todo{ID: int64(i), Name: "todo name", Description: "todo description"})
+	}
+
+	return c.JSON(http.StatusOK, todos)
 }
 
 type Todo struct {
