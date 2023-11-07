@@ -17,10 +17,8 @@ func main() {
 
 	e.Static("/assets", "dist")
 
-	e.GET("/", func(c echo.Context) error {
-		component := views.Index("w2go - index")
-		return component.Render(c.Request().Context(), c.Response().Writer)
-	})
+	// e.GET("/", func(c echo.Context) error {
+	// })
 
 	e.GET("/users/:id", getUser)
 	e.GET("/show", show)
@@ -28,12 +26,12 @@ func main() {
 	admin := e.Group("/admin")
 
 	admin.GET("", func(c echo.Context) error {
-		component := views.Admin("w2go - admin")
+		component := components.Admin("w2go - admin")
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
 	admin.GET("/todo", func(c echo.Context) error {
-		component := views.AdminTodo()
+		component := components.AdminTodo()
 		return component.Render(c.Request().Context(), c.Response().Writer)
 	})
 
