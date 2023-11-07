@@ -43,7 +43,7 @@ const page = new w2layout({
   box: '#page',
   panels: [
     { type: 'top', size: 40, html: toolbar },
-    { type: 'left', size: 260 },
+    // { type: 'left', size: 260 },
     { type: 'main' },
   ]
 })
