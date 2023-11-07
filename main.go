@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"w2go/pkg/views"
+	"w2go/components"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
