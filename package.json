@@ -4,7 +4,7 @@
   "description": "This project has been created using **webpack-cli**, you can now run",
   "main": "index.js",
   "scripts": {
-    "build:webpack": "webpack --mode production",
+    "build:webpack": "NODE_ENV=production webpack --mode production",
     "build:go": "templ generate && go build -o ./tmp/main ./main.go",
     "build": "concurrently npm:build:*",
     "watch:webpack": "webpack --mode development --watch",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "css-loader": "^6.8.1",
+    "cssnano": "^6.0.1",
     "dotenv-cli": "^7.3.0",
     "htmx.org": "^1.9.7",
     "postcss": "^8.4.31",
