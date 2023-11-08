@@ -28,12 +28,12 @@ const toolbar = new w2toolbar({
     { type: 'break' },
     {
       type: 'button', id: 'settings', text: 'Settings', icon: 'w2ui-icon-settings',
-      onClick: () => action('html', 'left', 'Settings!')
+      onClick: () => page.html('left', 'Settings!')
     },
     { type: 'spacer' },
     {
       type: 'button', id: 'logout', text: 'Log out', icon: 'w2ui-icon-cross',
-      onClick: () => action('html', 'left', 'Logout!')
+      onClick: () => page.html('left', 'Logout!')
     },
   ],
 })
