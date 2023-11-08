@@ -30,6 +30,7 @@ func New() (*App, error) {
 	a.echo.Use(middleware.CSRFWithConfig(
 		middleware.CSRFConfig{
 			CookiePath:     "/",
+			CookieHTTPOnly: true,
 			CookieSameSite: http.SameSiteLaxMode,
 		},
 	))
@@ -39,11 +40,11 @@ func New() (*App, error) {
 	a.todoService = &service.Todo{}
 
 	a.indexEndpoint = endpoint.NewIndex(a.todoService)
-	a.echo.GET("/", a.indexEndpoint.Get)
+	a.echo.GET("/", a.indexEndpoint.GetRoot)
 
 	a.adminEndpoint = endpoint.NewAdmin(a.todoService)
 	ag := a.echo.Group("/admin")
-	ag.GET("", a.adminEndpoint.Get)
+	ag.GET("", a.adminEndpoint.GetRoot)
 	ag.GET("/todo", a.adminEndpoint.GetTodo)
 	ag.GET("/todo/data", a.adminEndpoint.GetTodoData)
 
