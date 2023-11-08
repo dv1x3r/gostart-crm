@@ -18,9 +18,6 @@ func NewAdmin(s TodoService) *Admin {
 	}
 }
 
-func (h *Admin) Register(e *echo.Echo) {
-}
-
 func (h *Admin) Get(ctx echo.Context) error {
 	cmp := component.Admin("w2go - admin")
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
