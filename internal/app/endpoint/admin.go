@@ -18,7 +18,7 @@ func NewAdmin(s TodoService) *Admin {
 	}
 }
 
-func (h *Admin) Get(ctx echo.Context) error {
+func (h *Admin) GetRoot(ctx echo.Context) error {
 	cmp := component.Admin("w2go - admin")
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
 }
@@ -29,6 +29,6 @@ func (h *Admin) GetTodo(ctx echo.Context) error {
 }
 
 func (h *Admin) GetTodoData(c echo.Context) error {
-	data := h.todoService.GetList()
-	return c.JSON(http.StatusOK, data)
+	grid := h.todoService.GetWGrid()
+	return c.JSON(http.StatusOK, grid)
 }

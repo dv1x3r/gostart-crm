@@ -16,3 +16,13 @@ func (ts *Todo) GetList() []model.Todo {
 		{ID: 2, Name: "End", Description: "the end of the list"},
 	}
 }
+
+func (ts *Todo) GetWGrid() model.WGrid[model.Todo] {
+	data := ts.GetList()
+	return model.WGrid[model.Todo]{
+		Status:  "success",
+		Message: "error message",
+		// Total:   256,
+		Records: data,
+	}
+}
