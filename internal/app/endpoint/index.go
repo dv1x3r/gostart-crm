@@ -17,6 +17,6 @@ func NewIndex(ts TodoService) *Index {
 }
 
 func (h *Index) GetRoot(ctx echo.Context) error {
-	cmp := component.Index("w2go - index")
+	cmp := component.Index("w2go - index", "")
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
 }

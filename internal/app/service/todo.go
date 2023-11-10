@@ -11,8 +11,8 @@ func NewTodo() *Todo {
 
 func (ts *Todo) GetList() []model.Todo {
 	return []model.Todo{
-		{ID: 0, Name: "Demo", Description: "Description"},
-		{ID: 1, Name: "List", Description: "Placeholder field"},
+		{ID: 0, Name: "Demo", Description: "<b>Description</b>"},
+		{ID: 1, Name: "List", Description: "Placeholder field<script>alert('XSS Test')</script>"},
 		{ID: 2, Name: "End", Description: "the end of the list"},
 	}
 }
