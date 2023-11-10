@@ -3,77 +3,67 @@ import { w2grid, w2alert, w2popup, query } from 'w2ui/w2ui-2.0.es6'
 export const todoGrid = new w2grid({
   name: 'todoGrid',
   url: '/admin/todo/data',
-  header: 'List of Names',
-  reorderRows: true,
+  recid: 'id',
   liveSearch: true,
   show: {
-    header: false,
     footer: true,
     toolbar: true,
     toolbarAdd: true,
+    toolbarEdit: true,
     toolbarDelete: true,
     toolbarSave: true,
-    toolbarEdit: true,
-    lineNumbers: false,
-    selectColumn: true,
+    searchLogic: false,
   },
   columns: [
-    { field: 'id', text: 'ID', size: '30px', sortable: true, searchable: true, clipboardCopy: true }, // seachable for "all fields search"
-    { field: 'name', text: 'First Name', size: '30%', editable: { type: 'text' } },
-    { field: 'description', text: 'Last Name', size: '30%', editable: { type: 'text' } },
-    { field: 'email', text: 'Email', size: '40%' },
+    // seachable for "all fields search"
+    { field: 'id', text: 'ID', size: '100px', sortable: true, clipboardCopy: true },
+    { field: 'name', text: 'Name', size: '25%', sortable: true, editable: { type: 'text' } },
+    { field: 'description', text: 'Description', size: '75%', sortable: true, editable: { type: 'text' } },
     {
-      field: 'sdate', text: 'Start Date', size: '120px',
+      text: 'Summary', size: '120px',
       info: {
-        render: (rec, ind, col_ind) => { return '<i>' + rec.name + '</i> <b>' + rec.description + '</b>' }
-      }
-    },
-    {
-      field: 'empty', text: 'Empty', size: '120px',
-      info: {
-        fields: ['id', 'name'],
+        fields: ['id', 'name', 'description'],
+        showEmpty: true,
         showOn: 'mouseenter',
-        options: { position: 'top' },
-        style: 'color: green'
+        options: { position: 'left' },
+        // render: rec => `<b>${rec.name}</b>: ${rec.description}`,
       },
-      render: () => '<span style="color: silver">Mouse over</span>'
+      render: () => '<span class="text-slate-400">Mouse over</span>'
     },
   ],
   searches: [
     { type: 'int', field: 'id', label: 'ID' },
     { type: 'text', field: 'name', label: 'Name' },
+    { type: 'text', field: 'description', label: 'Description' },
   ],
   toolbar: {
     items: [
-      { id: 'add', type: 'button', text: 'Add Record', icon: 'w2ui-icon-plus' },
-      { type: 'break' },
-      { type: 'button', id: 'showChanges', text: 'Preview Changes' }
+      {
+        type: 'button', text: 'Preview', hint: 'Preview changes before save',
+        onClick: () => {
+          w2popup.open({
+            title: 'Preview Changes',
+            with: 600,
+            height: 550,
+            body: `<pre>${JSON.stringify(todoGrid.getChanges(), null, 4)}</pre>`,
+            actions: { Ok: w2popup.close }
+          })
+        },
+      },
+      // { type: 'break' },
     ],
-    onClick(event) {
-      if (event.target == 'add') {
-        let recid = grid.records.length + 1
-        this.owner.add({ recid });
-        this.owner.scrollIntoView(recid);
-        this.owner.editField(recid, 1)
-      }
-      if (event.target == 'showChanges') {
-        w2popup.open({
-          title: 'Preview Changes',
-          with: 600,
-          height: 550,
-          body: `<pre>${JSON.stringify(todoGrid.getChanges(), null, 4)}</pre>`,
-          actions: { Ok: w2popup.close }
-        })
-      }
-    }
   },
-  contextMenu: [
-    { id: 'view', text: 'View', icon: 'w2ui-icon-info' },
-    { id: 'edit', text: 'Edit', icon: 'w2ui-icon-pencil' },
-    { text: '--' },
-    { id: 'delete', text: 'Delete', icon: 'w2ui-icon-cross' },
-  ],
   onAdd: function(event) {
+    // onClick(event) {
+    //   if (event.target == 'add') {
+    //     let recid = grid.records.length + 1
+    //     this.owner.add({ recid });
+    //     this.owner.scrollIntoView(recid);
+    //     this.owner.editField(recid, 1)
+    //       w2popup.open({
+    //       })
+    //   }
+    // }
     w2alert('add');
   },
   onEdit: function(event) {
@@ -85,13 +75,4 @@ export const todoGrid = new w2grid({
   onSave: function(event) {
     w2alert('save');
   },
-  onReorderRow(event) {
-    query('#log').html(`Record "${event.detail.recid}" moved before "${event.detail.moveBefore || event.detail.moveAfter}"`)
-    console.log('move event', event)
-  },
-  onContextMenuClick(event) {
-    console.log(event)
-    query('#grid-log').html(event.detail.menuItem.text)
-  }
-
 })
