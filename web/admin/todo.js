@@ -39,7 +39,7 @@ export const todoGrid = new w2grid({
   toolbar: {
     items: [
       {
-        type: 'button', text: 'Preview', hint: 'Preview changes before save',
+        type: 'button', text: 'Preview', hint: 'Preview changes before saving',
         onClick: () => {
           w2popup.open({
             title: 'Preview Changes',
@@ -54,25 +54,20 @@ export const todoGrid = new w2grid({
     ],
   },
   onAdd: function(event) {
-    // onClick(event) {
-    //   if (event.target == 'add') {
-    //     let recid = grid.records.length + 1
-    //     this.owner.add({ recid });
-    //     this.owner.scrollIntoView(recid);
-    //     this.owner.editField(recid, 1)
-    //       w2popup.open({
-    //       })
-    //   }
-    // }
-    w2alert('add');
+    // this.add({ id: 55 });
+    // this.scrollIntoView(recid);
+    // this.editField(recid, 1)
+    // w2popup.open({
+    // })
+    // w2alert('add');
   },
   onEdit: function(event) {
-    w2alert('edit');
+    // w2alert('edit');
   },
-  onDelete: function(event) {
-    console.log('delete has default behavior');
-  },
-  onSave: function(event) {
-    w2alert('save');
-  },
+  // onDelete: function(event) {
+  //   console.log('delete has default behavior');
+  // },
+  // onSave: function(event) {
+  //   w2alert('save');
+  // },
 })
