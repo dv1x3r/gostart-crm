@@ -5,7 +5,7 @@ import { safeRender, enablePreview, disablePreview, getCookie } from './utils'
 export const todoGrid = new w2grid({
   name: 'todoGrid',
   url: '/admin/todo/data',
-  httpHeaders: { 'X-CSRF-Token': getCookie('_csrf') },
+  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
   recid: 'id',
   liveSearch: true,
   show: {
@@ -79,7 +79,7 @@ export const todoGrid = new w2grid({
     new w2form({
       box: '#todoForm',
       url: '/admin/todo/data',
-      httpHeaders: { 'X-CSRF-Token': getCookie('_csrf') },
+  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
       style: 'border: 0px; background-color: transparent;',
       fields: [
         { field: 'id', type: 'int', required: true, html: { label: 'ID' } },

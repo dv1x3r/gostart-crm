@@ -1,6 +1,7 @@
 import { w2utils } from 'w2ui/w2ui-2.0.es6'
 
-export function getCookie(cookieName) {
+export function getCsrfToken() {
+  const cookieName = "_csrf"
   const name = cookieName + "="
   const decodedCookie = decodeURIComponent(document.cookie)
   const cookieArray = decodedCookie.split(';')
