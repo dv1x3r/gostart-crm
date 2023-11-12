@@ -30,7 +30,6 @@ func New() (*App, error) {
 	a.echo.Use(middleware.CSRFWithConfig(
 		middleware.CSRFConfig{
 			CookiePath:     "/",
-			CookieHTTPOnly: true,
 			CookieSameSite: http.SameSiteLaxMode,
 		},
 	))
