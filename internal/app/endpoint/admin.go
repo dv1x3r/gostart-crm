@@ -29,6 +29,12 @@ func (h *Admin) GetTodo(ctx echo.Context) error {
 }
 
 func (h *Admin) GetTodoData(c echo.Context) error {
-	grid := h.todoService.GetWGrid()
+	grid := h.todoService.GetW2Grid()
 	return c.JSON(http.StatusOK, grid)
+}
+
+func (h *Admin) PostTodoData(c echo.Context) error {
+	c.Logger().Debug(c.FormParams())
+	res := h.todoService.NewTodo()
+	return c.JSON(http.StatusOK, res)
 }

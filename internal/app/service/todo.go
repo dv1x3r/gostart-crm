@@ -17,12 +17,16 @@ func (ts *Todo) GetList() []model.Todo {
 	}
 }
 
-func (ts *Todo) GetWGrid() model.WGrid[model.Todo] {
+func (ts *Todo) GetW2Grid() model.W2Grid[model.Todo] {
 	data := ts.GetList()
-	return model.WGrid[model.Todo]{
+	return model.W2Grid[model.Todo]{
 		Status:  "success",
-		Message: "error message",
-		// Total:   256,
 		Records: data,
+	}
+}
+
+func (ts *Todo) NewTodo() model.W2FormResponse {
+	return model.W2FormResponse{
+		Status: "success",
 	}
 }

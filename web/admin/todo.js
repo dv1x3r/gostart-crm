@@ -1,5 +1,5 @@
-import { w2grid, w2alert, w2popup, w2form } from 'w2ui/w2ui-2.0.es6'
-import { safeRender, enablePreview, disablePreview, getCsrfToken} from './utils'
+import { w2grid, w2alert, w2popup, w2form, w2utils } from 'w2ui/w2ui-2.0.es6'
+import { safeRender, enablePreview, disablePreview, getCsrfToken } from './utils'
 
 
 export const todoGrid = new w2grid({
@@ -98,7 +98,18 @@ export const todoGrid = new w2grid({
       // },
       actions: {
         Close() { w2popup.close() },
-        Save() { if (this.validate().length == 0) { this.save() } },
+        async Save() {
+          if (this.validate().length == 0) {
+            const res = await this.save()
+            if (res.status == 'success') {
+              w2utils.notify('Todo has been successfully created!', { timeout: 5000 })
+              w2popup.close()
+              todoGrid.reload()
+            } else {
+              w2utils.notify('Error: ' + res.message, { timeout: 5000, error: true })
+            }
+          }
+        },
       }
     })
   },

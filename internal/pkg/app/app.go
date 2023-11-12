@@ -46,6 +46,7 @@ func New() (*App, error) {
 	ag.GET("", a.adminEndpoint.GetRoot)
 	ag.GET("/todo", a.adminEndpoint.GetTodo)
 	ag.GET("/todo/data", a.adminEndpoint.GetTodoData)
+	ag.POST("/todo/data", a.adminEndpoint.PostTodoData)
 
 	a.echo.GET("/users/:id", func(c echo.Context) error {
 		// User ID from path `users/:id`
