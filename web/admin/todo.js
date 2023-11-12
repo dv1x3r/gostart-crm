@@ -1,9 +1,11 @@
-import { w2grid, w2alert, w2popup, w2utils, query } from 'w2ui/w2ui-2.0.es6'
+import { w2grid, w2alert, w2popup, w2form } from 'w2ui/w2ui-2.0.es6'
+import { safeRender, enablePreview, disablePreview, getCookie } from './utils'
 
 
 export const todoGrid = new w2grid({
   name: 'todoGrid',
   url: '/admin/todo/data',
+  httpHeaders: { 'X-CSRF-Token': getCookie('_csrf') },
   recid: 'id',
   liveSearch: true,
   show: {
@@ -16,21 +18,31 @@ export const todoGrid = new w2grid({
     searchLogic: false,
   },
   columns: [
-    // seachable for "all fields search"
-    { field: 'id', text: 'ID', size: '100px', sortable: true, clipboardCopy: true },
-    { field: 'name', text: 'Name', size: '25%', sortable: true, render: row =>  w2utils.encodeTags(row.name) },
-    { field: 'description', text: 'Description', size: '75%', sortable: true, render: row => w2utils.encodeTags(row.description) },
-    { field: 'qty', text: 'Quantity', size: '100px', sortable: true, editable: { type: 'float' } },
+    {
+      field: 'id', text: 'ID', size: '100px',
+      sortable: true, clipboardCopy: true,
+    },
+    {
+      field: 'name', text: 'Name', size: '25%',
+      sortable: true, render: row => safeRender(row.name),
+    },
+    {
+      field: 'description', text: 'Description', size: '75%',
+      sortable: true, render: row => safeRender(row.description),
+    },
+    {
+      field: 'qty', text: 'Quantity', size: '100px',
+      sortable: true, editable: { type: 'float' },
+    },
     {
       text: 'Summary', size: '120px',
       info: {
-        fields: ['id', 'name', 'description'],
         showEmpty: true,
         showOn: 'mouseenter',
         options: { position: 'left' },
-        render: rec => `<b>${rec.name}</b>: ${rec.description}`,
+        render: rec => `<b>${safeRender(rec.name)}</b>: ${safeRender(rec.description)}`,
       },
-      render: () => '<span class="text-slate-400">Mouse over</span>'
+      render: () => '<span class="text-slate-400">Mouse over</span>',
     },
   ],
   searches: [
@@ -48,9 +60,7 @@ export const todoGrid = new w2grid({
         disabled: true,
         onClick: () => {
           w2popup.open({
-            title: 'Preview Changes',
-            with: 600,
-            height: 550,
+            title: 'Preview Changes', with: 600, height: 550,
             body: `<pre>${JSON.stringify(todoGrid.getChanges(), null, 4)}</pre>`,
             actions: { Close: w2popup.close }
           })
@@ -59,33 +69,40 @@ export const todoGrid = new w2grid({
       // { type: 'break' },
     ],
   },
-  contextMenu: [
-    { id: 'edit', text: 'Edit', icon: 'w2ui-icon-pencil' },
-    { id: 'delete', text: 'Delete', icon: 'w2ui-icon-cross' },
-  ],
-  onChange: (event) => { event.owner.toolbar.enable('preview') },
-  onRestore: (event) => {
-    event.onComplete = () => {
-      if (event.owner.getChanges().length == 0) {
-        event.owner.toolbar.disable('preview')
+  onChange: enablePreview,
+  onRestore: disablePreview,
+  onAdd: () => {
+    w2popup.open({
+      title: 'New Todo', width: 800, height: 600, showMax: true,
+      body: '<div id="todoForm" class="w-full h-full"></div>',
+    })
+    new w2form({
+      box: '#todoForm',
+      url: '/admin/todo/data',
+      httpHeaders: { 'X-CSRF-Token': getCookie('_csrf') },
+      style: 'border: 0px; background-color: transparent;',
+      fields: [
+        { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
+        { field: 'name', type: 'text', required: true, html: { label: 'Name' } },
+        { field: 'description', type: 'text', required: true, html: { label: 'Description' } },
+        { field: 'qty', type: 'float', required: true, html: { label: 'Quantity' } },
+        // {
+        //   field: 'type', type: 'list',
+        //   html: { label: 'Person Type' },
+        //   options: { items: ['Employee', 'Contractor', 'Other'] }
+        // }
+      ],
+      // record: {
+      //   name: 'todo',
+      //   description: 'important stuff',
+      // },
+      actions: {
+        Close() { w2popup.close() },
+        Save() { if (this.validate().length == 0) { this.save() } },
       }
-    }
+    })
   },
-  onAdd: function(event) {
-    // this.add({ id: 55 });
-    // this.scrollIntoView(recid);
-    // this.editField(recid, 1)
-    // w2popup.open({
-    // })
-    // w2alert('add');
+  onEdit: () => {
+    w2alert('edit form');
   },
-  onEdit: function(event) {
-    // w2alert('edit');
-  },
-  // onDelete: function(event) {
-  //   console.log('delete has default behavior');
-  // },
-  // onSave: function(event) {
-  //   w2alert('save');
-  // },
 })

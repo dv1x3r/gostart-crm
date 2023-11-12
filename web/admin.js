@@ -6,14 +6,6 @@ window.w2ui = w2ui
 
 w2utils.settings.dataType = 'RESTFULL'
 
-// W2UI Security Rules
-
-// 1. use the following render function for ALL text fields
-// row => w2utils.encodeTags(row.field)
-
-// 2. do NOT allow inline editing for text fields
-// this may lead to broken tag characters
-
 const toolbar = new w2toolbar({
   name: 'toolbar',
   items: [
