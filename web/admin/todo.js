@@ -1,5 +1,5 @@
 import { w2grid, w2alert, w2popup, w2form } from 'w2ui/w2ui-2.0.es6'
-import { safeRender, enablePreview, disablePreview, getCookie } from './utils'
+import { safeRender, enablePreview, disablePreview, getCsrfToken} from './utils'
 
 
 export const todoGrid = new w2grid({
@@ -79,7 +79,7 @@ export const todoGrid = new w2grid({
     new w2form({
       box: '#todoForm',
       url: '/admin/todo/data',
-  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
+      httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
       style: 'border: 0px; background-color: transparent;',
       fields: [
         { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
