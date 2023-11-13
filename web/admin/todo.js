@@ -76,44 +76,50 @@ export const todoGrid = new w2grid({
       title: 'New Todo', width: 800, height: 600, showMax: true,
       body: '<div id="todoForm" class="w-full h-full"></div>',
     })
-    new w2form({
-      box: '#todoForm',
-      url: '/admin/todo/data',
-      httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
-      style: 'border: 0px; background-color: transparent;',
-      fields: [
-        { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
-        { field: 'name', type: 'text', required: true, html: { label: 'Name' } },
-        { field: 'description', type: 'text', required: true, html: { label: 'Description' } },
-        { field: 'qty', type: 'float', required: true, html: { label: 'Quantity' } },
-        // {
-        //   field: 'type', type: 'list',
-        //   html: { label: 'Person Type' },
-        //   options: { items: ['Employee', 'Contractor', 'Other'] }
-        // }
-      ],
-      // record: {
-      //   name: 'todo',
-      //   description: 'important stuff',
-      // },
-      actions: {
-        Close() { w2popup.close() },
-        async Save() {
-          if (this.validate().length == 0) {
-            const res = await this.save()
-            if (res.status == 'success') {
-              w2utils.notify('Todo has been successfully created!', { timeout: 5000 })
-              w2popup.close()
-              todoGrid.reload()
-            } else {
-              w2utils.notify('Error: ' + res.message, { timeout: 5000, error: true })
-            }
-          }
-        },
-      }
-    })
+    todoForm.recid = 0
+    todoForm.clear()
+    todoForm.render('#todoForm')
   },
-  onEdit: () => {
-    w2alert('edit form');
+  onEdit: async event => {
+    todoForm.recid = event.detail.recid
+    await todoForm.reload()
+    w2popup.open({
+      title: 'Edit Todo', width: 800, height: 600, showMax: true,
+      body: '<div id="todoForm" class="w-full h-full"></div>',
+    })
+    todoForm.render('#todoForm')
   },
 })
+
+const todoForm = new w2form({
+  url: '/admin/todo/data',
+  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
+  style: 'border: 0px; background-color: transparent;',
+  fields: [
+    { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
+    { field: 'name', type: 'text', required: true, html: { label: 'Name' } },
+    { field: 'description', type: 'text', required: true, html: { label: 'Description' } },
+    { field: 'qty', type: 'float', required: true, html: { label: 'Quantity' } },
+    // {
+    //   field: 'type', type: 'list',
+    //   html: { label: 'Person Type' },
+    //   options: { items: ['Employee', 'Contractor', 'Other'] }
+    // }
+  ],
+  actions: {
+    Close() { w2popup.close() },
+    async Save() {
+      if (this.validate().length == 0) {
+        const res = await this.save()
+        if (res.status == 'success') {
+          w2utils.notify('Todo has been successfully saved!', { timeout: 5000 })
+          w2popup.close()
+          todoGrid.reload()
+        } else if (res.status == 'error') {
+          w2utils.notify('Error: ' + res.message, { timeout: 5000, error: true })
+        }
+      }
+    },
+  }
+})
+
