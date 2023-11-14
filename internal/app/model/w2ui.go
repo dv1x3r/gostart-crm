@@ -22,16 +22,16 @@ type W2GridDataRequest struct {
 
 type W2GridDataResponse[T any, V any] struct {
 	Status  string `json:"status"`
-	Records []T    `json:"records"`
+	Records []T    `json:"records,omitempty"`
 	Summary []V    `json:"summary,omitempty"`
 	Message string `json:"message,omitempty"`
 	Total   int64  `json:"total,omitempty"`
 }
 
 type W2GridActionRequest[T any] struct {
-	Action  string `json:"action"`
-	RecID   []T    `json:"recid,omitempty"`   // Action: delete
-	Changes []T    `json:"changes,omitempty"` // Action: save
+	Action  string  `json:"action"`
+	Changes []T     `json:"changes"` // Action: save
+	ID      []int64 `json:"id"`      // Action: delete
 }
 
 type W2GridActionResponse struct {
@@ -39,10 +39,10 @@ type W2GridActionResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-type W2FormSubmit[T any, V any] struct {
+type W2FormSubmit[T any] struct {
 	Cmd    string `json:"cmd"`
 	Name   string `json:"name"`
-	RecID  V      `json:"recid"`
+	RecID  int64  `json:"recid"`
 	Record T      `json:"record"`
 }
 

@@ -24,9 +24,9 @@ export function getCsrfToken() {
 // 2. do NOT allow inline editing for text fields
 // this may lead to broken tag characters
 
-export function safeRender (value) {
-  return w2utils.encodeTags(`${value}`)
-} 
+export function safeRender(value) {
+  return w2utils.encodeTags(value)
+}
 
 export function enablePreview(event) {
   event.owner.toolbar.enable('preview')

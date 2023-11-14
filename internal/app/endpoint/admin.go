@@ -26,6 +26,8 @@ func (h *Admin) Register(c *echo.Echo) {
 	g.GET("/todo", h.GetTodo)
 	g.GET("/todo/data", h.GetTodoData)
 	g.POST("/todo/data", h.PostTodoData)
+	g.GET("/todo/form", h.GetTodoForm)
+	g.POST("/todo/form", h.PostTodoForm)
 }
 
 func (h *Admin) GetRoot(ctx echo.Context) error {
@@ -42,45 +44,61 @@ func (h *Admin) GetTodoData(c echo.Context) error {
 	req := &model.W2GridDataRequest{}
 	err := json.Unmarshal([]byte(c.QueryParam("request")), req)
 	if err != nil {
-		c.Logger().Warn(err)
-		return c.JSON(http.StatusBadRequest, model.W2GridDataResponse[any, any]{Status: "error", Message: "invalid request parameters"})
+		return err
 	}
 
 	res, err := h.todoService.GetTodoW2Grid(*req)
 	if err != nil {
-		c.Logger().Error(err)
-		return c.JSON(http.StatusInternalServerError, res)
+		return err
 	}
 
 	return c.JSON(http.StatusOK, res)
 }
 
 func (h *Admin) PostTodoData(c echo.Context) error {
-	// if form.Cmd == "save" {
-	// } else if form.Cmd == "delete" {
-	// }
-	// return c.JSON(http.StatusBadRequest, model.W2FormResponse{Status: "error", Message: fmt.Sprintf("Unknown command (%s)", form.Cmd)})
+	action := &model.TodoW2Action{}
+	if err := c.Bind(action); err != nil {
+		return err
+	}
+
+	if action.Action == "save" {
+		res, err := h.todoService.UpdateTodoW2Action(action.Changes)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, res)
+	} else if action.Action == "delete" {
+		res, err := h.todoService.DeleteTodoW2Action(action.ID)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, res)
+	}
+
+	return c.JSON(http.StatusBadRequest, model.W2GridActionResponse{Status: "error", Message: "invalid action"})
+}
+
+func (h *Admin) GetTodoForm(c echo.Context) error {
 	return nil
 }
 
 func (h *Admin) PostTodoForm(c echo.Context) error {
 	form := &model.TodoW2Form{}
 	if err := c.Bind(form); err != nil {
-		c.Logger().Warn(err)
-		return c.JSON(http.StatusBadRequest, model.W2FormResponse{Status: "error", Message: "incorrect form mapping"})
+		return err
 	}
 
 	if form.RecID == 0 {
-		if res, err := h.todoService.AddTodoW2Form(form.Record); err != nil {
-			c.Logger().Error(err)
-			return c.JSON(http.StatusInternalServerError, res)
+		res, err := h.todoService.CreateTodoW2Form(form.Record)
+		if err != nil {
+			return err
 		}
+		return c.JSON(http.StatusOK, res)
 	} else {
-		if res, err := h.todoService.UpdateTodoW2Form(form.RecID, form.Record); err != nil {
-			c.Logger().Error(err)
-			return c.JSON(http.StatusInternalServerError, res)
+		res, err := h.todoService.UpdateTodoW2Form(form.RecID, form.Record)
+		if err != nil {
+			return err
 		}
+		return c.JSON(http.StatusOK, res)
 	}
-
-	return c.JSON(http.StatusOK, model.W2FormResponse{Status: "success"})
 }

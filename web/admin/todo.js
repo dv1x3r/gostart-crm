@@ -31,8 +31,8 @@ export const todoGrid = new w2grid({
       sortable: true, render: row => safeRender(row.description),
     },
     {
-      field: 'qty', text: 'Quantity', size: '100px',
-      sortable: true, editable: { type: 'float' },
+      field: 'quantity', text: 'Quantity', size: '100px',
+      sortable: true, editable: { type: 'int' },
     },
     {
       text: 'Summary', size: '120px',
@@ -89,17 +89,20 @@ export const todoGrid = new w2grid({
     })
     todoForm.render('#todoForm')
   },
+  // onSave: async () => {
+  //   todoGrid.reload()
+  // }
 })
 
 const todoForm = new w2form({
-  url: '/admin/todo/data',
+  url: '/admin/todo/form',
   httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
   style: 'border: 0px; background-color: transparent;',
   fields: [
     { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
     { field: 'name', type: 'text', required: true, html: { label: 'Name' } },
     { field: 'description', type: 'text', required: true, html: { label: 'Description' } },
-    { field: 'qty', type: 'float', required: true, html: { label: 'Quantity' } },
+    { field: 'quantity', type: 'int', required: true, html: { label: 'Quantity' } },
     // {
     //   field: 'type', type: 'list',
     //   html: { label: 'Person Type' },
