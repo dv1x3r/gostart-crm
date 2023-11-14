@@ -4,7 +4,7 @@ import { todoGrid } from './admin/todo'
 
 window.w2ui = w2ui
 
-w2utils.settings.dataType = 'RESTFULL'
+w2utils.settings.dataType = 'JSON'
 
 const toolbar = new w2toolbar({
   name: 'toolbar',
