@@ -117,6 +117,8 @@ const todoForm = new w2form({
           todoGrid.reload()
         } else if (res.status == 'error') {
           w2utils.notify('Error: ' + res.message, { timeout: 5000, error: true })
+        } else {
+          w2utils.notify('Error: Invalid server response', { timeout: 5000, error: true })
         }
       }
     },
