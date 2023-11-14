@@ -42,11 +42,7 @@ func New() (*App, error) {
 	a.echo.GET("/", a.indexEndpoint.GetRoot)
 
 	a.adminEndpoint = endpoint.NewAdmin(a.todoService)
-	ag := a.echo.Group("/admin")
-	ag.GET("", a.adminEndpoint.GetRoot)
-	ag.GET("/todo", a.adminEndpoint.GetTodo)
-	ag.GET("/todo/data", a.adminEndpoint.GetTodoData)
-	ag.POST("/todo/data", a.adminEndpoint.PostTodoData)
+	a.adminEndpoint.Register(a.echo)
 
 	a.echo.GET("/users/:id", func(c echo.Context) error {
 		// User ID from path `users/:id`

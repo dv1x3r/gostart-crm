@@ -1,23 +1,23 @@
 package model
 
 type W2GridSearch struct {
-	Field    string `query:"field"`
-	Type     string `query:"type"`
-	Operator string `query:"operator"`
-	Value    any    `query:"value"`
+	Field    string `json:"field"`
+	Type     string `json:"type"`
+	Operator string `json:"operator"`
+	Value    any    `json:"value"`
 }
 
 type W2GridSort struct {
-	Field     string `query:"field"`
-	Direction string `query:"direction"`
+	Field     string `json:"field"`
+	Direction string `json:"direction"`
 }
 
 type W2GridDataRequest struct {
-	Limit      int64        `query:"limit"`
-	Offset     int64        `query:"offset"`
-	SeachLogic string       `query:"searchLogic"`
-	Search     W2GridSearch `query:"search"`
-	Sort       W2GridSort   `query:"sort"`
+	Limit      int64          `json:"limit"`
+	Offset     int64          `json:"offset"`
+	SeachLogic string         `json:"searchLogic"`
+	Search     []W2GridSearch `json:"search"`
+	Sort       []W2GridSort   `json:"sort"`
 }
 
 type W2GridDataResponse[T any, V any] struct {
