@@ -71,6 +71,9 @@ export const todoGrid = new w2grid({
   },
   onChange: enablePreview,
   onRestore: disablePreview,
+  onSave: event => {
+    event.onComplete = disablePreview
+  },
   onAdd: () => {
     w2popup.open({
       title: 'New Todo', width: 800, height: 600, showMax: true,
@@ -89,9 +92,6 @@ export const todoGrid = new w2grid({
     })
     todoForm.render('#todoForm')
   },
-  // onSave: async () => {
-  //   todoGrid.reload()
-  // }
 })
 
 const todoForm = new w2form({
