@@ -88,13 +88,13 @@ export const todoGrid = new w2grid({
     todoForm.render('#todoForm')
   },
   onEdit: async event => {
-    todoForm.recid = event.detail.recid
-    await todoForm.reload()
     w2popup.open({
       title: 'Edit Todo', width: 800, height: 600, showMax: true,
       body: '<div id="todoForm" class="w-full h-full"></div>',
     })
     todoForm.render('#todoForm')
+    todoForm.recid = event.detail.recid
+    await todoForm.reload()
   },
 })
 

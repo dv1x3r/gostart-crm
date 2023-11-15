@@ -1,6 +1,8 @@
 package service
 
-import "w2go/internal/app/model"
+import (
+	"w2go/internal/app/model"
+)
 
 type Todo struct {
 	data []model.TodoDTO
@@ -22,12 +24,12 @@ func (ts *Todo) GetTodoW2Grid(req model.W2GridDataRequest) (model.TodoW2GridResp
 	return model.TodoW2GridResponse{Status: "success", Records: ts.data}, nil
 }
 
-func (ts *Todo) DeleteTodoW2Action(idList []int64) (model.W2BaseResponse, error) {
+func (ts *Todo) DeleteTodoW2Action(req model.W2GridDeleteRequest) (model.W2BaseResponse, error) {
 	newData := []model.TodoDTO{}
 
 out:
 	for _, td := range ts.data {
-		for _, deleteID := range idList {
+		for _, deleteID := range req.ID {
 			if td.ID == deleteID {
 				continue out
 			}
@@ -39,13 +41,29 @@ out:
 	return model.W2BaseResponse{Status: "success"}, nil
 }
 
-func (ts *Todo) PatchTodoW2Action(t []model.TodoPatchDTO) (model.W2BaseResponse, error) {
-	return model.W2BaseResponse{Status: "success"}, nil
+func (ts *Todo) PatchTodoW2Action(req model.TodoW2PatchRequest) (model.W2BaseResponse, error) {
+	return model.W2BaseResponse{Status: "error", Message: "not implemented"}, nil
 }
 
-func (ts *Todo) UpsertTodoW2Form(id int64, t model.TodoDTO) (model.W2BaseResponse, error) {
-	if id == 0 {
-		ts.data = append(ts.data, t)
+func (ts *Todo) GetTodoW2Form(req model.TodoW2FormRequest) (model.TodoW2FormResponse, error) {
+	for _, row := range ts.data {
+		if row.ID == req.RecID {
+			return model.TodoW2FormResponse{Status: "success", Record: row}, nil
+		}
+	}
+	return model.TodoW2FormResponse{Status: "error", Message: "not found"}, nil
+}
+
+func (ts *Todo) UpsertTodoW2Form(req model.TodoW2FormRequest) (model.W2BaseResponse, error) {
+	if req.RecID == 0 {
+		ts.data = append(ts.data, req.Record)
+	} else {
+		for i, row := range ts.data {
+			if row.ID == req.RecID {
+				ts.data[i] = req.Record
+				break
+			}
+		}
 	}
 	return model.W2BaseResponse{Status: "success"}, nil
 }

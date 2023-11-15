@@ -52,7 +52,6 @@ func (h *Admin) GetTodoGrid(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -62,7 +61,7 @@ func (h *Admin) DeleteTodo(c echo.Context) error {
 		return err
 	}
 
-	res, err := h.todoService.DeleteTodoW2Action(req.ID)
+	res, err := h.todoService.DeleteTodoW2Action(*req)
 	if err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func (h *Admin) PatchTodo(c echo.Context) error {
 		return err
 	}
 
-	res, err := h.todoService.PatchTodoW2Action(req.Changes)
+	res, err := h.todoService.PatchTodoW2Action(*req)
 	if err != nil {
 		return err
 	}
@@ -83,16 +82,26 @@ func (h *Admin) PatchTodo(c echo.Context) error {
 }
 
 func (h *Admin) GetTodoForm(c echo.Context) error {
-	return nil
-}
-
-func (h *Admin) PostTodoForm(c echo.Context) error {
-	form := &model.TodoW2Form{}
-	if err := c.Bind(form); err != nil {
+	req := &model.TodoW2FormRequest{}
+	err := json.Unmarshal([]byte(c.QueryParam("request")), req)
+	if err != nil {
 		return err
 	}
 
-	res, err := h.todoService.UpsertTodoW2Form(form.RecID, form.Record)
+	res, err := h.todoService.GetTodoW2Form(*req)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h *Admin) PostTodoForm(c echo.Context) error {
+	req := &model.TodoW2FormRequest{}
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+
+	res, err := h.todoService.UpsertTodoW2Form(*req)
 	if err != nil {
 		return err
 	}

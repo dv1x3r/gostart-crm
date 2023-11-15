@@ -14,6 +14,7 @@ type TodoPatchDTO struct {
 	Quantity    *any    `json:"quantity,omitempty"`
 }
 
-type TodoW2Form = W2FormSubmit[TodoDTO]
 type TodoW2GridResponse = W2GridDataResponse[TodoDTO, any]
 type TodoW2PatchRequest = W2GridPatchRequest[TodoPatchDTO]
+type TodoW2FormRequest = W2FormRequest[TodoDTO]
+type TodoW2FormResponse = W2FormResponse[TodoDTO]

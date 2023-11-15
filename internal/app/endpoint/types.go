@@ -4,7 +4,8 @@ import "w2go/internal/app/model"
 
 type TodoService interface {
 	GetTodoW2Grid(model.W2GridDataRequest) (model.TodoW2GridResponse, error)
-	DeleteTodoW2Action([]int64) (model.W2BaseResponse, error)
-	PatchTodoW2Action([]model.TodoPatchDTO) (model.W2BaseResponse, error)
-	UpsertTodoW2Form(int64, model.TodoDTO) (model.W2BaseResponse, error)
+	DeleteTodoW2Action(model.W2GridDeleteRequest) (model.W2BaseResponse, error)
+	PatchTodoW2Action(model.TodoW2PatchRequest) (model.W2BaseResponse, error)
+	GetTodoW2Form(model.TodoW2FormRequest) (model.TodoW2FormResponse, error)
+	UpsertTodoW2Form(model.TodoW2FormRequest) (model.W2BaseResponse, error)
 }

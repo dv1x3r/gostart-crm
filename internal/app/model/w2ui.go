@@ -41,9 +41,15 @@ type W2GridDeleteRequest struct {
 	ID []int64 `json:"id"`
 }
 
-type W2FormSubmit[T any] struct {
+type W2FormRequest[T any] struct {
 	Cmd    string `json:"cmd"`
 	Name   string `json:"name"`
 	RecID  int64  `json:"recid"`
 	Record T      `json:"record"`
+}
+
+type W2FormResponse[T any] struct {
+	Status  string `json:"status"`
+	Message string `json:"message,omitempty"`
+	Record  T      `json:"record"`
 }
