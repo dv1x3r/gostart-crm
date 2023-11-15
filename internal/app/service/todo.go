@@ -5,6 +5,11 @@ import (
 )
 
 type TodoStorager interface {
+	// Select(int64) (model.TodoDTO, error)
+	// Insert(model.TodoDTO) (int64, error)
+	// Update(int64, model.TodoDTO) error
+	// Patch(int64, model.TodoPatchDTO) error
+	// Delete(int64) error
 }
 
 type Todo struct {
