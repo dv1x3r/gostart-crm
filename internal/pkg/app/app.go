@@ -36,7 +36,7 @@ func New() (*App, error) {
 
 	a.echo.Static("/assets", "dist")
 
-	a.todoService = &service.Todo{}
+	a.todoService = service.NewTodo()
 
 	a.indexEndpoint = endpoint.NewIndex(a.todoService)
 	a.echo.GET("/", a.indexEndpoint.GetRoot)

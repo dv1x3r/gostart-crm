@@ -25,7 +25,7 @@ export function getCsrfToken() {
 // this may lead to broken tag characters
 
 export function safeRender(value) {
-  return w2utils.encodeTags(value)
+  return w2utils.encodeTags(value) ?? ""
 }
 
 export function enablePreview(event) {

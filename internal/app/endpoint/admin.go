@@ -23,9 +23,10 @@ func NewAdmin(s TodoService) *Admin {
 func (h *Admin) Register(c *echo.Echo) {
 	g := c.Group("/admin")
 	g.GET("", h.GetRoot)
-	g.GET("/todo", h.GetTodo)
-	g.GET("/todo/data", h.GetTodoData)
-	g.POST("/todo/data", h.PostTodoData)
+	g.GET("/todo", h.GetTodoComponent)
+	g.GET("/todo/grid", h.GetTodoGrid)
+	g.POST("/todo/grid/delete", h.DeleteTodo)
+	g.POST("/todo/grid/patch", h.PatchTodo)
 	g.GET("/todo/form", h.GetTodoForm)
 	g.POST("/todo/form", h.PostTodoForm)
 }
@@ -35,12 +36,12 @@ func (h *Admin) GetRoot(ctx echo.Context) error {
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
 }
 
-func (h *Admin) GetTodo(ctx echo.Context) error {
+func (h *Admin) GetTodoComponent(ctx echo.Context) error {
 	cmp := component.AdminTodo()
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
 }
 
-func (h *Admin) GetTodoData(c echo.Context) error {
+func (h *Admin) GetTodoGrid(c echo.Context) error {
 	req := &model.W2GridDataRequest{}
 	err := json.Unmarshal([]byte(c.QueryParam("request")), req)
 	if err != nil {
@@ -55,27 +56,30 @@ func (h *Admin) GetTodoData(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (h *Admin) PostTodoData(c echo.Context) error {
-	action := &model.TodoW2Action{}
-	if err := c.Bind(action); err != nil {
+func (h *Admin) DeleteTodo(c echo.Context) error {
+	req := &model.W2GridDeleteRequest{}
+	if err := c.Bind(req); err != nil {
 		return err
 	}
 
-	if action.Action == "save" {
-		res, err := h.todoService.UpdateTodoW2Action(action.Changes)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, res)
-	} else if action.Action == "delete" {
-		res, err := h.todoService.DeleteTodoW2Action(action.ID)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, res)
+	res, err := h.todoService.DeleteTodoW2Action(req.ID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h *Admin) PatchTodo(c echo.Context) error {
+	req := &model.TodoW2PatchRequest{}
+	if err := c.Bind(req); err != nil {
+		return err
 	}
 
-	return c.JSON(http.StatusBadRequest, model.W2GridActionResponse{Status: "error", Message: "invalid action"})
+	res, err := h.todoService.PatchTodoW2Action(req.Changes)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *Admin) GetTodoForm(c echo.Context) error {
@@ -88,17 +92,9 @@ func (h *Admin) PostTodoForm(c echo.Context) error {
 		return err
 	}
 
-	if form.RecID == 0 {
-		res, err := h.todoService.CreateTodoW2Form(form.Record)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, res)
-	} else {
-		res, err := h.todoService.UpdateTodoW2Form(form.RecID, form.Record)
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, res)
+	res, err := h.todoService.UpsertTodoW2Form(form.RecID, form.Record)
+	if err != nil {
+		return err
 	}
+	return c.JSON(http.StatusOK, res)
 }

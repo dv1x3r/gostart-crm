@@ -4,7 +4,11 @@ import { safeRender, enablePreview, disablePreview, getCsrfToken } from './utils
 
 export const todoGrid = new w2grid({
   name: 'todoGrid',
-  url: '/admin/todo/data',
+  url: {
+    get: '/admin/todo/grid',
+    remove: '/admin/todo/grid/delete',
+    save: '/admin/todo/grid/patch',
+  },
   httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
   recid: 'id',
   liveSearch: true,
