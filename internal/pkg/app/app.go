@@ -2,18 +2,26 @@ package app
 
 import (
 	"net/http"
+	"os"
 
 	"w2go/internal/app/endpoint"
 	"w2go/internal/app/service"
+	"w2go/internal/app/storage/sqlitedb"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type App struct {
 	echo          *echo.Echo
+	db            *sqlx.DB
 	indexEndpoint *endpoint.Index
 	adminEndpoint *endpoint.Admin
+	todoStorage   *sqlitedb.Todo
 	todoService   *service.Todo
 }
 
@@ -36,7 +44,14 @@ func New() (*App, error) {
 
 	a.echo.Static("/assets", "dist")
 
-	a.todoService = service.NewTodo()
+	dbDriver, dbString := os.Getenv("GOOSE_DRIVER"), os.Getenv("GOOSE_DBSTRING")
+	if dbDriver == "sqlite3" {
+		dbString += "?_journal=WAL&_fk=1"
+	}
+	a.db = sqlx.MustConnect(dbDriver, dbString)
+
+	a.todoStorage = sqlitedb.NewTodo(a.db)
+	a.todoService = service.NewTodo(a.todoStorage)
 
 	a.indexEndpoint = endpoint.NewIndex(a.todoService)
 	a.echo.GET("/", a.indexEndpoint.GetRoot)

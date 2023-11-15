@@ -4,11 +4,15 @@ import (
 	"w2go/internal/app/model"
 )
 
+type TodoStorager interface {
+}
+
 type Todo struct {
+	st   TodoStorager
 	data []model.TodoDTO
 }
 
-func NewTodo() *Todo {
+func NewTodo(st TodoStorager) *Todo {
 	data := []model.TodoDTO{
 		{ID: 0, Name: "Demo", Description: new(string)},
 		{ID: 1, Name: "List", Description: new(string)},
@@ -17,7 +21,7 @@ func NewTodo() *Todo {
 	*data[0].Description = "<b>Description</b>"
 	*data[1].Description = "Placeholder field<script>alert('XSS Test')</script>"
 	*data[2].Quantity = 5
-	return &Todo{data: data}
+	return &Todo{st: st, data: data}
 }
 
 func (ts *Todo) GetTodoW2Grid(req model.W2GridDataRequest) (model.TodoW2GridResponse, error) {
