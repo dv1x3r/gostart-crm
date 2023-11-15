@@ -83,9 +83,9 @@ export const todoGrid = new w2grid({
       title: 'New Todo', width: 800, height: 600, showMax: true,
       body: '<div id="todoForm" class="w-full h-full"></div>',
     })
+    todoForm.render('#todoForm')
     todoForm.recid = 0
     todoForm.clear()
-    todoForm.render('#todoForm')
   },
   onEdit: async event => {
     w2popup.open({
@@ -96,6 +96,19 @@ export const todoGrid = new w2grid({
     todoForm.recid = event.detail.recid
     await todoForm.reload()
   },
+  onDblClick: async event => {
+    const ix = event.detail.column
+    const isEditable = Object.keys(todoGrid.columns[ix].editable).length > 0
+    if (!isEditable) {
+      w2popup.open({
+        title: 'Edit Todo', width: 800, height: 600, showMax: true,
+        body: '<div id="todoForm" class="w-full h-full"></div>',
+      })
+      todoForm.render('#todoForm')
+      todoForm.recid = parseInt(event.detail.recid)
+      await todoForm.reload()
+    }
+  },
 })
 
 const todoForm = new w2form({
@@ -103,15 +116,9 @@ const todoForm = new w2form({
   httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
   style: 'border: 0px; background-color: transparent;',
   fields: [
-    { field: 'id', type: 'int', required: true, html: { label: 'ID' } },
     { field: 'name', type: 'text', required: true, html: { label: 'Name' } },
-    { field: 'description', type: 'text', required: true, html: { label: 'Description' } },
-    { field: 'quantity', type: 'int', required: true, html: { label: 'Quantity' } },
-    // {
-    //   field: 'type', type: 'list',
-    //   html: { label: 'Person Type' },
-    //   options: { items: ['Employee', 'Contractor', 'Other'] }
-    // }
+    { field: 'description', type: 'text', required: false, html: { label: 'Description' } },
+    { field: 'quantity', type: 'int', required: false, html: { label: 'Quantity' } },
   ],
   actions: {
     Close() { w2popup.close() },
