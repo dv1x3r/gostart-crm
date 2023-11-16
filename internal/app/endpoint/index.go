@@ -6,6 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type TodoService interface {
+}
+
 type Index struct {
 	todoService TodoService
 }
