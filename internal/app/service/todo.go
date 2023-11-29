@@ -5,7 +5,7 @@ import (
 )
 
 type TodoStorager interface {
-	SelectList(model.QueryList) ([]model.TodoDTO, error)
+	SelectList(model.QueryList) ([]model.TodoDTO, int64, error)
 	// Insert(model.TodoDTO) (int64, error)
 	// Update(int64, model.TodoDTO) error
 	// Patch(int64, model.TodoPatchDTO) error
@@ -30,6 +30,8 @@ func NewTodo(st TodoStorager) *Todo {
 }
 
 func (ts *Todo) GetTodoW2Grid(req model.W2GridDataRequest) (model.TodoW2GridResponse, error) {
+	// ql := req.ToQueryList()
+	// data, total, err := ts.st.SelectList(ql)
 	return model.TodoW2GridResponse{Status: "success", Records: ts.data}, nil
 }
 

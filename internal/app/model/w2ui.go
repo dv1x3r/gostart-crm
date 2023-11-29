@@ -25,6 +25,28 @@ type W2GridDataRequest struct {
 	Sort       []W2GridSort   `json:"sort"`
 }
 
+func (req W2GridDataRequest) ToQueryList() QueryList {
+	ql := QueryList{Limit: req.Limit, Offset: req.Offset}
+
+	for _, s := range req.Search {
+		ql.Search = append(ql.Search, QuerySearch{
+			Field:    s.Field,
+			Type:     s.Type,
+			Operator: s.Operator,
+			Value:    s.Value,
+		})
+	}
+
+	for _, s := range req.Sort {
+		ql.Sort = append(ql.Sort, QuerySort{
+			Field:     s.Field,
+			Direction: s.Direction,
+		})
+	}
+
+	return ql
+}
+
 type W2GridDataResponse[T any, V any] struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`

@@ -15,9 +15,9 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
-func (ts *Todo) SelectList(q model.QueryList) ([]model.TodoDTO, error) {
+func (ts *Todo) SelectList(q model.QueryList) ([]model.TodoDTO, int64, error) {
 	_ = sqlbuilder.NewSelectBuilder()
-	return nil, nil
+	return nil, 0, nil
 }
 
 func (ts *Todo) SelectByID(id int64) {

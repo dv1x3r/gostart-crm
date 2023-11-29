@@ -2,6 +2,7 @@ package model
 
 type QuerySearch struct {
 	Field    string
+	Type     string
 	Operator string
 	Value    any
 }
