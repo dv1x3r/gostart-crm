@@ -33,8 +33,8 @@ func (h *Admin) Register(c *echo.Echo) {
 	g.GET("", h.GetRoot)
 	g.GET("/todo", h.GetTodoComponent)
 	g.GET("/todo/grid", h.GetTodoGrid)
-	g.POST("/todo/grid/delete", h.DeleteTodo)
-	g.POST("/todo/grid/patch", h.PatchTodo)
+	g.POST("/todo/grid/delete", h.DeleteTodoGrid)
+	g.POST("/todo/grid/patch", h.PatchTodoGrid)
 	g.GET("/todo/form", h.GetTodoForm)
 	g.POST("/todo/form", h.PostTodoForm)
 }
@@ -63,7 +63,7 @@ func (h *Admin) GetTodoGrid(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (h *Admin) DeleteTodo(c echo.Context) error {
+func (h *Admin) DeleteTodoGrid(c echo.Context) error {
 	req := &model.W2GridDeleteRequest{}
 	if err := c.Bind(req); err != nil {
 		return err
@@ -76,7 +76,7 @@ func (h *Admin) DeleteTodo(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (h *Admin) PatchTodo(c echo.Context) error {
+func (h *Admin) PatchTodoGrid(c echo.Context) error {
 	req := &model.TodoW2PatchRequest{}
 	if err := c.Bind(req); err != nil {
 		return err

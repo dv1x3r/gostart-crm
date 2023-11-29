@@ -78,38 +78,34 @@ export const todoGrid = new w2grid({
   onSave: event => {
     event.onComplete = disablePreview
   },
-  onAdd: () => {
-    w2popup.open({
-      title: 'New Todo', width: 800, height: 600, showMax: true,
-      body: '<div id="todoForm" class="w-full h-full"></div>',
-    })
-    todoForm.render('#todoForm')
-    todoForm.recid = 0
-    todoForm.clear()
+  onAdd: async () => {
+    await showTodoForm(0)
   },
   onEdit: async event => {
-    w2popup.open({
-      title: 'Edit Todo', width: 800, height: 600, showMax: true,
-      body: '<div id="todoForm" class="w-full h-full"></div>',
-    })
-    todoForm.render('#todoForm')
-    todoForm.recid = event.detail.recid
-    await todoForm.reload()
+    await showTodoForm(event.detail.recid)
   },
   onDblClick: async event => {
-    const ix = event.detail.column
-    const isEditable = Object.keys(todoGrid.columns[ix].editable).length > 0
+    const columnIndex = event.detail.column
+    const isEditable = Object.keys(todoGrid.columns[columnIndex].editable).length > 0
     if (!isEditable) {
-      w2popup.open({
-        title: 'Edit Todo', width: 800, height: 600, showMax: true,
-        body: '<div id="todoForm" class="w-full h-full"></div>',
-      })
-      todoForm.render('#todoForm')
-      todoForm.recid = parseInt(event.detail.recid)
-      await todoForm.reload()
+      await showTodoForm(parseInt(event.detail.recid))
     }
   },
 })
+
+async function showTodoForm(id) {
+  w2popup.open({
+    title: 'Edit Todo', width: 800, height: 600, showMax: true,
+    body: '<div id="todoForm" class="w-full h-full"></div>',
+  })
+  todoForm.render('#todoForm')
+  todoForm.recid = id
+  if (id == 0) {
+    todoForm.clear()
+  } else {
+    await todoForm.reload()
+  }
+}
 
 const todoForm = new w2form({
   url: '/admin/todo/form',
