@@ -1,6 +1,8 @@
 package sqlitedb
 
 import (
+	"w2go/internal/app/model"
+
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 )
@@ -13,8 +15,9 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
-func (ts *Todo) SelectList(limit int64, offset int64) {
+func (ts *Todo) SelectList(q model.QueryList) ([]model.TodoDTO, error) {
 	_ = sqlbuilder.NewSelectBuilder()
+	return nil, nil
 }
 
 func (ts *Todo) SelectByID(id int64) {
