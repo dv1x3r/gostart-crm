@@ -14,6 +14,6 @@ type QueryOrderBy struct {
 type QueryListParams struct {
 	Limit   int
 	Offset  int
-	Where   []QueryWhere
+	Where   [][]QueryWhere
 	OrderBy []QueryOrderBy
 }

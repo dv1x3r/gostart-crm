@@ -55,6 +55,36 @@ type W2FormResponse[T any] struct {
 }
 
 func (r W2GridDataRequest) ToQueryListParams() QueryListParams {
-	q := QueryListParams{}
+	q := QueryListParams{
+		Limit:  r.Limit,
+		Offset: r.Offset,
+	}
+
+	if len(r.Search) > 0 {
+		q.Where = [][]QueryWhere{{}}
+	}
+
+	for _, s := range r.Search {
+		q.Where[0] = append(q.Where[0], QueryWhere{
+			Field:    s.Field,
+			Operator: s.Operator,
+			Value:    s.Value,
+		})
+	}
+
+	for _, s := range r.Sort {
+		if s.Direction == "desc" {
+			q.OrderBy = append(q.OrderBy, QueryOrderBy{
+				Field: s.Field,
+				Desc:  true,
+			})
+		} else {
+			q.OrderBy = append(q.OrderBy, QueryOrderBy{
+				Field: s.Field,
+				Desc:  false,
+			})
+		}
+	}
+
 	return q
 }
