@@ -1,20 +1,19 @@
 package model
 
-type QuerySearch struct {
+type QueryWhere struct {
 	Field    string
-	Type     string
 	Operator string
 	Value    any
 }
 
-type QuerySort struct {
-	Field     string
-	Direction string
+type QueryOrderBy struct {
+	Field string
+	Desc  bool
 }
 
-type QueryList struct {
-	Limit  int64
-	Offset int64
-	Search []QuerySearch
-	Sort   []QuerySort
+type QueryListParams struct {
+	Limit   int
+	Offset  int
+	Where   []QueryWhere
+	OrderBy []QueryOrderBy
 }
