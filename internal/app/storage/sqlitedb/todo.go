@@ -18,7 +18,7 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
-func (ts *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.TodoFromDB, error) {
+func (st *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.TodoFromDB, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 	sb.Select(
 		"id",
@@ -38,11 +38,11 @@ func (ts *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.T
 	fmt.Println(sql, args)
 
 	var rows []model.TodoFromDB
-	err := ts.db.SelectContext(ctx, &rows, sql, args...)
+	err := st.db.SelectContext(ctx, &rows, sql, args...)
 	return rows, err
 }
 
-func (ts *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error) {
+func (st *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 	sb.Select(
 		"id",
@@ -57,11 +57,11 @@ func (ts *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error)
 	fmt.Println(sql, args)
 
 	var row model.TodoDTO
-	err := ts.db.GetContext(ctx, &row, sql, args...)
+	err := st.db.GetContext(ctx, &row, sql, args...)
 	return row, err
 }
 
-func (s *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
+func (st *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
 	dlb := sqlbuilder.NewDeleteBuilder()
 	dlb.DeleteFrom("todo")
 	dlb.Where(dlb.In("id", sqlbuilder.List(ids)))
@@ -69,24 +69,24 @@ func (s *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
 	sql, args := dlb.BuildWithFlavor(sqlbuilder.SQLite)
 	fmt.Println(sql, args)
 
-	res, err := s.db.ExecContext(ctx, sql, args...)
+	res, err := st.db.ExecContext(ctx, sql, args...)
 	if err != nil {
 		return 0, err
 	}
 	return res.RowsAffected()
 }
 
-func (ts *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialDTO) (int64, error) {
+func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialDTO) (int64, error) {
 	_ = sqlbuilder.NewUpdateBuilder()
 	return 0, nil
 }
 
-func (ts *Todo) UpdateByID(ctx context.Context, todo model.TodoDTO) (int64, error) {
+func (st *Todo) UpdateByID(ctx context.Context, todo model.TodoDTO) (int64, error) {
 	_ = sqlbuilder.NewUpdateBuilder()
 	return 0, nil
 }
 
-func (ts *Todo) Insert(ctx context.Context, todo model.TodoDTO) (int64, error) {
+func (st *Todo) Insert(ctx context.Context, todo model.TodoDTO) (int64, error) {
 	_ = sqlbuilder.NewInsertBuilder()
 	return 0, nil
 }
