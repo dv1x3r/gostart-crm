@@ -42,8 +42,23 @@ func (ts *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.T
 	return rows, err
 }
 
-func (ts *Todo) GetOneByID(id int64) {
-	_ = sqlbuilder.NewSelectBuilder()
+func (ts *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error) {
+	sb := sqlbuilder.NewSelectBuilder()
+	sb.Select(
+		"id",
+		"name",
+		"description",
+		"quantity",
+	)
+	sb.From("todo")
+	sb.Where(sb.EQ("id", id))
+
+	sql, args := sb.BuildWithFlavor(sqlbuilder.SQLite)
+	fmt.Println(sql, args)
+
+	var row model.TodoDTO
+	err := ts.db.GetContext(ctx, &row, sql, args...)
+	return row, err
 }
 
 func (s *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
@@ -69,6 +84,7 @@ func (ts *Todo) Update() {
 	_ = sqlbuilder.NewUpdateBuilder()
 }
 
-func (ts *Todo) Patch() {
+func (ts *Todo) PatchOneByID(ctx context.Context, partial model.TodoPatchDTO) error {
 	_ = sqlbuilder.NewUpdateBuilder()
+	return nil
 }

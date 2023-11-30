@@ -9,9 +9,9 @@ import (
 type TodoStorager interface {
 	FindMany(context.Context, model.FindManyParams) ([]model.TodoFromDB, error)
 	DeleteManyByID(context.Context, []int64) (int64, error)
+	PatchOneByID(context.Context, model.TodoPatchDTO) error
 	// Insert(model.TodoDTO) (int64, error)
 	// Update(int64, model.TodoDTO) error
-	// Patch(int64, model.TodoPatchDTO) error
 }
 
 type Todo struct {
