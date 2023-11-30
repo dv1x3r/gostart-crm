@@ -54,35 +54,38 @@ type W2FormResponse[T any] struct {
 	Record  T      `json:"record"`
 }
 
-func (r W2GridDataRequest) ToQueryListParams() {
-	q := QueryListParams{
+func (r W2GridDataRequest) ToQuerySelectList() QuerySelectList {
+	q := QuerySelectList{
 		Limit:  r.Limit,
 		Offset: r.Offset,
 	}
 
 	if len(r.Search) > 0 {
-		q.Where = [][]QueryWhere{{}}
+		q.Filters = make([][]QueryFilter, 1)
+		q.Filters[0] = make([]QueryFilter, len(r.Search))
+		for i, s := range r.Search {
+			q.Filters[0][i] = QueryFilter{
+				Field:    s.Field,
+				Operator: s.Operator,
+				Value:    s.Value,
+			}
+		}
 	}
 
-	for _, s := range r.Search {
-		q.Where[0] = append(q.Where[0], QueryWhere{
-			Field:    s.Field,
-			Operator: s.Operator,
-			Value:    s.Value,
-		})
-	}
-
-	for _, s := range r.Sort {
-		if s.Direction == "desc" {
-			q.OrderBy = append(q.OrderBy, QueryOrderBy{
-				Field: s.Field,
-				Desc:  true,
-			})
-		} else {
-			q.OrderBy = append(q.OrderBy, QueryOrderBy{
-				Field: s.Field,
-				Desc:  false,
-			})
+	if len(r.Sort) > 0 {
+		q.Sorters = make([]QuerySorter, len(r.Sort))
+		for i, s := range r.Sort {
+			if s.Direction == "desc" {
+				q.Sorters[i] = QuerySorter{
+					Field: s.Field,
+					Desc:  true,
+				}
+			} else {
+				q.Sorters[i] = QuerySorter{
+					Field: s.Field,
+					Desc:  false,
+				}
+			}
 		}
 	}
 

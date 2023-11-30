@@ -6,7 +6,14 @@ type QueryFilter struct {
 	Value    any
 }
 
-type QuerySort struct {
+type QuerySorter struct {
 	Field string
 	Desc  bool
+}
+
+type QuerySelectList struct {
+	Limit   int
+	Offset  int
+	Filters [][]QueryFilter
+	Sorters []QuerySorter
 }

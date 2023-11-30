@@ -10,40 +10,35 @@ import (
 )
 
 func QuoteIdentifier(name string) string {
-	end := strings.IndexRune(name, 0)
-	if end > -1 {
-		name = name[:end]
-	}
-	return `"` + strings.Replace(name, `"`, `""`, -1) + `"`
+	return fmt.Sprintf(`"%s"`, strings.ReplaceAll(name, `"`, `""`))
 }
 
-func ApplyQueryFilter(sb *sqlbuilder.SelectBuilder, qf [][]model.QueryFilter) {
+func ApplyQueryFilters(sb *sqlbuilder.SelectBuilder, qf [][]model.QueryFilter) {
 	for _, g := range qf {
-		og := []string{}
+		og := make([]string, len(g))
 
-		for _, w := range g {
+		for i, w := range g {
 			safeField := QuoteIdentifier(w.Field)
 			switch w.Operator {
 			case "=", "is":
-				og = append(og, sb.EQ(safeField, w.Value))
+				og[i] = sb.EQ(safeField, w.Value)
 			case ">":
-				og = append(og, sb.GT(safeField, w.Value))
+				og[i] = sb.GT(safeField, w.Value)
 			case "<":
-				og = append(og, sb.LT(safeField, w.Value))
+				og[i] = sb.LT(safeField, w.Value)
 			case ">=":
-				og = append(og, sb.GTE(safeField, w.Value))
+				og[i] = sb.GTE(safeField, w.Value)
 			case "<=":
-				og = append(og, sb.LTE(safeField, w.Value))
+				og[i] = sb.LTE(safeField, w.Value)
 			case "begins":
-				og = append(og, sb.Like(safeField, fmt.Sprintf("%v%%", w.Value)))
+				og[i] = sb.Like(safeField, fmt.Sprintf("%v%%", w.Value))
 			case "contains":
-				og = append(og, sb.Like(safeField, fmt.Sprintf("%%%v%%", w.Value)))
+				og[i] = sb.Like(safeField, fmt.Sprintf("%%%v%%", w.Value))
 			case "ends":
-				og = append(og, sb.Like(safeField, fmt.Sprintf("%%%v", w.Value)))
+				og[i] = sb.Like(safeField, fmt.Sprintf("%%%v", w.Value))
 			case "between":
 				if values, ok := w.Value.([]any); ok && len(values) == 2 {
-					fmt.Println("YES")
-					og = append(og, sb.Between(safeField, values[0], values[1]))
+					og[i] = sb.Between(safeField, values[0], values[1])
 				}
 			}
 		}
@@ -52,8 +47,8 @@ func ApplyQueryFilter(sb *sqlbuilder.SelectBuilder, qf [][]model.QueryFilter) {
 	}
 }
 
-func applyQueryOrderBy(sb *sqlbuilder.SelectBuilder, qo []model.QuerySort) {
-	for _, s := range qo {
+func ApplyQuerySorters(sb *sqlbuilder.SelectBuilder, qs []model.QuerySorter) {
+	for _, s := range qs {
 		safeField := QuoteIdentifier(s.Field)
 		if s.Desc {
 			sb = sb.OrderBy(fmt.Sprintf("%s DESC", safeField))

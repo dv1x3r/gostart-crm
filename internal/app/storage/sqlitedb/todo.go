@@ -17,7 +17,7 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
-func (ts *Todo) SelectList(limit int, offset int, filters [][]model.QueryFilter, sort []model.QuerySort) ([]model.TodoDTO, int64, error) {
+func (ts *Todo) SelectList(q model.QuerySelectList) ([]model.TodoDTO, int64, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 	sb = sb.
 		Select(
@@ -28,13 +28,15 @@ func (ts *Todo) SelectList(limit int, offset int, filters [][]model.QueryFilter,
 			sb.As("count(*)", "total"),
 		).
 		From("todo").
-		Limit(limit).
-		Offset(offset)
+		Limit(q.Limit).
+		Offset(q.Offset)
 
-	applyQueryListParams(sb, p)
+	ApplyQueryFilters(sb, q.Filters)
+	ApplyQuerySorters(sb, q.Sorters)
 
 	sql, args := sb.Build()
 	fmt.Println(sql, args)
+
 	return nil, 0, nil
 }
 
