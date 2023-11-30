@@ -54,6 +54,9 @@ export const todoGrid = new w2grid({
     { type: 'text', field: 'name', label: 'Name' },
     { type: 'text', field: 'description', label: 'Description' },
   ],
+  defaultOperator: {
+    'text': 'contains',
+  },
   toolbar: {
     items: [
       {
