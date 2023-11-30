@@ -12,7 +12,7 @@ type TodoFromDB struct {
 	Count int64 `db:"count"`
 }
 
-type TodoPatchDTO struct {
+type TodoPartialDTO struct {
 	ID          int64 `json:"id"`
 	Name        *any  `json:"name,omitempty"`
 	Description *any  `json:"description,omitempty"`
@@ -20,6 +20,6 @@ type TodoPatchDTO struct {
 }
 
 type TodoW2GridResponse = W2GridDataResponse[TodoDTO, any]
-type TodoW2PatchRequest = W2GridPatchRequest[TodoPatchDTO]
+type TodoW2PatchRequest = W2GridPatchRequest[TodoPartialDTO]
 type TodoW2FormRequest = W2FormRequest[TodoDTO]
 type TodoW2FormResponse = W2FormResponse[TodoDTO]

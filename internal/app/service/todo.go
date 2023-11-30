@@ -2,17 +2,17 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"w2go/internal/app/model"
 )
 
 type TodoStorager interface {
 	FindMany(context.Context, model.FindManyParams) ([]model.TodoFromDB, error)
+	GetOneByID(context.Context, int64) (model.TodoDTO, error)
 	DeleteManyByID(context.Context, []int64) (int64, error)
-	PatchOneByID(context.Context, model.TodoPatchDTO) error
-	// Insert(model.TodoDTO) (int64, error)
-	// Update(int64, model.TodoDTO) error
+	PatchManyByID(context.Context, []model.TodoPartialDTO) (int64, error)
+	UpdateByID(context.Context, model.TodoDTO) (int64, error)
+	Insert(context.Context, model.TodoDTO) (int64, error)
 }
 
 type Todo struct {
@@ -46,30 +46,33 @@ func (s *Todo) DeleteTodoW2Grid(ctx context.Context, req model.W2GridDeleteReque
 	return model.W2BaseResponse{Status: "success"}, nil
 }
 
-func (ts *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2PatchRequest) (model.W2BaseResponse, error) {
-	fmt.Printf("%+v \n", req.Changes)
-	return model.W2BaseResponse{Status: "error", Message: "not implemented"}, nil
+func (s *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2PatchRequest) (model.W2BaseResponse, error) {
+	if _, err := s.st.PatchManyByID(ctx, req.Changes); err != nil {
+		return model.W2BaseResponse{Status: "error"}, err
+	}
+	return model.W2BaseResponse{Status: "success"}, nil
 }
 
-func (ts *Todo) GetTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.TodoW2FormResponse, error) {
-	// for _, row := range ts.data {
-	// 	if row.ID == req.RecID {
-	// 		return model.TodoW2FormResponse{Status: "success", Record: row}, nil
-	// 	}
-	// }
-	return model.TodoW2FormResponse{Status: "error", Message: "not found"}, nil
+func (s *Todo) GetTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.TodoW2FormResponse, error) {
+	todo, err := s.st.GetOneByID(ctx, req.RecID)
+	if err != nil {
+		return model.TodoW2FormResponse{Status: "error"}, err
+	}
+	return model.TodoW2FormResponse{Status: "success", Record: todo}, nil
 }
 
-func (ts *Todo) UpsertTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.W2BaseResponse, error) {
-	// if req.RecID == 0 {
-	// 	ts.data = append(ts.data, req.Record)
-	// } else {
-	// 	for i, row := range ts.data {
-	// 		if row.ID == req.RecID {
-	// 			ts.data[i] = req.Record
-	// 			break
-	// 		}
-	// 	}
-	// }
+func (s *Todo) UpsertTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.W2BaseResponse, error) {
+	var err error
+
+	if req.RecID == 0 {
+		_, err = s.st.Insert(ctx, req.Record)
+	} else {
+		_, err = s.st.UpdateByID(ctx, req.Record)
+	}
+
+	if err != nil {
+		return model.W2BaseResponse{Status: "error"}, err
+	}
+
 	return model.W2BaseResponse{Status: "success"}, nil
 }

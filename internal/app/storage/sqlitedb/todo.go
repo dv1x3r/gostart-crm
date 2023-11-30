@@ -76,15 +76,17 @@ func (s *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
 	return res.RowsAffected()
 }
 
-func (ts *Todo) Insert() {
+func (ts *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialDTO) (int64, error) {
+	_ = sqlbuilder.NewUpdateBuilder()
+	return 0, nil
+}
+
+func (ts *Todo) UpdateByID(ctx context.Context, todo model.TodoDTO) (int64, error) {
+	_ = sqlbuilder.NewUpdateBuilder()
+	return 0, nil
+}
+
+func (ts *Todo) Insert(ctx context.Context, todo model.TodoDTO) (int64, error) {
 	_ = sqlbuilder.NewInsertBuilder()
-}
-
-func (ts *Todo) Update() {
-	_ = sqlbuilder.NewUpdateBuilder()
-}
-
-func (ts *Todo) PatchOneByID(ctx context.Context, partial model.TodoPatchDTO) error {
-	_ = sqlbuilder.NewUpdateBuilder()
-	return nil
+	return 0, nil
 }

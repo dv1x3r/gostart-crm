@@ -64,6 +64,7 @@ func (h *Admin) GetTodoGrid(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -80,6 +81,7 @@ func (h *Admin) DeleteTodoGrid(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -96,6 +98,7 @@ func (h *Admin) PatchTodoGrid(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -113,6 +116,7 @@ func (h *Admin) GetTodoForm(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -129,5 +133,6 @@ func (h *Admin) PostTodoForm(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
