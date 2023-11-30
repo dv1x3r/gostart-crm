@@ -54,17 +54,17 @@ type W2FormResponse[T any] struct {
 	Record  T      `json:"record"`
 }
 
-func (r W2GridDataRequest) ToQuerySelectList() QuerySelectList {
-	q := QuerySelectList{
+func (r W2GridDataRequest) ToFindManyParams() FindManyParams {
+	p := FindManyParams{
 		Limit:  r.Limit,
 		Offset: r.Offset,
 	}
 
 	if len(r.Search) > 0 {
-		q.Filters = make([][]QueryFilter, 1)
-		q.Filters[0] = make([]QueryFilter, len(r.Search))
+		p.Filters = make([][]QueryFilter, 1)
+		p.Filters[0] = make([]QueryFilter, len(r.Search))
 		for i, s := range r.Search {
-			q.Filters[0][i] = QueryFilter{
+			p.Filters[0][i] = QueryFilter{
 				Field:    s.Field,
 				Operator: s.Operator,
 				Value:    s.Value,
@@ -73,15 +73,15 @@ func (r W2GridDataRequest) ToQuerySelectList() QuerySelectList {
 	}
 
 	if len(r.Sort) > 0 {
-		q.Sorters = make([]QuerySorter, len(r.Sort))
+		p.Sorters = make([]QuerySorter, len(r.Sort))
 		for i, s := range r.Sort {
 			if s.Direction == "desc" {
-				q.Sorters[i] = QuerySorter{
+				p.Sorters[i] = QuerySorter{
 					Field: s.Field,
 					Desc:  true,
 				}
 			} else {
-				q.Sorters[i] = QuerySorter{
+				p.Sorters[i] = QuerySorter{
 					Field: s.Field,
 					Desc:  false,
 				}
@@ -89,5 +89,5 @@ func (r W2GridDataRequest) ToQuerySelectList() QuerySelectList {
 		}
 	}
 
-	return q
+	return p
 }

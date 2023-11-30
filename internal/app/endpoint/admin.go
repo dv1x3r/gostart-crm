@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -11,11 +12,11 @@ import (
 )
 
 type TodoAdminService interface {
-	GetTodoW2Grid(model.W2GridDataRequest) (model.TodoW2GridResponse, error)
-	DeleteTodoW2Action(model.W2GridDeleteRequest) (model.W2BaseResponse, error)
-	PatchTodoW2Action(model.TodoW2PatchRequest) (model.W2BaseResponse, error)
-	GetTodoW2Form(model.TodoW2FormRequest) (model.TodoW2FormResponse, error)
-	UpsertTodoW2Form(model.TodoW2FormRequest) (model.W2BaseResponse, error)
+	GetTodoW2Grid(context.Context, model.W2GridDataRequest) (model.TodoW2GridResponse, error)
+	DeleteTodoW2Grid(context.Context, model.W2GridDeleteRequest) (model.W2BaseResponse, error)
+	PatchTodoW2Action(context.Context, model.TodoW2PatchRequest) (model.W2BaseResponse, error)
+	GetTodoW2Form(context.Context, model.TodoW2FormRequest) (model.TodoW2FormResponse, error)
+	UpsertTodoW2Form(context.Context, model.TodoW2FormRequest) (model.W2BaseResponse, error)
 }
 
 type Admin struct {
@@ -59,7 +60,7 @@ func (h *Admin) GetTodoGrid(c echo.Context) error {
 		})
 	}
 
-	res, err := h.todoService.GetTodoW2Grid(*req)
+	res, err := h.todoService.GetTodoW2Grid(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}
@@ -75,7 +76,7 @@ func (h *Admin) DeleteTodoGrid(c echo.Context) error {
 		})
 	}
 
-	res, err := h.todoService.DeleteTodoW2Action(*req)
+	res, err := h.todoService.DeleteTodoW2Grid(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}
@@ -91,7 +92,7 @@ func (h *Admin) PatchTodoGrid(c echo.Context) error {
 		})
 	}
 
-	res, err := h.todoService.PatchTodoW2Action(*req)
+	res, err := h.todoService.PatchTodoW2Action(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}
@@ -108,7 +109,7 @@ func (h *Admin) GetTodoForm(c echo.Context) error {
 		})
 	}
 
-	res, err := h.todoService.GetTodoW2Form(*req)
+	res, err := h.todoService.GetTodoW2Form(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}
@@ -124,7 +125,7 @@ func (h *Admin) PostTodoForm(c echo.Context) error {
 		})
 	}
 
-	res, err := h.todoService.UpsertTodoW2Form(*req)
+	res, err := h.todoService.UpsertTodoW2Form(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}

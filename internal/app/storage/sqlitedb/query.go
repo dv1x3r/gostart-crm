@@ -51,9 +51,9 @@ func ApplyQuerySorters(sb *sqlbuilder.SelectBuilder, qs []model.QuerySorter) {
 	for _, s := range qs {
 		safeField := QuoteIdentifier(s.Field)
 		if s.Desc {
-			sb = sb.OrderBy(fmt.Sprintf("%s DESC", safeField))
+			sb.OrderBy(fmt.Sprintf("%s DESC", safeField))
 		} else {
-			sb = sb.OrderBy(fmt.Sprintf("%s ASC", safeField))
+			sb.OrderBy(fmt.Sprintf("%s ASC", safeField))
 		}
 	}
 }

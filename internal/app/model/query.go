@@ -11,7 +11,7 @@ type QuerySorter struct {
 	Desc  bool
 }
 
-type QuerySelectList struct {
+type FindManyParams struct {
 	Limit   int
 	Offset  int
 	Filters [][]QueryFilter
