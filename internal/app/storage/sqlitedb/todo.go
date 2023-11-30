@@ -72,13 +72,55 @@ func (st *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) 
 	res, err := st.db.ExecContext(ctx, sql, args...)
 	if err != nil {
 		return 0, err
+	} else {
+		return res.RowsAffected()
 	}
-	return res.RowsAffected()
 }
 
 func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialDTO) (int64, error) {
-	_ = sqlbuilder.NewUpdateBuilder()
-	return 0, nil
+	updates := make([]*sqlbuilder.UpdateBuilder, len(partials))
+
+	for i, p := range partials {
+		ub := sqlbuilder.NewUpdateBuilder()
+		ub.Update("todo")
+		ub.Where(ub.EQ("id", p.ID))
+
+		if p.Quantity != nil {
+			if value, ok := (*p.Quantity).(float64); ok {
+				ub.Set(ub.EQ("quantity", value))
+			} else {
+				ub.Set(ub.EQ("quantity", nil))
+			}
+		}
+
+		updates[i] = ub
+	}
+
+	tx, err := st.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	var affected int64
+
+	for _, ub := range updates {
+		sql, args := ub.BuildWithFlavor(sqlbuilder.SQLite)
+		fmt.Println(sql, args)
+
+		res, err := tx.ExecContext(ctx, sql, args...)
+		if err != nil {
+			return 0, tx.Rollback()
+		} else {
+			ra, _ := res.RowsAffected()
+			affected += ra
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	} else {
+		return affected, nil
+	}
 }
 
 func (st *Todo) UpdateByID(ctx context.Context, todo model.TodoDTO) (int64, error) {
