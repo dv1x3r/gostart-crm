@@ -1,6 +1,8 @@
 package sqlitedb
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 
 	"w2go/internal/app/model"
@@ -17,6 +19,18 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
+type TodoBase struct {
+	ID          int64          `db:"id"`
+	Name        string         `db:"name"`
+	Description sql.NullString `db:"description"`
+	Quantity    sql.NullInt64  `db:"quantity"`
+}
+
+type TodoDetails struct {
+	TodoBase
+	Total int64 `db:"total"`
+}
+
 func (ts *Todo) SelectList(q model.QuerySelectList) ([]model.TodoDTO, int64, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 	sb = sb.
@@ -25,7 +39,7 @@ func (ts *Todo) SelectList(q model.QuerySelectList) ([]model.TodoDTO, int64, err
 			"name",
 			"description",
 			"quantity",
-			sb.As("count(*)", "total"),
+			sb.As("count(*) over ()", "total"),
 		).
 		From("todo").
 		Limit(q.Limit).
@@ -34,10 +48,25 @@ func (ts *Todo) SelectList(q model.QuerySelectList) ([]model.TodoDTO, int64, err
 	ApplyQueryFilters(sb, q.Filters)
 	ApplyQuerySorters(sb, q.Sorters)
 
-	sql, args := sb.Build()
+	sql, args := sb.BuildWithFlavor(sqlbuilder.SQLite)
 	fmt.Println(sql, args)
 
-	return nil, 0, nil
+	var rows []TodoDetails
+	err := ts.db.SelectContext(context.TODO(), &rows, sql, args...)
+
+	todos := make([]model.TodoDTO, len(rows))
+	var total int64
+	for i, row := range rows {
+		total = row.Total
+		todos[i] = model.TodoDTO{
+			ID:          row.ID,
+			Name:        row.Name,
+			Description: &row.Description.String,
+			Quantity:    &row.Quantity.Int64,
+		}
+	}
+
+	return todos, total, err
 }
 
 func (ts *Todo) SelectByID(id int64) {
