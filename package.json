@@ -29,7 +29,7 @@
     "css-loader": "^6.8.1",
     "cssnano": "^6.0.1",
     "dotenv-cli": "^7.3.0",
-    "htmx.org": "^1.9.7",
+    "htmx.org": "^1.9.9",
     "postcss": "^8.4.31",
     "postcss-loader": "^7.3.3",
     "postcss-preset-env": "^9.3.0",
