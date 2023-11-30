@@ -13,10 +13,10 @@ type TodoFromDB struct {
 }
 
 type TodoPatchDTO struct {
-	ID          int64   `json:"id"`
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Quantity    *any    `json:"quantity,omitempty"`
+	ID          int64 `json:"id"`
+	Name        *any  `json:"name,omitempty"`
+	Description *any  `json:"description,omitempty"`
+	Quantity    *any  `json:"quantity,omitempty"`
 }
 
 type TodoW2GridResponse = W2GridDataResponse[TodoDTO, any]

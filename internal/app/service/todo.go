@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"w2go/internal/app/model"
 )
@@ -46,6 +47,7 @@ func (s *Todo) DeleteTodoW2Grid(ctx context.Context, req model.W2GridDeleteReque
 }
 
 func (ts *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2PatchRequest) (model.W2BaseResponse, error) {
+	fmt.Printf("%+v \n", req.Changes)
 	return model.W2BaseResponse{Status: "error", Message: "not implemented"}, nil
 }
 
