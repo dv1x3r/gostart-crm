@@ -1,10 +1,15 @@
 package model
 
 type TodoDTO struct {
-	ID          int64   `json:"id"`
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Quantity    *int64  `json:"quantity,omitempty"`
+	ID          int64   `json:"id" db:"id"`
+	Name        string  `json:"name" db:"name"`
+	Description *string `json:"description,omitempty" db:"description"`
+	Quantity    *int64  `json:"quantity,omitempty" db:"quantity"`
+}
+
+type TodoFromDB struct {
+	TodoDTO
+	Count int64 `db:"count"`
 }
 
 type TodoPatchDTO struct {
