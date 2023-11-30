@@ -54,7 +54,7 @@ type W2FormResponse[T any] struct {
 	Record  T      `json:"record"`
 }
 
-func (r W2GridDataRequest) ToQueryListParams() QueryListParams {
+func (r W2GridDataRequest) ToQueryListParams() {
 	q := QueryListParams{
 		Limit:  r.Limit,
 		Offset: r.Offset,

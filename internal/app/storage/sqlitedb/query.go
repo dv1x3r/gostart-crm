@@ -9,7 +9,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 )
 
-func quoteIdentifier(name string) string {
+func QuoteIdentifier(name string) string {
 	end := strings.IndexRune(name, 0)
 	if end > -1 {
 		name = name[:end]
@@ -17,12 +17,12 @@ func quoteIdentifier(name string) string {
 	return `"` + strings.Replace(name, `"`, `""`, -1) + `"`
 }
 
-func applyQueryWhere(sb *sqlbuilder.SelectBuilder, qw [][]model.QueryWhere) {
-	for _, g := range qw {
+func ApplyQueryFilter(sb *sqlbuilder.SelectBuilder, qf [][]model.QueryFilter) {
+	for _, g := range qf {
 		og := []string{}
 
 		for _, w := range g {
-			safeField := quoteIdentifier(w.Field)
+			safeField := QuoteIdentifier(w.Field)
 			switch w.Operator {
 			case "=", "is":
 				og = append(og, sb.EQ(safeField, w.Value))
@@ -52,9 +52,9 @@ func applyQueryWhere(sb *sqlbuilder.SelectBuilder, qw [][]model.QueryWhere) {
 	}
 }
 
-func applyQueryOrderBy(sb *sqlbuilder.SelectBuilder, qo []model.QueryOrderBy) {
+func applyQueryOrderBy(sb *sqlbuilder.SelectBuilder, qo []model.QuerySort) {
 	for _, s := range qo {
-		safeField := quoteIdentifier(s.Field)
+		safeField := QuoteIdentifier(s.Field)
 		if s.Desc {
 			sb = sb.OrderBy(fmt.Sprintf("%s DESC", safeField))
 		} else {

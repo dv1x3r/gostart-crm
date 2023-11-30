@@ -2,7 +2,7 @@ package model
 
 type TodoDTO struct {
 	ID          int64   `json:"id"`
-	Name        string  `json:"name,omitempty"`
+	Name        string  `json:"name"`
 	Description *string `json:"description,omitempty"`
 	Quantity    *int64  `json:"quantity,omitempty"`
 }
