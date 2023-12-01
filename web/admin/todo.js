@@ -1,5 +1,5 @@
-import { w2grid, w2alert, w2popup, w2form, w2utils } from 'w2ui/w2ui-2.0.es6'
-import { safeRender, enablePreview, disablePreview, getCsrfToken } from './utils'
+import { w2grid, w2popup, w2form, w2utils } from 'w2ui/w2ui-2.0.es6'
+import { safeRender, getCsrfToken } from './utils'
 
 
 export const todoGrid = new w2grid({
@@ -76,36 +76,49 @@ export const todoGrid = new w2grid({
       // { type: 'break' },
     ],
   },
-  onChange: enablePreview,
-  onRestore: disablePreview,
+  onChange: event => {
+    event.owner.toolbar.enable('preview')
+  },
+  onRestore: event => {
+    event.onComplete = () => {
+      if (event.owner.getChanges().length == 0) {
+        event.owner.toolbar.disable('preview')
+      }
+    }
+  },
   onSave: event => {
-    event.onComplete = disablePreview
+    event.onComplete = () => {
+      if (event.owner.getChanges().length == 0) {
+        event.owner.toolbar.disable('preview')
+      }
+    }
   },
   onAdd: async () => {
-    await showTodoForm(0)
+    await showTodoForm(0, 'New Todo')
   },
   onEdit: async event => {
-    await showTodoForm(event.detail.recid)
+    await showTodoForm(event.detail.recid, 'Edit Todo')
   },
   onDblClick: async event => {
     const columnIndex = event.detail.column
     const isEditable = Object.keys(todoGrid.columns[columnIndex].editable).length > 0
     if (!isEditable) {
-      await showTodoForm(parseInt(event.detail.recid))
+      await showTodoForm(parseInt(event.detail.recid), 'Edit Todo')
     }
   },
 })
 
-async function showTodoForm(id) {
+async function showTodoForm(id, title) {
   w2popup.open({
-    title: 'Edit Todo', width: 800, height: 600, showMax: true,
+    title: title, width: 800, height: 600, showMax: true,
     body: '<div id="todoForm" class="w-full h-full"></div>',
   })
-  todoForm.render('#todoForm')
-  todoForm.recid = id
   if (id == 0) {
     todoForm.clear()
+    todoForm.render('#todoForm')
   } else {
+    todoForm.recid = id
+    todoForm.render('#todoForm')
     await todoForm.reload()
   }
 }
