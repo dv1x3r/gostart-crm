@@ -10,7 +10,7 @@ import (
 )
 
 func QuoteIdentifier(name string) string {
-	return fmt.Sprintf(`"%s"`, strings.ReplaceAll(name, `"`, `""`))
+	return `"` + strings.Replace(name, `"`, `""`, -1) + `"`
 }
 
 func ApplyQueryLimitOffset(sb *sqlbuilder.SelectBuilder, limit int, offset int) {

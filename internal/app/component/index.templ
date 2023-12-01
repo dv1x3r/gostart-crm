@@ -1,7 +1,10 @@
 package component
 
-import "w2go/internal/app/model"
-import "fmt"
+import (
+	"strconv"
+
+	"w2go/internal/app/model"
+)
 
 templ Index(title string, todos []model.TodoFromDB) {
 	<!DOCTYPE html>
@@ -12,25 +15,30 @@ templ Index(title string, todos []model.TodoFromDB) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script type="module" src="/assets/main.bundle.js"></script>
 		</head>
-		<body>
-			<ul>
-				for _, todo := range todos {
-					@TodoCard(todo.TodoDTO)
-				}
-			</ul>
+		<body class="bg-gradient-to-r from-slate-950 from-10% to-gray-900 text-white flex items-center justify-center h-screen">
+			<div class="flex items-center gap-4 p-4 h-full">
+				<div class="mx-auto">
+					for _, todo := range todos {
+						@TodoCard(todo.TodoDTO)
+					}
+				</div>
+			</div>
 		</body>
 	</html>
 }
 
 templ TodoCard(todo model.TodoDTO) {
-	<div>
-		<li>{ fmt.Sprint(todo.ID) }</li>
-		<li class="text-red-700">{ todo.Name }</li>
-		if todo.Description != nil {
-			<li>{ *todo.Description }</li>
-		}
-		if todo.Quantity != nil {
-			<li>{ fmt.Sprint(*todo.Quantity) }</li>
-		}
+	<div class="flex flex-col p-4 rounded shadow-lg ">
+		<div class="border border-gray-800 border-opacity-30 bg-gradient-radial-dark rounded-lg p-2">
+			<p class="text-slate-100 font-medium">{ todo.Name }</p>
+			<div class="">
+				if todo.Description != nil {
+					<p class="text-slate-600 text-sm">Description: { *todo.Description }</p>
+				}
+				if todo.Quantity != nil {
+					<p class="text-slate-600 text-sm">Quantity: { strconv.FormatInt(*todo.Quantity, 10) }</p>
+				}
+			</div>
+		</div>
 	</div>
 }
