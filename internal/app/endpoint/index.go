@@ -1,12 +1,16 @@
 package endpoint
 
 import (
+	"context"
+
 	"w2go/internal/app/component"
+	"w2go/internal/app/model"
 
 	"github.com/labstack/echo/v4"
 )
 
 type TodoService interface {
+	GetTodoList(context.Context) ([]model.TodoFromDB, error)
 }
 
 type Index struct {
@@ -19,7 +23,12 @@ func NewIndex(ts TodoService) *Index {
 	}
 }
 
-func (h *Index) GetRoot(ctx echo.Context) error {
-	cmp := component.Index("w2go - index", "")
-	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
+func (h *Index) GetRoot(c echo.Context) error {
+	todos, err := h.todoService.GetTodoList(c.Request().Context())
+	if err != nil {
+		return err
+	} else {
+		cmp := component.Index("w2go - index", todos)
+		return cmp.Render(c.Request().Context(), c.Response().Writer)
+	}
 }

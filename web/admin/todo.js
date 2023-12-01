@@ -1,5 +1,5 @@
 import { w2grid, w2popup, w2form, w2utils } from 'w2ui/w2ui-2.0.es6'
-import { safeRender, getCsrfToken } from './utils'
+import { GetCsrfToken } from './csrf'
 
 
 export const todoGrid = new w2grid({
@@ -9,7 +9,7 @@ export const todoGrid = new w2grid({
     remove: '/admin/todo/grid/delete',
     save: '/admin/todo/grid/patch',
   },
-  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
+  httpHeaders: { 'X-CSRF-Token': GetCsrfToken() },
   recid: 'id',
   liveSearch: true,
   show: {
@@ -28,15 +28,15 @@ export const todoGrid = new w2grid({
     },
     {
       field: 'name', text: 'Name', size: '25%',
-      sortable: true, render: row => safeRender(row.name),
+      sortable: true, render: 'safe',
     },
     {
       field: 'description', text: 'Description', size: '75%',
-      sortable: true, render: row => safeRender(row.description),
+      sortable: true, render: 'safe',
     },
     {
       field: 'quantity', text: 'Quantity', size: '100px',
-      sortable: true, editable: { type: 'int' },
+      sortable: true, editable: { type: 'int' }, render: 'int',
     },
     {
       text: 'Summary', size: '120px',
@@ -44,7 +44,7 @@ export const todoGrid = new w2grid({
         showEmpty: true,
         showOn: 'mouseenter',
         options: { position: 'left' },
-        render: rec => `<b>${safeRender(rec.name)}</b>: ${safeRender(rec.description)}`,
+        render: rec => `<b>${w2utils.encodeTags(rec.name)}</b>: ${w2utils.encodeTags(rec.description)}`,
       },
       render: () => '<span class="text-slate-400">Mouse over</span>',
     },
@@ -125,7 +125,7 @@ async function showTodoForm(id, title) {
 
 const todoForm = new w2form({
   url: '/admin/todo/form',
-  httpHeaders: { 'X-CSRF-Token': getCsrfToken() },
+  httpHeaders: { 'X-CSRF-Token': GetCsrfToken() },
   style: 'border: 0px; background-color: transparent;',
   fields: [
     { field: 'name', type: 'text', required: true, html: { label: 'Name' } },

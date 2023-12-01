@@ -13,6 +13,15 @@ func QuoteIdentifier(name string) string {
 	return fmt.Sprintf(`"%s"`, strings.ReplaceAll(name, `"`, `""`))
 }
 
+func ApplyQueryLimitOffset(sb *sqlbuilder.SelectBuilder, limit int, offset int) {
+	if limit != 0 {
+		sb.Limit(limit)
+	}
+	if offset != 0 {
+		sb.Offset(offset)
+	}
+}
+
 func ApplyQueryFilters(sb *sqlbuilder.SelectBuilder, qf [][]model.QueryFilter) {
 	for _, g := range qf {
 		og := make([]string, len(g))

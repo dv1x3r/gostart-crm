@@ -1,6 +1,9 @@
 package component
 
-templ Index(title string, text string) {
+import "w2go/internal/app/model"
+import "fmt"
+
+templ Index(title string, todos []model.TodoFromDB) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -10,10 +13,24 @@ templ Index(title string, text string) {
 			<script type="module" src="/assets/main.bundle.js"></script>
 		</head>
 		<body>
-			<p class="text-red-700">
-				Coming soon...
-				{ text }
-			</p>
+			<ul>
+				for _, todo := range todos {
+					@TodoCard(todo.TodoDTO)
+				}
+			</ul>
 		</body>
 	</html>
+}
+
+templ TodoCard(todo model.TodoDTO) {
+	<div>
+		<li>{ fmt.Sprint(todo.ID) }</li>
+		<li class="text-red-700">{ todo.Name }</li>
+		if todo.Description != nil {
+			<li>{ *todo.Description }</li>
+		}
+		if todo.Quantity != nil {
+			<li>{ fmt.Sprint(*todo.Quantity) }</li>
+		}
+	</div>
 }

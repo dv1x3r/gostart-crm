@@ -23,6 +23,10 @@ func NewTodo(st TodoStorager) *Todo {
 	return &Todo{st: st}
 }
 
+func (ts *Todo) GetTodoList(ctx context.Context) ([]model.TodoFromDB, error) {
+	return ts.st.FindMany(ctx, model.FindManyParams{})
+}
+
 func (ts *Todo) GetTodoW2Grid(ctx context.Context, req model.W2GridDataRequest) (model.TodoW2GridResponse, error) {
 	rows, err := ts.st.FindMany(ctx, req.ToFindManyParams())
 	if err != nil {

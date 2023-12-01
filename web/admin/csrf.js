@@ -1,6 +1,4 @@
-import { w2utils } from 'w2ui/w2ui-2.0.es6'
-
-export function getCsrfToken() {
+export function GetCsrfToken() {
   const cookieName = "_csrf"
   const name = cookieName + "="
   const decodedCookie = decodeURIComponent(document.cookie)
@@ -16,6 +14,3 @@ export function getCsrfToken() {
   return null
 }
 
-export function safeRender(value) {
-  return w2utils.encodeTags(value) ?? ""
-}

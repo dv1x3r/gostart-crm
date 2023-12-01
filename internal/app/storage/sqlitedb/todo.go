@@ -28,9 +28,8 @@ func (st *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.T
 		sb.As("count(*) over ()", "count"),
 	)
 	sb.From("todo")
-	sb.Limit(q.Limit)
-	sb.Offset(q.Offset)
 
+	ApplyQueryLimitOffset(sb, q.Limit, q.Offset)
 	ApplyQueryFilters(sb, q.Filters)
 	ApplyQuerySorters(sb, q.Sorters)
 

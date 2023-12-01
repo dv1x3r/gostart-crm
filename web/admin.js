@@ -5,6 +5,7 @@ import { todoGrid } from './admin/todo'
 window.w2ui = w2ui
 
 w2utils.settings.dataType = 'JSON'
+w2utils.formatters['safe'] = value => w2utils.encodeTags(value) ?? ""
 
 const toolbar = new w2toolbar({
   name: 'toolbar',
