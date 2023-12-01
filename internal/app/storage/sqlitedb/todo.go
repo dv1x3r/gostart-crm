@@ -38,8 +38,7 @@ func (st *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.T
 	fmt.Println(sql, args)
 
 	var rows []model.TodoFromDB
-	err := st.db.SelectContext(ctx, &rows, sql, args...)
-	return rows, err
+	return rows, st.db.SelectContext(ctx, &rows, sql, args...)
 }
 
 func (st *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error) {
@@ -57,8 +56,7 @@ func (st *Todo) GetOneByID(ctx context.Context, id int64) (model.TodoDTO, error)
 	fmt.Println(sql, args)
 
 	var row model.TodoDTO
-	err := st.db.GetContext(ctx, &row, sql, args...)
-	return row, err
+	return row, st.db.GetContext(ctx, &row, sql, args...)
 }
 
 func (st *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) {
@@ -84,24 +82,24 @@ func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialD
 		ub := sqlbuilder.NewUpdateBuilder()
 		ub.Update("todo")
 		ub.Where(ub.EQ("id", p.ID))
+		updates[i] = ub
 
 		if p.Quantity != nil {
 			if value, ok := (*p.Quantity).(float64); ok {
-				ub.Set(ub.EQ("quantity", value))
+				ub.SetMore(ub.EQ("quantity", value))
 			} else {
-				ub.Set(ub.EQ("quantity", nil))
+				ub.SetMore(ub.EQ("quantity", nil))
 			}
 		}
-
-		updates[i] = ub
 	}
 
 	tx, err := st.db.Begin()
 	if err != nil {
 		return 0, err
 	}
+	defer tx.Rollback()
 
-	var affected int64
+	var affectedTotal int64
 
 	for _, ub := range updates {
 		sql, args := ub.BuildWithFlavor(sqlbuilder.SQLite)
@@ -109,26 +107,54 @@ func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialD
 
 		res, err := tx.ExecContext(ctx, sql, args...)
 		if err != nil {
-			return 0, tx.Rollback()
+			return 0, err
 		} else {
-			ra, _ := res.RowsAffected()
-			affected += ra
+			affectedUpdate, _ := res.RowsAffected()
+			affectedTotal += affectedUpdate
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
 		return 0, err
 	} else {
-		return affected, nil
+		return affectedTotal, nil
 	}
 }
 
 func (st *Todo) UpdateByID(ctx context.Context, todo model.TodoDTO) (int64, error) {
-	_ = sqlbuilder.NewUpdateBuilder()
-	return 0, nil
+	ub := sqlbuilder.NewUpdateBuilder()
+	ub.Update("todo")
+	ub.Where(ub.EQ("id", todo.ID))
+	ub.Set(
+		ub.EQ("name", todo.Name),
+		ub.EQ("description", todo.Description),
+		ub.EQ("quantity", todo.Quantity),
+	)
+
+	sql, args := ub.BuildWithFlavor(sqlbuilder.SQLite)
+	fmt.Println(sql, args)
+
+	res, err := st.db.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, err
+	} else {
+		return res.RowsAffected()
+	}
 }
 
 func (st *Todo) Insert(ctx context.Context, todo model.TodoDTO) (int64, error) {
-	_ = sqlbuilder.NewInsertBuilder()
-	return 0, nil
+	ib := sqlbuilder.NewInsertBuilder()
+	ib.InsertInto("todo")
+	ib.Cols("name", "description", "quantity")
+	ib.Values(todo.Name, todo.Description, todo.Quantity)
+
+	sql, args := ib.BuildWithFlavor(sqlbuilder.SQLite)
+	fmt.Println(sql, args)
+
+	res, err := st.db.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, err
+	} else {
+		return res.LastInsertId()
+	}
 }
