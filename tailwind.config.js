@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     "./internal/**/*.templ",
@@ -6,7 +9,11 @@ module.exports = {
     "./web/**/*.{html,js}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'sans': ['"Inter Variable"', ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   plugins: [],
 }

@@ -1,4 +1,4 @@
-import { w2grid, w2popup, w2form, w2utils } from 'w2ui/w2ui-2.0.es6'
+import { w2grid, w2popup, w2form, w2utils } from 'w2ui/dist/w2ui.es6'
 import { GetCsrfToken } from './csrf'
 
 

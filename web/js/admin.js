@@ -1,5 +1,4 @@
-import 'w2ui/w2ui-2.0.css'
-import { w2ui, w2layout, w2toolbar, w2utils } from 'w2ui/w2ui-2.0.es6'
+import { w2ui, w2layout, w2toolbar, w2utils } from 'w2ui/dist/w2ui.es6'
 import { todoGrid } from './admin/todo'
 
 window.w2ui = w2ui

@@ -1,0 +1,32 @@
+@use "@fontsource-variable/inter/scss/mixins" as Inter;
+@include Inter.faces($directory: '../fonts');
+
+$fa-font-path: '../fonts';
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+  display: none !important;
+}
+
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+  opacity: 1
+}
+
+.htmx-request.htmx-indicator {
+  opacity: 1
+}
+
+.kek33 {
+  display: block;
+}

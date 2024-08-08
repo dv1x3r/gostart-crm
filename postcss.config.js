@@ -1,7 +1,9 @@
 module.exports = {
+  map: false,
   plugins: [
+    require('@csstools/postcss-sass')({ sourceMap: false, includePaths: ['node_modules'] }),
     require('tailwindcss'),
-    require('postcss-preset-env'),
-    ...(process.env.NODE_ENV === 'production' ? [require('cssnano')] : []),
+    require('autoprefixer'),
+    require('cssnano'),
   ]
 }
