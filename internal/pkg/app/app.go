@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"w2go/internal/app/endpoint"
-	"w2go/internal/app/service"
-	"w2go/internal/app/storage/sqlitedb"
+	"gocraft-crm/internal/app/endpoint"
+	"gocraft-crm/internal/app/service"
+	"gocraft-crm/internal/app/storage/sqlitedb"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"

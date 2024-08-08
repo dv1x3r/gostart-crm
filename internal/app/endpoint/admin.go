@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"w2go/internal/app/component"
-	"w2go/internal/app/model"
+	"gocraft-crm/internal/app/component"
+	"gocraft-crm/internal/app/model"
 
 	"github.com/labstack/echo/v4"
 )

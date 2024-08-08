@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"w2go/internal/app/model"
+	"gocraft-crm/internal/app/model"
 
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"

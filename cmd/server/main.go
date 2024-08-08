@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"w2go/internal/pkg/app"
+
+	"gocraft-crm/internal/pkg/app"
 )
 
 func main() {
