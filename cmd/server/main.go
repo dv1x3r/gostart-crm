@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"gocraft-crm/internal/pkg/app"
+	"gostart-crm/internal/pkg/app"
 )
 
 func main() {
