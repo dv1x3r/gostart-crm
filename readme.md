@@ -1,4 +1,4 @@
-# gosimple-crm
+# gostart-crm
 
 ## Introduction
 
