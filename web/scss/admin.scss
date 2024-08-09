@@ -1,0 +1,14 @@
+@use "@fontsource-variable/inter/scss/mixins" as Inter;
+@include Inter.faces($directory: '../fonts');
+
+$fa-font-path: '../fonts';
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+
+@import 'w2ui/dist/w2ui.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+

@@ -2,10 +2,10 @@
   "scripts": {
     "build": "bun build:js && bun build:css && bun build:migrate && bun build:server",
     "watch": "concurrently bun:watch:*",
-    "build:js": "bun build ./web/js/client.js ./web/js/admin.js --outdir ./tmp/public/js --minify",
-    "watch:js": "bun build ./web/js/client.js ./web/js/admin.js --outdir ./tmp/public/js --watch",
-    "build:css": "postcss ./web/scss/main.scss -o ./tmp/public/css/main.css",
-    "watch:css": "postcss ./web/scss/main.scss -o ./tmp/public/css/main.css --watch",
+    "build:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --minify",
+    "watch:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --watch",
+    "build:css": "postcss ./web/scss/admin.scss ./web/scss/client.scss --dir ./tmp/public/css/",
+    "watch:css": "postcss ./web/scss/admin.scss ./web/scss/client.scss --dir ./tmp/public/css/ --watch",
     "build:migrate": "go build -o ./tmp/migrate ./cmd/migrate/main.go",
     "build:server": "templ generate && go build -o ./tmp/server ./cmd/server/main.go",
     "watch:server": "air",
@@ -20,7 +20,6 @@
     "db:create": "./tmp/migrate create"
   },
   "devDependencies": {
-    "@alpinejs/collapse": "^3.14.1",
     "@csstools/postcss-sass": "^5.1.1",
     "@fontsource-variable/inter": "^5.0.20",
     "@fortawesome/fontawesome-free": "^6.6.0",
@@ -30,6 +29,7 @@
     "htmx.org": "^2.0.1",
     "postcss": "^8.4.41",
     "postcss-cli": "^11.0.0",
+    "postcss-import": "^16.1.0",
     "tailwindcss": "^3.4.9",
     "w2ui": "github:vitmalina/w2ui#bac775"
   }
