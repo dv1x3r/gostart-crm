@@ -1,4 +1,4 @@
-# gocraft-crm
+# gosimple-crm
 
 ## Introduction
 
