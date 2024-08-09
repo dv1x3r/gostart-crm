@@ -6,12 +6,10 @@ import (
 	"log"
 	"os"
 
-	// _ "gocraft-crm/migrations"
-
-	_ "github.com/joho/godotenv/autoload"
 	"github.com/pressly/goose/v3"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/tursodatabase/go-libsql"
 )
 
 var (
@@ -29,7 +27,7 @@ func main() {
 
 	command := args[0]
 
-	db, err := goose.OpenDBWithDriver(os.Getenv("GOOSE_DRIVER"), os.Getenv("GOOSE_DBSTRING"))
+	db, err := goose.OpenDBWithDriver(os.Getenv("DB_DRIVER"), os.Getenv("DB_STRING"))
 	if err != nil {
 		log.Fatalf("goose: failed to open DB: %v\n", err)
 	}
