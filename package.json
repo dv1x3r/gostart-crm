@@ -10,14 +10,14 @@
     "build:server": "templ generate && go build -o ./tmp/server ./cmd/server/main.go",
     "watch:server": "air",
     "test": "go test -v ./...",
-    "db:up": "./tmp/migrate up",
-    "db:up-to": "./tmp/migrate up-to",
-    "db:up-by-one": "./tmp/migrate up-by-one",
-    "db:down": "./tmp/migrate down",
-    "db:down-to": "./tmp/migrate down-to",
-    "db:status": "./tmp/migrate status",
-    "db:reset": "./tmp/migrate reset",
-    "db:create": "./tmp/migrate create"
+    "db:up": "goose -dir ./migrations sqlite3 ./tmp/data.db up",
+    "db:up-to": "goose -dir ./migrations sqlite3 ./tmp/data.db up-to",
+    "db:up-by-one": "goose -dir ./migrations sqlite3 ./tmp/data.db up-by-one",
+    "db:down": "goose -dir ./migrations sqlite3 ./tmp/data.db down",
+    "db:down-to": "goose -dir ./migrations sqlite3 ./tmp/data.db down-to",
+    "db:status": "goose -dir ./migrations sqlite3 ./tmp/data.db status",
+    "db:reset": "goose -dir ./migrations sqlite3 ./tmp/data.db reset",
+    "db:create": "goose -dir ./migrations sqlite3 ./tmp/data.db create"
   },
   "devDependencies": {
     "@csstools/postcss-sass": "^5.1.1",

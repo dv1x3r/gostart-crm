@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/tursodatabase/go-libsql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type App struct {
