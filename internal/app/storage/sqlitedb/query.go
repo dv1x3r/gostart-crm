@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gocraft-crm/internal/app/model"
+	"gostart-crm/internal/app/model"
 
 	"github.com/huandu/go-sqlbuilder"
 )

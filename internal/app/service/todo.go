@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"gocraft-crm/internal/app/model"
+	"gostart-crm/internal/app/model"
 )
 
 type TodoStorager interface {

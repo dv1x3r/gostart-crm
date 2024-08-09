@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gocraft-crm/internal/app/component"
-	"gocraft-crm/internal/app/model"
+	"gostart-crm/internal/app/component"
+	"gostart-crm/internal/app/model"
 
 	"github.com/labstack/echo/v4"
 )

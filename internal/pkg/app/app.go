@@ -4,16 +4,16 @@ import (
 	"net/http"
 	"os"
 
-	"gocraft-crm/internal/app/endpoint"
-	"gocraft-crm/internal/app/service"
-	"gocraft-crm/internal/app/storage/sqlitedb"
+	"gostart-crm/internal/app/endpoint"
+	"gostart-crm/internal/app/service"
+	"gostart-crm/internal/app/storage/sqlitedb"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/tursodatabase/go-libsql"
 )
 
 type App struct {
