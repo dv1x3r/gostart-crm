@@ -44,7 +44,7 @@ func New() (*App, error) {
 
 	a.echo.Static("/assets", "dist")
 
-	dbDriver, dbString := os.Getenv("GOOSE_DRIVER"), os.Getenv("GOOSE_DBSTRING")
+	dbDriver, dbString := os.Getenv("DB_DRIVER"), os.Getenv("DB_STRING")
 	if dbDriver == "sqlite3" {
 		dbString += "?_journal=WAL&_fk=1"
 	}

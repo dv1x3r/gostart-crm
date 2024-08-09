@@ -27,7 +27,7 @@ func main() {
 
 	command := args[0]
 
-	db, err := goose.OpenDBWithDriver(os.Getenv("DB_DRIVER"), os.Getenv("DB_STRING"))
+	db, err := goose.OpenDBWithDriver(os.Getenv("GOOSE_DRIVER"), os.Getenv("GOOSE_STRING"))
 	if err != nil {
 		log.Fatalf("goose: failed to open DB: %v\n", err)
 	}
