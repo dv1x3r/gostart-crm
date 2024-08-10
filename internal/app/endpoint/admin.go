@@ -32,7 +32,6 @@ func NewAdmin(s TodoAdminService) *Admin {
 func (h *Admin) Register(c *echo.Echo) {
 	g := c.Group("/admin")
 	g.GET("", h.GetRoot)
-	g.GET("/todo", h.GetTodoComponent)
 	g.GET("/todo/grid", h.GetTodoGrid)
 	g.POST("/todo/grid/delete", h.DeleteTodoGrid)
 	g.POST("/todo/grid/patch", h.PatchTodoGrid)
@@ -41,12 +40,10 @@ func (h *Admin) Register(c *echo.Echo) {
 }
 
 func (h *Admin) GetRoot(ctx echo.Context) error {
-	cmp := component.Admin("w2go - admin")
-	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
-}
-
-func (h *Admin) GetTodoComponent(ctx echo.Context) error {
-	cmp := component.AdminTodo()
+	cp := component.CoreParams{
+		Title: "w2go - admin",
+	}
+	cmp := component.Admin(cp)
 	return cmp.Render(ctx.Request().Context(), ctx.Response().Writer)
 }
 

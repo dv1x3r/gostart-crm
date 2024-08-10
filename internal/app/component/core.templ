@@ -1,0 +1,41 @@
+package component
+
+import "fmt"
+
+type CoreParams struct {
+	DebugMode     bool
+	Title         string
+	StaticVersion string
+	CsrfToken     string
+	GoogleTag     string
+}
+
+templ Core(cp CoreParams, extraHead templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			if cp.DebugMode {
+				<title>DEV { cp.Title }</title>
+			} else {
+				<title>{ cp.Title }</title>
+			}
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="csrf-token" content={ cp.CsrfToken }/>
+			@extraHead
+			if cp.GoogleTag != "" && !cp.DebugMode {
+				<!-- Google tag (gtag.js) -->
+				<script async src={ fmt.Sprintf("https://www.googletagmanager.com/gtag/js?id=%s", cp.GoogleTag) }></script>
+				<script>
+				  window.dataLayer = window.dataLayer || [];
+				  function gtag(){dataLayer.push(arguments);}
+				  gtag('js', new Date());
+				  gtag('config', cp.GoogleTag);
+				</script>
+			}
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
+}

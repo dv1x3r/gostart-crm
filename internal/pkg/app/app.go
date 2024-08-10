@@ -42,7 +42,7 @@ func New() (*App, error) {
 		},
 	))
 
-	a.echo.Static("/assets", "dist")
+	a.echo.Static("/", "./tmp/public")
 
 	dbDriver, dbString := os.Getenv("DB_DRIVER"), os.Getenv("DB_STRING")
 	if dbDriver == "sqlite3" {
