@@ -1,13 +1,12 @@
 {
   "scripts": {
-    "build": "bun build:js && bun build:css && bun build:migrate && bun build:server",
+    "build": "bun build:js && bun build:css && bun build:fonts && bun build:server",
     "watch": "concurrently bun:watch:*",
     "build:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --minify",
     "watch:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --watch",
     "build:css": "postcss ./web/scss/admin.scss ./web/scss/client.scss --dir ./tmp/public/css/",
     "watch:css": "postcss ./web/scss/admin.scss ./web/scss/client.scss --dir ./tmp/public/css/ --watch",
     "build:fonts": "mkdir -p ./tmp/public/fonts && cp ./node_modules/@fontsource-variable/inter/files/* ./node_modules/@fortawesome/fontawesome-free/webfonts/* ./tmp/public/fonts",
-    "build:migrate": "go build -o ./tmp/migrate ./cmd/migrate/main.go",
     "build:server": "templ generate && go build -o ./tmp/server ./cmd/server/main.go",
     "watch:server": "air",
     "test": "go test -v ./...",
