@@ -31,7 +31,7 @@ export function createProductGrid() {
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'code', text: 'Code', size: '100px', render: 'safe', sortable: true, clipboardCopy: true },
       {
-        field: 'name', text: 'Name', size: '384px', render: 'hover', sortable: true,
+        field: 'name', text: 'Name', size: '385px', render: 'hover', sortable: true,
         info: {
           // showOn: 'mouseenter',
           render: row => {
