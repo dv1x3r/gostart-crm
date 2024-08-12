@@ -1,4 +1,4 @@
-import { w2form, w2grid, w2layout, w2popup } from 'w2ui/dist/w2ui.es6'
+import { w2form, w2grid, w2layout } from 'w2ui/dist/w2ui.es6'
 import * as utils from './utils'
 
 export function createUserLayout() {
@@ -47,11 +47,6 @@ export function createUserLayout() {
     sortData: [
       { field: 'created_at', direction: 'desc' },
     ],
-    toolbar: {
-      items: [
-        { id: 'visits', type: 'button', text: 'Visits', icon: 'fa fa-chart-simple', onClick: () => openVisitPopup() },
-      ],
-    },
     onDelete: async event => {
       await utils.gridShowDeleted(event)
       userForm.recid = null
@@ -102,36 +97,5 @@ export function createUserLayout() {
       userForm.destroy()
     }
   })
-}
-
-function openVisitPopup() {
-  const visitGrid = new w2grid({
-    name: 'visitGrid',
-    url: '/user/visit',
-    httpHeaders: { 'X-CSRF-Token': utils.getCsrfToken() },
-    recid: 'id',
-    show: {
-      footer: true,
-      toolbar: false,
-    },
-    columns: [
-      { field: 'id', text: 'ID', size: '60px', hidden: true },
-      { field: 'date', text: 'Date', size: '90px', render: 'date' },
-      { field: 'email', text: 'E-mail', size: '200px', render: 'safe' },
-      { field: 'full_name', text: 'Full name', size: '200px', render: 'safe' },
-    ],
-    onDelete: event => event.preventDefault(),
-  })
-
-  w2popup.open({
-    title: 'Visits',
-    width: 900,
-    height: 600,
-    showMax: true,
-    resizable: true,
-    body: '<div id="visit-grid" class="w-full h-full"></div>'
-  })
-    .then(() => visitGrid.render('#visit-grid'))
-    .close(() => visitGrid.destroy())
 }
 
