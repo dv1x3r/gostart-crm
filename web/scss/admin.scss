@@ -12,3 +12,18 @@ $fa-font-path: '../fonts';
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+// Fix w2ui grid advanced search font size
+.w2ui-overlay-body {
+
+  .search-logic select,
+  .operator select,
+  .value input {
+    font-size: 13px;
+    font-weight: normal;
+  }
+
+}
