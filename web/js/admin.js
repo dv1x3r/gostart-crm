@@ -3,7 +3,14 @@ window.htmx = Htmx
 
 import { w2ui, w2layout, w2tooltip, w2utils } from 'w2ui/dist/w2ui.es6'
 
+import { createProductGrid, openProductStatusPopup } from './admin/product'
+import { categorySidebar, createCategoryGrid } from './admin/category'
 import { createSupplierGrid } from './admin/supplier'
+import { createBrandGrid } from './admin/brand'
+import { createAttributeLayout } from './admin/attribute'
+
+import { createUserLayout } from './admin/user'
+import { updateOrderCounter, createOrderLayout, openOrderStatusPopup, openPaymentMethodPopup } from './admin/order'
 
 import * as utils from './admin/utils'
 
@@ -74,10 +81,10 @@ export const mainLayout = new w2layout({
           { type: 'button', id: 'logout', text: 'Log out', icon: 'fa fa-right-from-bracket', onClick: () => window.location = '/logout/' },
         ],
         onClick: event => utils.w2menuOnClick(event),
-        // _updateOrderCounter: updateOrderCounter,
+        _updateOrderCounter: updateOrderCounter,
       }
     },
-    // { type: 'left', size: 260, html: categorySidebar },
+    { type: 'left', size: 260, html: categorySidebar },
     {
       type: 'main',
       tabs: {
@@ -85,7 +92,6 @@ export const mainLayout = new w2layout({
         onClose: event => utils.w2tabOnClose(event),
       },
     },
-
   ]
 })
 

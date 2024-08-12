@@ -18,6 +18,8 @@ templ Admin(cp CoreParams) {
 		<script>
 			document.addEventListener('DOMContentLoaded', () => {
 				w2ui['mainLayout'].get('top').toolbar.items[0].onClick()
+				w2ui['mainLayout'].get('top').toolbar._updateOrderCounter()
+				setInterval(w2ui['mainLayout'].get('top').toolbar._updateOrderCounter, 600000) // 10 min
 			})
 		</script>
 		<div id="main-layout" class="w-screen h-screen min-w-[1200px]"></div>

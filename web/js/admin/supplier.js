@@ -27,7 +27,7 @@ export function createSupplierGrid() {
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'code', text: 'Code', size: '88px', render: 'safe', editable: { type: 'text' } },
-      { field: 'name', text: 'Name', size: '250px', render: 'safe', editable: { type: 'text' } },
+      { field: 'name', text: 'Name', size: '340px', render: 'safe', editable: { type: 'text' } },
       { field: 'related_products', text: '# Products', size: '90px', render: 'int', tooltip: 'Number of products related to this supplier' },
       { field: 'is_published', text: 'Is Pub', size: '60px', editable: { type: 'checkbox' }, tooltip: 'Show this supplier' },
     ],
