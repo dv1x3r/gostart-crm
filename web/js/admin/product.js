@@ -31,7 +31,7 @@ export function createProductGrid() {
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'code', text: 'Code', size: '100px', render: 'safe', sortable: true, clipboardCopy: true },
       {
-        field: 'name', text: 'Name', size: '340px', render: 'hover', sortable: true,
+        field: 'name', text: 'Name', size: '400px', render: 'hover', sortable: true,
         info: {
           // showOn: 'mouseenter',
           render: row => {
@@ -50,7 +50,7 @@ export function createProductGrid() {
       },
       { field: 'category', text: 'Category', size: '387px', render: 'drophover', editable: utils.getSelectOptions('/category/dropdown?leafs=1', 'list'), sortable: false, hidden: true },
       { field: 'supplier', text: 'Supplier', size: '88px', render: 'dropdown', editable: utils.getSelectOptions('/supplier/dropdown', 'list'), sortable: true },
-      { field: 'brand', text: 'Brand', size: '88px', render: 'dropdown', editable: utils.getSelectOptions('/brand/dropdown', 'list'), sortable: true, hidden: true },
+      { field: 'brand', text: 'Brand', size: '88px', render: 'dropdown', editable: utils.getSelectOptions('/brand/dropdown', 'list'), sortable: true },
       { field: 'status', text: 'Status', size: '88px', render: 'tag', editable: utils.getSelectOptions('/product/status/dropdown', 'list'), sortable: true },
       { field: 'quantity', text: 'Quantity', size: '88px', render: 'float:2', editable: { type: 'float', precision: 2 }, sortable: true },
       { field: 'price', text: 'Price', size: '88px', render: 'float:2', editable: { type: 'float', precision: 2 }, sortable: true },
