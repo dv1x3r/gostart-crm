@@ -11,7 +11,7 @@ type TodoDTO struct {
 	Description *string `json:"description,omitempty" db:"description" validate:"required,max=16"`
 	Quantity    *int64  `json:"quantity,omitempty" db:"quantity" validate:"number,min=-2147483647,max=2147483647"`
 
-	Partial map[string]struct{}
+	Partial map[string]struct{} `json:"-" db:"-"`
 }
 
 func (t *TodoDTO) UnmarshalJSON(data []byte) error {
