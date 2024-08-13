@@ -7,17 +7,7 @@ type TodoDTO struct {
 	Quantity    *int64  `json:"quantity,omitempty" db:"quantity"`
 }
 
-type TodoFromDB struct {
-	TodoDTO
-	Count int64 `db:"count"`
-}
-
-type TodoPartialDTO struct {
-	ID       int64 `json:"id"`
-	Quantity *any  `json:"quantity"`
-}
-
 type TodoW2GridResponse = W2GridDataResponse[TodoDTO, any]
-type TodoW2PatchRequest = W2GridPatchRequest[TodoPartialDTO]
-type TodoW2FormRequest = W2FormRequest[TodoDTO]
+type TodoW2SaveRequest = W2GridSaveRequest[TodoDTO]
 type TodoW2FormResponse = W2FormResponse[TodoDTO]
+type TodoW2FormRequest = W2FormRequest[TodoDTO]

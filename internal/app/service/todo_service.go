@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"gostart-crm/internal/app/model"
+	"gostart-crm/internal/app/storage"
 )
 
 type TodoStorager interface {
-	FindMany(context.Context, model.FindManyParams) ([]model.TodoFromDB, error)
+	FindMany(context.Context, storage.FindManyParams) ([]model.TodoDTO, error)
 	GetOneByID(context.Context, int64) (model.TodoDTO, error)
 	DeleteManyByID(context.Context, []int64) (int64, error)
-	PatchManyByID(context.Context, []model.TodoPartialDTO) (int64, error)
+	PatchManyByID(context.Context, []model.TodoDTO) (int64, error)
 	UpdateByID(context.Context, model.TodoDTO) (int64, error)
 	Insert(context.Context, model.TodoDTO) (int64, error)
 }
@@ -23,8 +24,8 @@ func NewTodo(st TodoStorager) *Todo {
 	return &Todo{st: st}
 }
 
-func (ts *Todo) GetTodoList(ctx context.Context) ([]model.TodoFromDB, error) {
-	return ts.st.FindMany(ctx, model.FindManyParams{})
+func (ts *Todo) GetTodoList(ctx context.Context) ([]model.TodoDTO, error) {
+	return ts.st.FindMany(ctx, storage.FindManyParams{})
 }
 
 func (ts *Todo) GetTodoW2Grid(ctx context.Context, req model.W2GridDataRequest) (model.TodoW2GridResponse, error) {
@@ -36,21 +37,21 @@ func (ts *Todo) GetTodoW2Grid(ctx context.Context, req model.W2GridDataRequest) 
 	todos := make([]model.TodoDTO, len(rows))
 	var count int64
 	for i, row := range rows {
-		count = row.Count
-		todos[i] = row.TodoDTO
+		// count = row.Count
+		todos[i] = row //.TodoDTO
 	}
 
 	return model.TodoW2GridResponse{Status: "success", Records: todos, Total: count}, nil
 }
 
-func (ts *Todo) DeleteTodoW2Grid(ctx context.Context, req model.W2GridDeleteRequest) (model.W2BaseResponse, error) {
+func (ts *Todo) DeleteTodoW2Grid(ctx context.Context, req model.W2GridRemoveRequest) (model.W2BaseResponse, error) {
 	if _, err := ts.st.DeleteManyByID(ctx, req.ID); err != nil {
 		return model.W2BaseResponse{Status: "error"}, err
 	}
 	return model.W2BaseResponse{Status: "success"}, nil
 }
 
-func (ts *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2PatchRequest) (model.W2BaseResponse, error) {
+func (ts *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2SaveRequest) (model.W2BaseResponse, error) {
 	if _, err := ts.st.PatchManyByID(ctx, req.Changes); err != nil {
 		return model.W2BaseResponse{Status: "error"}, err
 	}
@@ -62,7 +63,7 @@ func (ts *Todo) GetTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) 
 	if err != nil {
 		return model.TodoW2FormResponse{Status: "error"}, err
 	}
-	return model.TodoW2FormResponse{Status: "success", Record: todo}, nil
+	return model.TodoW2FormResponse{Status: "success", Record: &todo}, nil
 }
 
 func (ts *Todo) UpsertTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.W2BaseResponse, error) {

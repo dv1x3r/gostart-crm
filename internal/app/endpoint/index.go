@@ -10,7 +10,7 @@ import (
 )
 
 type TodoService interface {
-	GetTodoList(context.Context) ([]model.TodoFromDB, error)
+	GetTodoList(context.Context) ([]model.TodoDTO, error)
 }
 
 type Index struct {

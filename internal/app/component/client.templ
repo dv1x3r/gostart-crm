@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-templ Index(title string, todos []model.TodoFromDB) {
+templ Index(title string, todos []model.TodoDTO) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -18,7 +18,7 @@ templ Index(title string, todos []model.TodoFromDB) {
 			<div class="flex items-center gap-4 p-4 h-full">
 				<div class="mx-auto">
 					for _, todo := range todos {
-						@TodoCard(todo.TodoDTO)
+						@TodoCard(todo)
 					}
 				</div>
 			</div>

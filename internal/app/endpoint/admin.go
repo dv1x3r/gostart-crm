@@ -13,8 +13,8 @@ import (
 
 type TodoAdminService interface {
 	GetTodoW2Grid(context.Context, model.W2GridDataRequest) (model.TodoW2GridResponse, error)
-	DeleteTodoW2Grid(context.Context, model.W2GridDeleteRequest) (model.W2BaseResponse, error)
-	PatchTodoW2Action(context.Context, model.TodoW2PatchRequest) (model.W2BaseResponse, error)
+	DeleteTodoW2Grid(context.Context, model.W2GridRemoveRequest) (model.W2BaseResponse, error)
+	PatchTodoW2Action(context.Context, model.TodoW2SaveRequest) (model.W2BaseResponse, error)
 	GetTodoW2Form(context.Context, model.TodoW2FormRequest) (model.TodoW2FormResponse, error)
 	UpsertTodoW2Form(context.Context, model.TodoW2FormRequest) (model.W2BaseResponse, error)
 }
@@ -66,7 +66,7 @@ func (h *Admin) GetTodoGrid(c echo.Context) error {
 }
 
 func (h *Admin) DeleteTodoGrid(c echo.Context) error {
-	req := &model.W2GridDeleteRequest{}
+	req := &model.W2GridRemoveRequest{}
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"status":  "error",
@@ -83,7 +83,7 @@ func (h *Admin) DeleteTodoGrid(c echo.Context) error {
 }
 
 func (h *Admin) PatchTodoGrid(c echo.Context) error {
-	req := &model.TodoW2PatchRequest{}
+	req := &model.TodoW2SaveRequest{}
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"status":  "error",

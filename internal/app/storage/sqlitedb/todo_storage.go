@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"gostart-crm/internal/app/model"
+	"gostart-crm/internal/app/storage"
 
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
@@ -18,7 +19,7 @@ func NewTodo(db *sqlx.DB) *Todo {
 	return &Todo{db: db}
 }
 
-func (st *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.TodoFromDB, error) {
+func (st *Todo) FindMany(ctx context.Context, q storage.FindManyParams) ([]model.TodoDTO, error) {
 	sb := sqlbuilder.NewSelectBuilder()
 	sb.Select(
 		"id",
@@ -29,14 +30,14 @@ func (st *Todo) FindMany(ctx context.Context, q model.FindManyParams) ([]model.T
 	)
 	sb.From("todo")
 
-	ApplyQueryLimitOffset(sb, q.Limit, q.Offset)
-	ApplyQueryFilters(sb, q.Filters)
-	ApplyQuerySorters(sb, q.Sorters)
+	storage.ApplyLimitOffset(sb, q.Limit, q.Offset)
+	storage.ApplyFilters(sb, q.Filters, q.LogicAnd, map[string]string{})
+	storage.ApplySorters(sb, q.Sorters, map[string]string{})
 
 	sql, args := sb.BuildWithFlavor(sqlbuilder.SQLite)
 	fmt.Println(sql, args)
 
-	var rows []model.TodoFromDB
+	var rows []model.TodoDTO
 	return rows, st.db.SelectContext(ctx, &rows, sql, args...)
 }
 
@@ -74,7 +75,7 @@ func (st *Todo) DeleteManyByID(ctx context.Context, ids []int64) (int64, error) 
 	}
 }
 
-func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialDTO) (int64, error) {
+func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoDTO) (int64, error) {
 	updates := make([]*sqlbuilder.UpdateBuilder, len(partials))
 
 	for i, p := range partials {
@@ -84,11 +85,7 @@ func (st *Todo) PatchManyByID(ctx context.Context, partials []model.TodoPartialD
 		updates[i] = ub
 
 		if p.Quantity != nil {
-			if value, ok := (*p.Quantity).(float64); ok {
-				ub.SetMore(ub.EQ("quantity", value))
-			} else {
-				ub.SetMore(ub.EQ("quantity", nil))
-			}
+			ub.SetMore(ub.EQ("quantity", *p.Quantity))
 		}
 	}
 
