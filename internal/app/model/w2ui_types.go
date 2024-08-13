@@ -1,11 +1,6 @@
 package model
 
-import (
-	"encoding/json"
-	"strings"
-
-	"gostart-crm/internal/app/storage"
-)
+import "gostart-crm/internal/app/storage"
 
 type W2BaseResponse struct {
 	Status  string `json:"status"`
@@ -123,63 +118,4 @@ type W2FormResponse[T any] struct {
 	Message string `json:"message,omitempty"`
 	RecID   int64  `json:"recid"`
 	Record  *T     `json:"record,omitempty"`
-}
-
-type FieldRaw = map[string]json.RawMessage
-type FieldMap = map[string]struct{}
-
-func getValue[T comparable](jsonKey string, fieldKey string, jsonRaw FieldRaw, fieldMap FieldMap) T {
-	value := new(T)
-
-	raw, ok := jsonRaw[jsonKey]
-	if !ok {
-		return *value
-	}
-
-	fieldMap[fieldKey] = struct{}{}
-
-	if string(raw) == "null" || string(raw) == `""` {
-		return *value
-	}
-
-	if err := json.Unmarshal(raw, value); err != nil {
-		return *value
-	}
-
-	if strValue, ok := any(*value).(string); ok {
-		strValue = strings.TrimSpace(strValue)
-		if tValue, ok := any(strValue).(T); ok {
-			return tValue
-		}
-	}
-
-	return *value
-}
-
-func getValuePtr[T comparable](jsonKey string, fieldKey string, jsonRaw FieldRaw, fieldMap FieldMap) *T {
-	value := new(T)
-
-	raw, ok := jsonRaw[jsonKey]
-	if !ok {
-		return nil
-	}
-
-	fieldMap[fieldKey] = struct{}{}
-
-	if string(raw) == "null" || string(raw) == `""` {
-		return nil
-	}
-
-	if err := json.Unmarshal(raw, value); err != nil {
-		return nil
-	}
-
-	if strValue, ok := any(*value).(string); ok {
-		strValue = strings.TrimSpace(strValue)
-		if tValue, ok := any(strValue).(T); ok {
-			return &tValue
-		}
-	}
-
-	return value
 }
