@@ -15,8 +15,6 @@ type TodoAdminService interface {
 	GetTodoW2Grid(context.Context, model.W2GridDataRequest) (model.TodoW2GridResponse, error)
 	DeleteTodoW2Grid(context.Context, model.W2GridRemoveRequest) (model.W2BaseResponse, error)
 	PatchTodoW2Action(context.Context, model.TodoW2SaveRequest) (model.W2BaseResponse, error)
-	GetTodoW2Form(context.Context, model.TodoW2FormRequest) (model.TodoW2FormResponse, error)
-	UpsertTodoW2Form(context.Context, model.TodoW2FormRequest) (model.W2BaseResponse, error)
 }
 
 type Admin struct {
@@ -35,8 +33,6 @@ func (h *Admin) Register(c *echo.Echo) {
 	g.GET("/todo/grid", h.GetTodoGrid)
 	g.POST("/todo/grid/delete", h.DeleteTodoGrid)
 	g.POST("/todo/grid/patch", h.PatchTodoGrid)
-	g.GET("/todo/form", h.GetTodoForm)
-	g.POST("/todo/form", h.PostTodoForm)
 }
 
 func (h *Admin) GetRoot(ctx echo.Context) error {
@@ -92,41 +88,6 @@ func (h *Admin) PatchTodoGrid(c echo.Context) error {
 	}
 
 	res, err := h.todoService.PatchTodoW2Action(c.Request().Context(), *req)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, res)
-}
-
-func (h *Admin) GetTodoForm(c echo.Context) error {
-	req := &model.TodoW2FormRequest{}
-	err := json.Unmarshal([]byte(c.QueryParam("request")), req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"status":  "error",
-			"message": "bad request",
-		})
-	}
-
-	res, err := h.todoService.GetTodoW2Form(c.Request().Context(), *req)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, res)
-}
-
-func (h *Admin) PostTodoForm(c echo.Context) error {
-	req := &model.TodoW2FormRequest{}
-	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"status":  "error",
-			"message": "bad request",
-		})
-	}
-
-	res, err := h.todoService.UpsertTodoW2Form(c.Request().Context(), *req)
 	if err != nil {
 		return err
 	}

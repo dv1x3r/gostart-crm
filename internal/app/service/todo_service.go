@@ -57,27 +57,3 @@ func (ts *Todo) PatchTodoW2Action(ctx context.Context, req model.TodoW2SaveReque
 	}
 	return model.W2BaseResponse{Status: "success"}, nil
 }
-
-func (ts *Todo) GetTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.TodoW2FormResponse, error) {
-	todo, err := ts.st.GetOneByID(ctx, req.RecID)
-	if err != nil {
-		return model.TodoW2FormResponse{Status: "error"}, err
-	}
-	return model.TodoW2FormResponse{Status: "success", Record: &todo}, nil
-}
-
-func (ts *Todo) UpsertTodoW2Form(ctx context.Context, req model.TodoW2FormRequest) (model.W2BaseResponse, error) {
-	var err error
-
-	if req.RecID == 0 {
-		_, err = ts.st.Insert(ctx, req.Record)
-	} else {
-		_, err = ts.st.UpdateByID(ctx, req.Record)
-	}
-
-	if err != nil {
-		return model.W2BaseResponse{Status: "error"}, err
-	}
-
-	return model.W2BaseResponse{Status: "success"}, nil
-}
