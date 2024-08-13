@@ -1,5 +1,9 @@
 package model
 
+import (
+	"gostart-crm/internal/app/storage"
+)
+
 type W2BaseResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -33,13 +37,35 @@ type W2GridDataResponse[T any, V any] struct {
 	Total   int64  `json:"total,omitempty"`
 }
 
-type W2GridPatchRequest[T any] struct {
+type W2GridSaveRequest[T any] struct {
 	Changes []T `json:"changes"`
 }
 
-type W2GridDeleteRequest struct {
+type W2GridRemoveRequest struct {
 	ID []int64 `json:"id"`
 }
+
+type W2GridReorderRequest struct {
+	ID         int64 `json:"id"`
+	MoveBefore int64 `json:"moveBefore"`
+}
+
+type W2DropdownRequest struct {
+	Max    int    `json:"max"`
+	Search string `json:"search"`
+}
+
+type W2Dropdown struct {
+	ID   *int64  `json:"id" db:"id"`
+	Text *string `json:"text" db:"text"`
+}
+
+type W2DropdownGenericResponse[T any] struct {
+	Status  string `json:"status"`
+	Records []T    `json:"records"`
+}
+
+type W2DropdownBasicResponse = W2DropdownGenericResponse[W2Dropdown]
 
 type W2FormRequest[T any] struct {
 	Cmd    string `json:"cmd"`
@@ -51,20 +77,24 @@ type W2FormRequest[T any] struct {
 type W2FormResponse[T any] struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
-	Record  T      `json:"record"`
+	RecID   int64  `json:"recid"`
+	Record  *T     `json:"record,omitempty"`
 }
 
-func (r W2GridDataRequest) ToFindManyParams() FindManyParams {
-	p := FindManyParams{
+func (r W2GridDataRequest) ToFindManyParams() storage.FindManyParams {
+	p := storage.FindManyParams{
 		Limit:  r.Limit,
 		Offset: r.Offset,
 	}
 
+	if r.SeachLogic == "AND" {
+		p.LogicAnd = true
+	}
+
 	if len(r.Search) > 0 {
-		p.Filters = make([][]QueryFilter, 1)
-		p.Filters[0] = make([]QueryFilter, len(r.Search))
+		p.Filters = make([]storage.QueryFilter, len(r.Search))
 		for i, s := range r.Search {
-			p.Filters[0][i] = QueryFilter{
+			p.Filters[i] = storage.QueryFilter{
 				Field:    s.Field,
 				Operator: s.Operator,
 				Value:    s.Value,
@@ -73,15 +103,15 @@ func (r W2GridDataRequest) ToFindManyParams() FindManyParams {
 	}
 
 	if len(r.Sort) > 0 {
-		p.Sorters = make([]QuerySorter, len(r.Sort))
+		p.Sorters = make([]storage.QuerySorter, len(r.Sort))
 		for i, s := range r.Sort {
 			if s.Direction == "desc" {
-				p.Sorters[i] = QuerySorter{
+				p.Sorters[i] = storage.QuerySorter{
 					Field: s.Field,
 					Desc:  true,
 				}
 			} else {
-				p.Sorters[i] = QuerySorter{
+				p.Sorters[i] = storage.QuerySorter{
 					Field: s.Field,
 					Desc:  false,
 				}
