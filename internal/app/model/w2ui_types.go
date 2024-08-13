@@ -1,6 +1,9 @@
 package model
 
 import (
+	"encoding/json"
+	"strings"
+
 	"gostart-crm/internal/app/storage"
 )
 
@@ -27,6 +30,47 @@ type W2GridDataRequest struct {
 	SeachLogic string         `json:"searchLogic"`
 	Search     []W2GridSearch `json:"search"`
 	Sort       []W2GridSort   `json:"sort"`
+}
+
+func (r W2GridDataRequest) ToFindManyParams() storage.FindManyParams {
+	p := storage.FindManyParams{
+		Limit:  r.Limit,
+		Offset: r.Offset,
+	}
+
+	if r.SeachLogic == "AND" {
+		p.LogicAnd = true
+	}
+
+	if len(r.Search) > 0 {
+		p.Filters = make([]storage.QueryFilter, len(r.Search))
+		for i, s := range r.Search {
+			p.Filters[i] = storage.QueryFilter{
+				Field:    s.Field,
+				Operator: s.Operator,
+				Value:    s.Value,
+			}
+		}
+	}
+
+	if len(r.Sort) > 0 {
+		p.Sorters = make([]storage.QuerySorter, len(r.Sort))
+		for i, s := range r.Sort {
+			if s.Direction == "desc" {
+				p.Sorters[i] = storage.QuerySorter{
+					Field: s.Field,
+					Desc:  true,
+				}
+			} else {
+				p.Sorters[i] = storage.QuerySorter{
+					Field: s.Field,
+					Desc:  false,
+				}
+			}
+		}
+	}
+
+	return p
 }
 
 type W2GridDataResponse[T any, V any] struct {
@@ -81,43 +125,61 @@ type W2FormResponse[T any] struct {
 	Record  *T     `json:"record,omitempty"`
 }
 
-func (r W2GridDataRequest) ToFindManyParams() storage.FindManyParams {
-	p := storage.FindManyParams{
-		Limit:  r.Limit,
-		Offset: r.Offset,
+type FieldRaw = map[string]json.RawMessage
+type FieldMap = map[string]struct{}
+
+func getValue[T comparable](jsonKey string, fieldKey string, jsonRaw FieldRaw, fieldMap FieldMap) T {
+	value := new(T)
+
+	raw, ok := jsonRaw[jsonKey]
+	if !ok {
+		return *value
 	}
 
-	if r.SeachLogic == "AND" {
-		p.LogicAnd = true
+	fieldMap[fieldKey] = struct{}{}
+
+	if string(raw) == "null" || string(raw) == `""` {
+		return *value
 	}
 
-	if len(r.Search) > 0 {
-		p.Filters = make([]storage.QueryFilter, len(r.Search))
-		for i, s := range r.Search {
-			p.Filters[i] = storage.QueryFilter{
-				Field:    s.Field,
-				Operator: s.Operator,
-				Value:    s.Value,
-			}
+	if err := json.Unmarshal(raw, value); err != nil {
+		return *value
+	}
+
+	if strValue, ok := any(*value).(string); ok {
+		strValue = strings.TrimSpace(strValue)
+		if tValue, ok := any(strValue).(T); ok {
+			return tValue
 		}
 	}
 
-	if len(r.Sort) > 0 {
-		p.Sorters = make([]storage.QuerySorter, len(r.Sort))
-		for i, s := range r.Sort {
-			if s.Direction == "desc" {
-				p.Sorters[i] = storage.QuerySorter{
-					Field: s.Field,
-					Desc:  true,
-				}
-			} else {
-				p.Sorters[i] = storage.QuerySorter{
-					Field: s.Field,
-					Desc:  false,
-				}
-			}
+	return *value
+}
+
+func getValuePtr[T comparable](jsonKey string, fieldKey string, jsonRaw FieldRaw, fieldMap FieldMap) *T {
+	value := new(T)
+
+	raw, ok := jsonRaw[jsonKey]
+	if !ok {
+		return nil
+	}
+
+	fieldMap[fieldKey] = struct{}{}
+
+	if string(raw) == "null" || string(raw) == `""` {
+		return nil
+	}
+
+	if err := json.Unmarshal(raw, value); err != nil {
+		return nil
+	}
+
+	if strValue, ok := any(*value).(string); ok {
+		strValue = strings.TrimSpace(strValue)
+		if tValue, ok := any(strValue).(T); ok {
+			return &tValue
 		}
 	}
 
-	return p
+	return value
 }
