@@ -1,6 +1,9 @@
 package model
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"gostart-crm/internal/app/utils"
+)
 
 type TodoDTO struct {
 	ID          int64   `json:"id" db:"id" validate:"number"`
@@ -8,11 +11,7 @@ type TodoDTO struct {
 	Description *string `json:"description,omitempty" db:"description" validate:"required,max=16"`
 	Quantity    *int64  `json:"quantity,omitempty" db:"quantity" validate:"number,min=-2147483647,max=2147483647"`
 
-	FieldMap FieldMap
-}
-
-func (t *TodoDTO) GetValidateFieldMap() FieldMap {
-	return t.FieldMap
+	Partial map[string]struct{}
 }
 
 func (t *TodoDTO) UnmarshalJSON(data []byte) error {
@@ -20,18 +19,18 @@ func (t *TodoDTO) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	raw := make(FieldRaw)
+	raw := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
 
-	t.FieldMap = make(FieldMap)
-	t.ID = getValue[int64]("id", "ID", raw, t.FieldMap)
-	t.Name = getValue[string]("name", "Name", raw, t.FieldMap)
-	t.Description = getValuePtr[string]("description", "Description", raw, t.FieldMap)
-	t.Quantity = getValuePtr[int64]("quantity", "Quantity", raw, t.FieldMap)
+	t.Partial = make(map[string]struct{})
+	t.ID = getValue[int64]("id", "ID", raw, t.Partial)
+	t.Name = getValue[string]("name", "Name", raw, t.Partial)
+	t.Description = getValuePtr[string]("description", "Description", raw, t.Partial)
+	t.Quantity = getValuePtr[int64]("quantity", "Quantity", raw, t.Partial)
 
-	return nil
+	return utils.GetValidator().ValidatePartial(t, t.Partial)
 }
 
 type TodoW2GridResponse = W2GridDataResponse[TodoDTO, any]
