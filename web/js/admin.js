@@ -88,13 +88,14 @@ export const mainLayout = new w2layout({
       },
     },
   ],
+  onRender: () => {
+    document.addEventListener('DOMContentLoaded', () => {
+      mainLayout.get('top').toolbar.items[0].onClick()
+      setInterval(updateOrderCounter, 600000) // 10 min
+      updateOrderCounter()
+    })
+  },
 })
 
 export const tabManager = new utils.W2TabManager(mainLayout.get('main').tabs)
-
-document.addEventListener('DOMContentLoaded', () => {
-  mainLayout.get('top').toolbar.items[0].onClick()
-  setInterval(updateOrderCounter, 600000) // 10 min
-  updateOrderCounter()
-})
 
