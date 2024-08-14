@@ -25,10 +25,10 @@ func (t *TodoDTO) UnmarshalJSON(data []byte) error {
 	}
 
 	t.Partial = make(map[string]struct{})
-	t.ID = getValue[int64]("id", "ID", raw, t.Partial)
-	t.Name = getValue[string]("name", "Name", raw, t.Partial)
-	t.Description = getValuePtr[string]("description", "Description", raw, t.Partial)
-	t.Quantity = getValuePtr[int64]("quantity", "Quantity", raw, t.Partial)
+	t.ID = getValue[int64](raw, "id", t.Partial, "ID")
+	t.Name = getValue[string](raw, "name", t.Partial, "Name")
+	t.Description = getValuePtr[string](raw, "description", t.Partial, "Description")
+	t.Quantity = getValuePtr[int64](raw, "quantity", t.Partial, "Quantity")
 
 	return utils.GetValidator().ValidatePartial(t, t.Partial)
 }
