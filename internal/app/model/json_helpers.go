@@ -19,7 +19,7 @@ func getValue[T any](jsonMap map[string]json.RawMessage, jsonKey string, partial
 		return value
 	}
 
-	if err := json.Unmarshal(raw, value); err != nil {
+	if err := json.Unmarshal(raw, &value); err != nil {
 		return value
 	}
 
@@ -44,7 +44,7 @@ func getValuePtr[T any](jsonMap map[string]json.RawMessage, jsonKey string, part
 		return nil
 	}
 
-	if err := json.Unmarshal(raw, value); err != nil {
+	if err := json.Unmarshal(raw, &value); err != nil {
 		return nil
 	}
 

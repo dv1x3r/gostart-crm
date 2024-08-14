@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 
@@ -34,6 +35,8 @@ func New() (*App, error) {
 	a.config = utils.GetConfig()
 	a.logger = utils.GetLogger()
 
+	a.echo.Validator = utils.GetValidator()
+
 	if a.config.DBDriver == "sqlite3" {
 		a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_journal=WAL&_fk=1&_busy_timeout=10000")
 		a.db.SetMaxOpenConns(1)
@@ -56,8 +59,6 @@ func New() (*App, error) {
 	if a.config.StaticPath != "" {
 		a.echo.Static("/", a.config.StaticPath)
 	}
-
-	a.echo.Validator = utils.GetValidator()
 
 	a.echo.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogRequestID:  true,
@@ -99,23 +100,14 @@ func New() (*App, error) {
 		}))
 	}
 
-	// a.echo[0].Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-	// 	TokenLookup:    "header:X-CSRF-Token",
-	// 	CookiePath:     "/",
-	// 	CookieName:     "csrftoken",
-	// 	CookieMaxAge:   86400,
-	// 	CookieHTTPOnly: true,
-	// 	CookieSameSite: http.SameSiteStrictMode,
-	// }))
-
-	// a.echo[1].Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-	// 	TokenLookup:    "form:csrftoken",
-	// 	CookiePath:     "/",
-	// 	CookieName:     "csrftoken",
-	// 	CookieMaxAge:   86400,
-	// 	CookieHTTPOnly: true,
-	// 	CookieSameSite: http.SameSiteStrictMode,
-	// }))
+	a.echo.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup:    "header:X-CSRF-Token",
+		CookiePath:     "/",
+		CookieName:     "csrftoken",
+		CookieMaxAge:   86400,
+		CookieHTTPOnly: true,
+		CookieSameSite: http.SameSiteStrictMode,
+	}))
 
 	todoStorage := sqlitedb.NewTodo(a.db)
 	todoService := service.NewTodo(todoStorage)
@@ -130,27 +122,48 @@ func New() (*App, error) {
 }
 
 func (a *App) MustRun() {
-	if strings.HasSuffix(a.config.ServerAddress, ".sock") {
-		os.Remove(a.config.ServerAddress)
-		listener, err := net.Listen("unix", a.config.ServerAddress)
-		if err != nil {
-			a.logger.Fatal().Err(err).Msg("unable to create unix .sock listener")
+	var err error
+
+	if strings.HasPrefix(a.config.ServerAddress, "tcp://") {
+		address := strings.TrimPrefix(a.config.ServerAddress, "tcp://")
+		a.echo.Listener, err = net.Listen("tcp", address)
+	} else if strings.HasPrefix(a.config.ServerAddress, "unix://") {
+		address := strings.TrimPrefix(a.config.ServerAddress, "unix://")
+
+		if _, err = os.Stat(address); err == nil {
+			if err = os.Remove(address); err != nil {
+				a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("unable to remove existing socket file")
+			}
 		}
 
-		if err := os.Chmod(a.config.ServerAddress, 0777); err != nil {
-			a.logger.Fatal().Err(err).Msg("unable set unix .sock permissions")
+		if err = os.Chmod(address, 0755); err != nil {
+			a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("unable to chmod .sock permissions")
 		}
 
-		a.echo.Listener = listener
-
-		server := new(http.Server)
-		if err := a.echo.StartServer(server); err != nil {
-			a.logger.Fatal().Err(err).Msg("unable to create unix .sock listener")
-		}
+		a.echo.Listener, err = net.Listen("unix", address)
 	} else {
-		err := a.echo.Start(a.config.ServerAddress)
+		a.logger.Fatal().Str("address", a.config.ServerAddress).Msg("unsupported address format")
+	}
+
+	if err != nil {
+		a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("failed to net.Listen")
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	go func() {
+		err = a.echo.StartServer(new(http.Server))
 		if err != nil && err != http.ErrServerClosed {
 			a.logger.Fatal().Err(err).Msg("shutting down the server")
 		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := a.echo.Shutdown(ctx); err != nil {
+		a.logger.Fatal().Err(err)
 	}
 }
