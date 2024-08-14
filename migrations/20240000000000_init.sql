@@ -106,7 +106,6 @@ create table product (
     [supplier_id] integer not null references supplier(id) on delete restrict,
     [status_id] integer references product_status(id) on delete restrict,
     [is_published] integer not null,
-    [hash] text not null,
     unique ([supplier_id], [slug] collate nocase),
     unique ([supplier_id], [code] collate nocase)
 ) strict;
