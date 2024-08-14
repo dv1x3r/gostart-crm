@@ -9,7 +9,6 @@ import { createSupplierGrid } from './admin/supplier'
 import { createBrandGrid } from './admin/brand'
 import { createAttributeLayout } from './admin/attribute'
 
-import { createUserLayout } from './admin/user'
 import { updateOrderCounter, createOrderLayout, openOrderStatusPopup, openPaymentMethodPopup } from './admin/order'
 
 import * as utils from './admin/utils'
@@ -62,22 +61,19 @@ export const mainLayout = new w2layout({
           { type: 'button', id: 'brands', text: 'Brands', icon: 'fa-brands fa-apple', onClick: () => tabManager.OpenTab('brands-tab', 'Brands', true, createBrandGrid) },
           { type: 'button', id: 'attributes', text: 'Attributes', icon: 'fa fa-wrench', onClick: () => tabManager.OpenTab('attributes-tab', 'Attributes', true, createAttributeLayout) },
           { type: 'break' },
-          { type: 'button', id: 'users', text: 'Users', icon: 'fa fa-users', onClick: () => tabManager.OpenTab('users-tab', 'Users', true, createUserLayout) },
           { type: 'button', id: 'orders', text: 'Orders', icon: 'fa fa-cart-shopping', onClick: () => tabManager.OpenTab('orders-tab', 'Orders', true, createOrderLayout) },
           { type: 'break' },
           {
             type: 'menu', id: 'settings', text: 'Settings', icon: 'fa fa-list-check',
             items: [
-              { type: 'html', id: 'catalog-settings', text: 'Catalog settings', disabled: true },
+              { type: 'html', id: 'enum-settings', text: 'Enum settings', disabled: true },
               { type: 'button', id: 'product-status', text: 'Product Status', icon: 'fa fa-tags', onClick: () => openProductStatusPopup() },
-              { type: 'break' },
-              { type: 'html', id: 'order-settings', text: 'Order settings', disabled: true },
               { type: 'button', id: 'order-status', text: 'Order Status', icon: 'fa fa-envelope-circle-check', onClick: () => openOrderStatusPopup() },
               { type: 'button', id: 'payment-method', text: 'Payment Methods', icon: 'fa-solid fa-credit-card', onClick: () => openPaymentMethodPopup() },
             ],
           },
           { type: 'spacer' },
-          { type: 'button', id: 'www', text: utils.isLocalhost() ? 'localhost:1323' : 'democrm.weasel.dev', icon: 'fa fa-arrow-right-to-city', onClick: () => window.open(utils.isLocalhost() ? 'http://localhost:1323' : 'https://democrm.weasel.dev', '_blank') },
+          { type: 'button', id: 'www', text: 'weasel.dev', icon: 'fa fa-arrow-right-to-city', onClick: () => window.open('https://weasel.dev', '_blank') },
           { type: 'button', id: 'logout', text: 'Log out', icon: 'fa fa-right-from-bracket', onClick: () => window.location = '/logout/' },
         ],
         onClick: event => utils.w2menuOnClick(event),
