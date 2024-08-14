@@ -1,4 +1,4 @@
-@use "@fontsource-variable/inter/scss/mixins" as Inter;
+@use "@fontsource/inter/scss/mixins" as Inter;
 @include Inter.faces($directory: '../fonts');
 
 $fa-font-path: '../fonts';
@@ -13,7 +13,7 @@ $fa-font-path: '../fonts';
 @tailwind utilities;
 
 * {
-  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 // Fix w2ui grid advanced search font size

@@ -1,4 +1,4 @@
-@use "@fontsource-variable/inter/scss/mixins" as Inter;
+@use "@fontsource/inter/scss/mixins" as Inter;
 @include Inter.faces($directory: '../fonts');
 
 $fa-font-path: '../fonts';
@@ -13,4 +13,3 @@ $fa-font-path: '../fonts';
 [x-cloak] {
   display: none !important;
 }
-
