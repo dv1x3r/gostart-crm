@@ -3,8 +3,6 @@ window.htmx = Htmx
 
 import { w2ui, w2layout, w2tooltip, w2utils } from 'w2ui/dist/w2ui.es6'
 
-import { createTodoGrid } from './admin/todo'
-
 import { createProductGrid, openProductStatusPopup } from './admin/product'
 import { categorySidebar, createCategoryGrid } from './admin/category'
 import { createSupplierGrid } from './admin/supplier'
@@ -57,7 +55,6 @@ export const mainLayout = new w2layout({
     {
       type: 'top', size: 40, toolbar: {
         items: [
-          { type: 'button', id: 'todo', text: 'Todo', icon: 'fa fa-check', onClick: () => tabManager.OpenTab('todo-tab', 'Todo', true, createTodoGrid) },
           { type: 'button', id: 'products', text: 'Products', icon: 'fa fa-book', onClick: () => tabManager.OpenTab('products-tab', 'Products', false, createProductGrid) },
           { type: 'button', id: 'categories', text: 'Categories', icon: 'fa fa-folder-tree', onClick: () => tabManager.OpenTab('categories-tab', 'Categories', true, createCategoryGrid) },
           { type: 'break' },
@@ -84,7 +81,6 @@ export const mainLayout = new w2layout({
           { type: 'button', id: 'logout', text: 'Log out', icon: 'fa fa-right-from-bracket', onClick: () => window.location = '/logout/' },
         ],
         onClick: event => utils.w2menuOnClick(event),
-        _updateOrderCounter: updateOrderCounter,
       }
     },
     { type: 'left', size: 260, html: categorySidebar },
@@ -95,8 +91,14 @@ export const mainLayout = new w2layout({
         onClose: event => utils.w2tabOnClose(event),
       },
     },
-  ]
+  ],
 })
 
 export const tabManager = new utils.W2TabManager(mainLayout.get('main').tabs)
+
+document.addEventListener('DOMContentLoaded', () => {
+  mainLayout.get('top').toolbar.items[0].onClick()
+  setInterval(updateOrderCounter, 600000) // 10 min
+  updateOrderCounter()
+})
 

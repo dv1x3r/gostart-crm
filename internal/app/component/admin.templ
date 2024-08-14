@@ -7,27 +7,14 @@ templ AdminHead(cp CoreParams) {
 	<script type="module" src={ fmt.Sprintf("/js/admin.js?v=%s", cp.StaticVersion) }></script>
 }
 
-templ AdminCore(cp CoreParams) {
-	@Core(cp, AdminHead(cp)) {
-		{ children... }
-	}
-}
-
 templ Admin(cp CoreParams) {
-	@AdminCore(cp) {
-		<script>
-			document.addEventListener('DOMContentLoaded', () => {
-				w2ui['mainLayout'].get('top').toolbar.items[0].onClick()
-				w2ui['mainLayout'].get('top').toolbar._updateOrderCounter()
-				setInterval(w2ui['mainLayout'].get('top').toolbar._updateOrderCounter, 600000) // 10 min
-			})
-		</script>
+	@Core(cp, AdminHead(cp)) {
 		<div id="main-layout" class="w-screen h-screen min-w-[1200px]"></div>
 	}
 }
 
 templ AdminLogin(cp CoreParams) {
-	@AdminCore(cp) {
+	@Core(cp, AdminHead(cp)) {
 		<form
 			hx-post="/login/"
 			hx-headers={ fmt.Sprintf(`{ "X-CSRF-Token": "%s" }`, cp.CsrfToken) }
