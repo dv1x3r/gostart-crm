@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -112,8 +111,8 @@ func ApplySorters(sb *sqlbuilder.SelectBuilder, qs []QuerySorter, allowed map[st
 	}
 }
 
-func ApplyUpdateSetPartial(ub *sqlbuilder.UpdateBuilder, partials map[string]json.RawMessage, partial string, field string, value any) {
-	if _, ok := partials[partial]; !ok {
+func ApplyUpdateSetPartial(ub *sqlbuilder.UpdateBuilder, partialMap map[string]struct{}, partialKey string, field string, value any) {
+	if _, ok := partialMap[partialKey]; !ok {
 		return
 	}
 

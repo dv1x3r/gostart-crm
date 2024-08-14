@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-func getValue[T any](jsonKey string, fieldKey string, jsonRaw map[string]json.RawMessage, fieldMap map[string]struct{}) T {
+func getValue[T any](jsonMap map[string]json.RawMessage, jsonKey string, partialMap map[string]struct{}, partialKey string) T {
 	var value T
 
-	raw, ok := jsonRaw[jsonKey]
+	raw, ok := jsonMap[jsonKey]
 	if !ok {
 		return value
 	}
 
-	fieldMap[fieldKey] = struct{}{}
+	partialMap[partialKey] = struct{}{}
 
 	if string(raw) == "null" || string(raw) == `""` {
 		return value
@@ -30,15 +30,15 @@ func getValue[T any](jsonKey string, fieldKey string, jsonRaw map[string]json.Ra
 	return value
 }
 
-func getValuePtr[T any](jsonKey string, fieldKey string, jsonRaw map[string]json.RawMessage, fieldMap map[string]struct{}) *T {
+func getValuePtr[T any](jsonMap map[string]json.RawMessage, jsonKey string, partialMap map[string]struct{}, partialKey string) *T {
 	var value T
 
-	raw, ok := jsonRaw[jsonKey]
+	raw, ok := jsonMap[jsonKey]
 	if !ok {
 		return nil
 	}
 
-	fieldMap[fieldKey] = struct{}{}
+	partialMap[partialKey] = struct{}{}
 
 	if string(raw) == "null" || string(raw) == `""` {
 		return nil
