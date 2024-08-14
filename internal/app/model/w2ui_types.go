@@ -2,6 +2,22 @@ package model
 
 import "gostart-crm/internal/app/storage"
 
+func ResponseSuccessJson(data any) map[string]any {
+	if data != nil {
+		return map[string]any{"status": "success", "data": data}
+	} else {
+		return map[string]any{"status": "success"}
+	}
+}
+
+func ResponseErrorJson(message string) map[string]any {
+	if message != "" {
+		return map[string]any{"status": "error", "message": message}
+	} else {
+		return map[string]any{"status": "error"}
+	}
+}
+
 type W2BaseResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -25,47 +41,6 @@ type W2GridDataRequest struct {
 	SeachLogic string         `json:"searchLogic"`
 	Search     []W2GridSearch `json:"search"`
 	Sort       []W2GridSort   `json:"sort"`
-}
-
-func (r W2GridDataRequest) ToFindManyParams() storage.FindManyParams {
-	p := storage.FindManyParams{
-		Limit:  r.Limit,
-		Offset: r.Offset,
-	}
-
-	if r.SeachLogic == "AND" {
-		p.LogicAnd = true
-	}
-
-	if len(r.Search) > 0 {
-		p.Filters = make([]storage.QueryFilter, len(r.Search))
-		for i, s := range r.Search {
-			p.Filters[i] = storage.QueryFilter{
-				Field:    s.Field,
-				Operator: s.Operator,
-				Value:    s.Value,
-			}
-		}
-	}
-
-	if len(r.Sort) > 0 {
-		p.Sorters = make([]storage.QuerySorter, len(r.Sort))
-		for i, s := range r.Sort {
-			if s.Direction == "desc" {
-				p.Sorters[i] = storage.QuerySorter{
-					Field: s.Field,
-					Desc:  true,
-				}
-			} else {
-				p.Sorters[i] = storage.QuerySorter{
-					Field: s.Field,
-					Desc:  false,
-				}
-			}
-		}
-	}
-
-	return p
 }
 
 type W2GridDataResponse[T any, V any] struct {
@@ -118,4 +93,45 @@ type W2FormResponse[T any] struct {
 	Message string `json:"message,omitempty"`
 	RecID   int64  `json:"recid"`
 	Record  *T     `json:"record,omitempty"`
+}
+
+func (r W2GridDataRequest) ToFindManyParams() storage.FindManyParams {
+	p := storage.FindManyParams{
+		Limit:  r.Limit,
+		Offset: r.Offset,
+	}
+
+	if r.SeachLogic == "AND" {
+		p.LogicAnd = true
+	}
+
+	if len(r.Search) > 0 {
+		p.Filters = make([]storage.QueryFilter, len(r.Search))
+		for i, s := range r.Search {
+			p.Filters[i] = storage.QueryFilter{
+				Field:    s.Field,
+				Operator: s.Operator,
+				Value:    s.Value,
+			}
+		}
+	}
+
+	if len(r.Sort) > 0 {
+		p.Sorters = make([]storage.QuerySorter, len(r.Sort))
+		for i, s := range r.Sort {
+			if s.Direction == "desc" {
+				p.Sorters[i] = storage.QuerySorter{
+					Field: s.Field,
+					Desc:  true,
+				}
+			} else {
+				p.Sorters[i] = storage.QuerySorter{
+					Field: s.Field,
+					Desc:  false,
+				}
+			}
+		}
+	}
+
+	return p
 }
