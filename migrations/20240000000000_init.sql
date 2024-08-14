@@ -99,7 +99,6 @@ create table product (
     [code] text not null,
     [name] text not null,
     [description] text,
-    [status_expire_at] integer,
     [quantity] real not null,
     [price] real,
     [brand_id] integer not null references brand(id) on delete restrict,
