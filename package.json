@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "bun build:js && bun build:css && bun build:fonts && bun build:static && bun build:server",
-    "watch": "concurrently bun:watch:*",
+    "watch": "concurrently --kill-others bun:watch:*",
     "build:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --minify",
     "watch:js": "bun build ./web/js/admin.js ./web/js/client.js --outdir ./tmp/public/js --watch",
     "build:css": "postcss ./web/scss/admin.scss ./web/scss/client.scss --dir ./tmp/public/css/",
