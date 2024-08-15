@@ -12,7 +12,7 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-type Selecter interface {
+type SelectProvider interface {
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 }
@@ -29,16 +29,16 @@ func logDebugQuery(ctx context.Context, query string, args any) {
 		Msg("stor")
 }
 
-func runSelect[T any](ctx context.Context, sx Selecter, query string, args []any) ([]T, error) {
+func runSelect[T any](ctx context.Context, sp SelectProvider, query string, args []any) ([]T, error) {
 	logDebugQuery(ctx, query, args)
 	var rows []T
-	return rows, sx.SelectContext(ctx, &rows, query, args...)
+	return rows, sp.SelectContext(ctx, &rows, query, args...)
 }
 
-func runGet[T any](ctx context.Context, sx Selecter, query string, args []any) (T, bool, error) {
+func runGet[T any](ctx context.Context, sp SelectProvider, query string, args []any) (T, bool, error) {
 	logDebugQuery(ctx, query, args)
 	var row T
-	err := sx.GetContext(ctx, &row, query, args...)
+	err := sp.GetContext(ctx, &row, query, args...)
 	if errors.Is(err, sql.ErrNoRows) {
 		return row, false, nil
 	} else if err != nil {
