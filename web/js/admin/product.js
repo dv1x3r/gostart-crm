@@ -66,6 +66,8 @@ export function createProductGrid() {
       { field: 'brand', label: 'Brand', type: 'enum', options: utils.getSelectOptions('/brand/dropdown') },
       { field: 'status', label: 'Status', type: 'enum', options: utils.getSelectOptions('/product/status/dropdown') },
       { field: 'is_published', label: 'Is Pub', type: 'enum', options: utils.getSelectOptionsBool() },
+      { field: 'quantity', label: 'Quantity', type: 'float' },
+      { field: 'price', label: 'Price', type: 'float' },
     ],
     defaultOperator: {
       'text': 'contains',

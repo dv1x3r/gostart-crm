@@ -76,6 +76,8 @@ func (st *Product) getQueryFindMany(q storage.FindManyParams, categoryID int64) 
 		"brand":        "p.brand_id",
 		"status":       "coalesce(p.status_id, 0)",
 		"is_published": "p.is_published",
+		"quantity":     "p.quantity",
+		"price":        "p.price",
 	}
 
 	allowedSorters := map[string]string{
