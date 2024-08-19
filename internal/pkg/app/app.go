@@ -23,17 +23,18 @@ import (
 )
 
 type App struct {
+	db     *sqlx.DB
+	echo   *echo.Echo
 	config utils.Config
 	logger zerolog.Logger
-	echo   *echo.Echo
-	db     *sqlx.DB
 }
 
 func New() (*App, error) {
-	a := &App{}
-	a.echo = echo.New()
-	a.config = utils.GetConfig()
-	a.logger = utils.GetLogger()
+	a := &App{
+		echo:   echo.New(),
+		config: utils.GetConfig(),
+		logger: utils.GetLogger(),
+	}
 
 	a.echo.Validator = utils.GetValidator()
 
@@ -125,28 +126,33 @@ func (a *App) MustRun() {
 	var err error
 
 	if strings.HasPrefix(a.config.ServerAddress, "tcp://") {
+
 		address := strings.TrimPrefix(a.config.ServerAddress, "tcp://")
 		a.echo.Listener, err = net.Listen("tcp", address)
-	} else if strings.HasPrefix(a.config.ServerAddress, "unix://") {
-		address := strings.TrimPrefix(a.config.ServerAddress, "unix://")
+		if err != nil {
+			a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("failed to net.Listen")
+		}
 
+	} else if strings.HasPrefix(a.config.ServerAddress, "unix://") {
+
+		address := strings.TrimPrefix(a.config.ServerAddress, "unix://")
 		if _, err = os.Stat(address); err == nil {
 			if err = os.Remove(address); err != nil {
 				a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("unable to remove existing socket file")
 			}
 		}
 
-		if err = os.Chmod(address, 0755); err != nil {
+		a.echo.Listener, err = net.Listen("unix", address)
+		if err != nil {
+			a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("failed to net.Listen")
+		}
+
+		if err = os.Chmod(address, 0777); err != nil {
 			a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("unable to chmod .sock permissions")
 		}
 
-		a.echo.Listener, err = net.Listen("unix", address)
 	} else {
 		a.logger.Fatal().Str("address", a.config.ServerAddress).Msg("unsupported address format")
-	}
-
-	if err != nil {
-		a.logger.Fatal().Str("address", a.config.ServerAddress).Err(err).Msg("failed to net.Listen")
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
