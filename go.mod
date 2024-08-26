@@ -3,7 +3,7 @@ module gostart-crm
 go 1.23
 
 require (
-	github.com/a-h/templ v0.2.747
+	github.com/a-h/templ v0.2.771
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/gosimple/slug v1.14.0
 	github.com/huandu/go-sqlbuilder v1.28.1
