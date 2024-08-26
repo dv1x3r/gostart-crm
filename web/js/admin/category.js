@@ -53,7 +53,8 @@ export const categorySidebar = new w2sidebar({
         count: x.related_products,
         expanded: true,
         style: !x.is_published && x.id != 0 ? 'color: darkgrey;' : null,
-        nodes: treeToNodes(x.children)
+        nodes: treeToNodes(x.children),
+        _hierarchy_text: x.hierarchy,
       }))
     }
 

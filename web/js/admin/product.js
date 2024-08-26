@@ -29,6 +29,7 @@ export function createProductGrid() {
     },
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
+      { field: 'thumbnail_url', text: x => x.field ? '' : 'Image', size: '36px', render: 'thumb-slim', hidden: true },
       { field: 'code', text: 'Code', size: '100px', render: 'safe', sortable: true, clipboardCopy: true },
       {
         field: 'name', text: 'Name', size: '385px', render: 'hover', sortable: true,
@@ -163,7 +164,7 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
     record: {
       category: selectedCategory.nodes.length > 0 ? null : {
         id: selectedCategory.id,
-        text: selectedCategory.text,
+        text: selectedCategory._hierarchy_text,
       },
       is_published: true,
     },

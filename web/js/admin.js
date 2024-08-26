@@ -35,6 +35,7 @@ w2utils.formatters['hover'] = value => `<span onmouseenter="w2tooltip.show(this,
 w2utils.formatters['drophover'] = value => value?.text == null ? null : `<span onmouseenter="w2tooltip.show(this, {'html': decodeURIComponent(atob(('${btoa(encodeURIComponent(value.text))}'))), 'name': 'no-name'})" onmouseleave="w2tooltip.hide('no-name')">${w2utils.encodeTags(value.text)}</span>`
 
 w2utils.formatters['thumb'] = value => value == null ? null : `<img src="media/${value}" style="max-width: 72px; max-height: 72px; margin: auto;"/>`
+w2utils.formatters['thumb-slim'] = value => value == null ? null : `<img src="media/${value}" style="max-width: 24px; max-height: 24px; margin: auto;"/>`
 
 w2utils.formatters['color'] = value => {
   const safeValue = w2utils.encodeTags(value)

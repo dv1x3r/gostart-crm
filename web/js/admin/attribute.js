@@ -1,4 +1,6 @@
 import { w2confirm, w2grid, w2layout, w2sidebar, w2utils } from 'w2ui/dist/w2ui.es6'
+import { categorySidebar } from './category'
+import * as admin from '../admin'
 import * as utils from './utils'
 
 export function createAttributeLayout() {
@@ -167,6 +169,26 @@ export function createAttributeLayout() {
     defaultOperator: {
       'text': 'contains',
     },
+    contextMenu: [
+      {
+        id: 'products', type: 'button', text: 'Filter Products', icon: 'fa fa-filter', onClick: async event => {
+          const selectionID = event.owner.getSelection()
+          if (selectionID.length != 1) {
+            return
+          }
+
+          const tabs = admin.tabManager.GetTabs()
+          tabs.click('products-tab')
+          categorySidebar.unselect(categorySidebar.selected)
+          categorySidebar.select(0)
+
+          const productGrid = tabs.get('products-tab').component
+          productGrid.routeData.categoryID = 0
+          productGrid.search([{ field: 'attribute', value: selectionID[0] }])
+        }
+      },
+    ],
+    onContextMenuClick: event => utils.w2contextMenuOnClick(event),
     onAdd: async event => await utils.gridNewRowAdd(event),
     onChange: async event => await utils.gridNewRowChange(event),
     onSave: async event => await utils.gridShowSaved(event),

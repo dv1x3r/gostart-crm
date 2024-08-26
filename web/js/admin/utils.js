@@ -161,6 +161,10 @@ export function w2menuOnClick(event) {
   }
 }
 
+export function w2contextMenuOnClick(event) {
+  event.detail.menuItem.onClick(event)
+}
+
 export function w2tabOnClick(event, selector) {
   const tabID = event.detail.tab.id
   const el = query(`#${tabID}`)
