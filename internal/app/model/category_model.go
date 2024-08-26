@@ -30,7 +30,7 @@ type Category struct {
 	IsPublished     bool    `json:"is_published" db:"is_published"`
 	RelatedProducts int64   `json:"related_products" db:"related_products"`
 	MpPath          *string `json:"-" db:"mp_path"`
-	Hierarchy       string  `json:"-" db:"hierarchy"`
+	Hierarchy       string  `json:"hierarchy" db:"hierarchy"`
 	CategoryURL     string  `json:"-" db:"category_url"`
 
 	CategoryParentEmbed         `json:"parent"`
