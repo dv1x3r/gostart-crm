@@ -109,15 +109,14 @@ export function createOrderLayout() {
       { field: 'quantity', text: 'Qty', size: '50px', render: 'float:2' },
       { field: 'price', text: 'Price', size: '80px', render: 'float:2' },
       { field: 'total', text: 'Total', size: '80px', render: 'float:2' },
-      { size: '25px' }, // keep space for forced scroll
     ],
     onDelete: event => event.preventDefault(),
     onExpand: event => {
       const row = event.owner.get(event.detail.recid)
       const safeContent = w2utils.encodeTags(`${row.code} | ${row.product}`)
       query('#' + event.detail.box_id).html(`
-      <div style="padding: 5px; width: calc(100% - 25px); height: 90px;">
-        <textarea style="width: 100%; height: 100%; resize: none;" readonly>${safeContent}</textarea>
+      <div style="padding: 5px;">
+        <textarea style="width: 100%; height: 100%; resize: none; field-sizing: content;" readonly>${safeContent}</textarea>
       </div>
     `)
     },

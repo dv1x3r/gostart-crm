@@ -29,7 +29,8 @@ export function createSupplierGrid() {
       { field: 'code', text: 'Code', size: '88px', render: 'safe', editable: { type: 'text' } },
       { field: 'name', text: 'Name', size: '120px', render: 'safe', editable: { type: 'text' } },
       { field: 'description', text: 'Description', size: '300px', render: 'safe', editable: { type: 'text' } },
-      { field: 'related_products', text: '# Products', size: '90px', render: 'int', tooltip: 'Number of products related to this supplier' },
+      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products in the local catalog', sortable: true },
+      { field: 'published_products', text: '# Pub', size: '60px', render: 'int', tooltip: 'Number of published products', sortable: true },
       { field: 'is_published', text: 'Is Pub', size: '60px', editable: { type: 'checkbox' }, tooltip: 'Show this supplier' },
     ],
     searches: [
@@ -38,6 +39,7 @@ export function createSupplierGrid() {
       { field: 'description', label: 'Description', type: 'text', _all: true },
       { field: 'is_published', label: 'Is Published', type: 'enum', options: utils.getSelectOptionsBool() },
       { field: 'related_products', label: '# Products', type: 'float' },
+      { field: 'published_products', label: '# Published', type: 'float' },
     ],
     defaultOperator: {
       'text': 'contains',

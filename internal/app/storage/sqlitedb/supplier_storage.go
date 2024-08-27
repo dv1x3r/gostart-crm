@@ -27,12 +27,22 @@ func (st *Supplier) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBuilde
 		"s.name",
 		"s.description",
 		"s.is_published",
-		"coalesce(p.count, 0) as related_products",
+		"coalesce(p.related_products, 0) as related_products",
+		"coalesce(p.published_products, 0) as published_products",
 	}
 
 	sb := sqlbuilder.NewSelectBuilder()
 	sb.Select(append(columns, extra...)...).From("supplier as s")
-	sb.JoinWithOption(sqlbuilder.LeftJoin, "(select supplier_id, count(*) as count from product group by supplier_id) as p", "p.supplier_id = s.id")
+	sb.JoinWithOption(sqlbuilder.LeftJoin, `(
+		select
+			p.supplier_id,
+			count(*) as related_products,
+			sum(iif(p.quantity > 0 and p.is_published = 1 and c.is_published = 1 and s.is_published = 1, 1, 0)) as published_products
+		from product as p
+		join category as c on c.id = p.category_id
+		join supplier as s on s.id = p.supplier_id
+		group by supplier_id
+	) as p`, "p.supplier_id = s.id")
 	sb.OrderBy("position", "id DESC")
 	return sb
 }
@@ -41,11 +51,12 @@ func (st *Supplier) getQueryFindMany(q storage.FindManyParams) (string, []any) {
 	sb := st.getQuerySelectBase("count(*) over () as count")
 
 	allowedFilters := map[string]string{
-		"code":             "s.code",
-		"name":             "s.name",
-		"description":      "s.description",
-		"is_published":     "s.is_published",
-		"related_products": "coalesce(p.count, 0)",
+		"code":               "s.code",
+		"name":               "s.name",
+		"description":        "s.description",
+		"is_published":       "s.is_published",
+		"related_products":   "p.related_products",
+		"published_products": "p.published_products",
 	}
 
 	storage.ApplyLimitOffset(sb, q.Limit, q.Offset)

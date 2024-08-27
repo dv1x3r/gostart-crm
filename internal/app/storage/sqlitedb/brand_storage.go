@@ -23,14 +23,25 @@ func (st *Brand) getQueryFindMany(q storage.FindManyParams) (string, []any) {
 	sb := sqlbuilder.Select(
 		"b.id",
 		"b.name",
-		"coalesce(p.count, 0) as related_products",
+		"coalesce(p.related_products, 0) as related_products",
+		"coalesce(p.published_products, 0) as published_products",
 		"count(*) over () as count",
 	).From("brand as b")
-	sb.JoinWithOption(sqlbuilder.LeftJoin, "(select brand_id, count(*) as count from product group by brand_id) as p", "p.brand_id = b.id")
+	sb.JoinWithOption(sqlbuilder.LeftJoin, `(
+		select
+			p.brand_id,
+			count(*) as related_products,
+			sum(iif(p.quantity > 0 and p.is_published = 1 and c.is_published = 1 and s.is_published = 1, 1, 0)) as published_products
+		from product as p
+		join category as c on c.id = p.category_id
+		join supplier as s on s.id = p.supplier_id
+		group by brand_id
+	) as p`, "p.brand_id = b.id")
 
 	allowed := map[string]string{
-		"name":             "b.name",
-		"related_products": "p.count",
+		"name":               "b.name",
+		"related_products":   "p.related_products",
+		"published_products": "p.published_products",
 	}
 
 	storage.ApplyLimitOffset(sb, q.Limit, q.Offset)

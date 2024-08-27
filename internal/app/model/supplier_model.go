@@ -8,13 +8,15 @@ import (
 )
 
 type Supplier struct {
-	ID              int64   `json:"id" db:"id" validate:"number"`
-	Slug            string  `json:"-" db:"slug"`
-	Code            string  `json:"code" db:"code" validate:"required,max=8"`
-	Name            string  `json:"name" db:"name" validate:"required,max=16"`
-	Description     *string `json:"description" db:"description" validate:"omitempty,max=256"`
-	IsPublished     bool    `json:"is_published" db:"is_published"`
-	RelatedProducts int64   `json:"related_products" db:"related_products"`
+	ID                int64   `json:"id" db:"id" validate:"number"`
+	Slug              string  `json:"-" db:"slug"`
+	Code              string  `json:"code" db:"code" validate:"required,max=8"`
+	Name              string  `json:"name" db:"name" validate:"required,max=16"`
+	Description       *string `json:"description" db:"description" validate:"omitempty,max=256"`
+	IsPublished       bool    `json:"is_published" db:"is_published"`
+	RelatedProducts   int64   `json:"related_products" db:"related_products"`
+	PublishedProducts int64   `json:"published_products" db:"published_products"`
+	ExternalProducts  int64   `json:"external_products" db:"external_products"`
 
 	Partial map[string]struct{} `json:"-" db:"-"`
 }

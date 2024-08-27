@@ -6,9 +6,10 @@ import (
 )
 
 type Brand struct {
-	ID              int64  `json:"id" db:"id" validate:"number"`
-	Name            string `json:"name" db:"name" validate:"required,max=128"`
-	RelatedProducts int64  `json:"related_products" db:"related_products"`
+	ID                int64  `json:"id" db:"id" validate:"number"`
+	Name              string `json:"name" db:"name" validate:"required,max=128"`
+	RelatedProducts   int64  `json:"related_products" db:"related_products"`
+	PublishedProducts int64  `json:"published_products" db:"published_products"`
 
 	Partial map[string]struct{} `json:"-" db:"-"`
 }
