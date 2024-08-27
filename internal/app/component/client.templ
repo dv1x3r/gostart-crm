@@ -1,42 +1,43 @@
 package component
 
 import (
+	"fmt"
 	"gostart-crm/internal/app/model"
 	"strconv"
 )
 
-templ Index(title string, todos []model.TodoDTO) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<title>{ title }</title>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<script type="module" src="/assets/main.bundle.js"></script>
-		</head>
-		<body class="bg-gradient-to-r from-slate-950 from-10% to-gray-900 text-white flex items-center justify-center h-screen">
-			<div class="flex items-center gap-4 p-4 h-full">
-				<div class="mx-auto">
-					for _, todo := range todos {
-						@TodoCard(todo)
-					}
-				</div>
-			</div>
-		</body>
-	</html>
+templ ClientHead(cp CoreParams) {
+	<link rel="stylesheet" href={ fmt.Sprintf("/css/client.css?v=%s", cp.StaticVersion) }/>
+	<script type="module" src={ fmt.Sprintf("/js/client.js?v=%s", cp.StaticVersion) }></script>
 }
 
-templ TodoCard(todo model.TodoDTO) {
+templ Client(cp CoreParams) {
+	@Core(cp, ClientHead(cp)) {
+		<div class="bg-gradient-to-r from-slate-950 from-10% to-gray-900 text-white flex items-center justify-center h-screen">
+			{ children... }
+		</div>
+	}
+}
+
+templ Todos(cp CoreParams, todos []model.Brand) {
+	@Client(cp) {
+		<div class="flex items-center gap-4 p-4 h-full">
+			<div class="mx-auto">
+				for _, todo := range todos {
+					@TodoCard(todo)
+				}
+			</div>
+		</div>
+	}
+}
+
+templ TodoCard(todo model.Brand) {
 	<div class="flex flex-col p-4 rounded shadow-lg ">
 		<div class="border border-gray-800 border-opacity-30 bg-gradient-radial-dark rounded-lg p-2">
 			<p class="text-slate-100 font-medium">{ todo.Name }</p>
 			<div class="">
-				if todo.Description != nil {
-					<p class="text-slate-600 text-sm">Description: { *todo.Description }</p>
-				}
-				if todo.Quantity != nil {
-					<p class="text-slate-600 text-sm">Quantity: { strconv.FormatInt(*todo.Quantity, 10) }</p>
-				}
+				<p class="text-slate-600 text-sm">Description: { todo.Name }</p>
+				<p class="text-slate-600 text-sm">Quantity: { strconv.FormatInt(todo.ID, 10) }</p>
 			</div>
 		</div>
 	</div>

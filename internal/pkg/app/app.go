@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -10,8 +11,6 @@ import (
 	"time"
 
 	"gostart-crm/internal/app/endpoint"
-	"gostart-crm/internal/app/service"
-	"gostart-crm/internal/app/storage/sqlitedb"
 	"gostart-crm/internal/app/utils"
 
 	"github.com/jmoiron/sqlx"
@@ -89,6 +88,7 @@ func New() (*App, error) {
 	})
 
 	a.echo.Use(middleware.Secure())
+	a.echo.Use(middleware.BodyLimit("30M"))
 
 	if a.config.GZIP {
 		a.echo.Use(middleware.Gzip())
@@ -110,13 +110,12 @@ func New() (*App, error) {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
-	todoStorage := sqlitedb.NewTodo(a.db)
-	todoService := service.NewTodo(todoStorage)
+	// todoStorage := sqlitedb.NewTodo(a.db)
+	// todoService := service.NewTodo(todoStorage)
 
-	indexEndpoint := endpoint.NewIndex(todoService)
-	a.echo.GET("/", indexEndpoint.GetRoot)
+	staticVersion := fmt.Sprint(time.Now().Unix())
 
-	adminEndpoint := endpoint.NewAdmin(todoService)
+	adminEndpoint := endpoint.NewAdmin(staticVersion)
 	adminEndpoint.Register(a.echo)
 
 	return a, nil
