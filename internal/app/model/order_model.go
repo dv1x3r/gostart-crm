@@ -5,64 +5,6 @@ import (
 	"gostart-crm/internal/app/utils"
 )
 
-type OrderStatus struct {
-	ID            int64  `json:"id" db:"id" validate:"number"`
-	Name          string `json:"name" db:"name" validate:"required,max=16"`
-	Color         string `json:"color" db:"color" validate:"required,max=16"`
-	RelatedOrders int64  `json:"related_orders" db:"related_orders"`
-
-	Partial map[string]struct{} `json:"-" db:"-"`
-}
-
-func (t *OrderStatus) UnmarshalJSON(data []byte) error {
-	if string(data) == "null" || string(data) == `""` {
-		return nil
-	}
-
-	raw := make(map[string]json.RawMessage)
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
-	}
-
-	t.Partial = make(map[string]struct{})
-	t.ID = getValue[int64](raw, "id", t.Partial, "ID")
-	t.Name = getValue[string](raw, "name", t.Partial, "Name")
-	t.Color = getValue[string](raw, "color", t.Partial, "Color")
-
-	return utils.GetValidator().ValidatePartial(t, t.Partial)
-}
-
-type OrderStatusW2GridResponse = W2GridDataResponse[OrderStatus, any]
-type OrderStatusW2SaveRequest = W2GridSaveRequest[OrderStatus]
-
-type PaymentMethod struct {
-	ID            int64  `json:"id" db:"id" validate:"number"`
-	Name          string `json:"name" db:"name" validate:"required,max=32"`
-	RelatedOrders int64  `json:"related_orders" db:"related_orders"`
-
-	Partial map[string]struct{} `json:"-" db:"-"`
-}
-
-func (t *PaymentMethod) UnmarshalJSON(data []byte) error {
-	if string(data) == "null" || string(data) == `""` {
-		return nil
-	}
-
-	raw := make(map[string]json.RawMessage)
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
-	}
-
-	t.Partial = make(map[string]struct{})
-	t.ID = getValue[int64](raw, "id", t.Partial, "ID")
-	t.Name = getValue[string](raw, "name", t.Partial, "Name")
-
-	return utils.GetValidator().ValidatePartial(t, t.Partial)
-}
-
-type PaymentMethodW2GridResponse = W2GridDataResponse[PaymentMethod, any]
-type PaymentMethodW2SaveRequest = W2GridSaveRequest[PaymentMethod]
-
 type OrderStatusEmbed struct {
 	StatusID    *int64  `json:"id" db:"order_status_id"`
 	StatusName  *string `json:"text" db:"order_status_name"`
@@ -122,19 +64,3 @@ func (t *Order) UnmarshalJSON(data []byte) error {
 type OrderW2GridResponse = W2GridDataResponse[Order, any]
 type OrderW2FormRequest = W2FormRequest[Order]
 type OrderW2FormResponse = W2FormResponse[Order]
-
-type OrderLine struct {
-	ID       int64   `json:"id" db:"id"`
-	Code     string  `json:"code" db:"code"`
-	Product  string  `json:"product" db:"product"`
-	Quantity float64 `json:"quantity" db:"quantity"`
-	Price    float64 `json:"price" db:"price"`
-	Total    float64 `json:"total" db:"total"`
-	Summary  float64 `json:"summary" db:"summary"`
-}
-
-type OrderLineW2GridResponse = W2GridDataResponse[OrderLine, any]
-
-type OrderLineSummary struct {
-	Total float64 `json:"total"`
-}
