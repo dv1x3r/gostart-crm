@@ -389,7 +389,7 @@ export function openProductStatusPopup() {
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'name', text: 'Name', size: '155px', render: 'safe', editable: { type: 'text' }, searchable: true },
-      { field: 'color', text: 'Color', size: '85px', render: 'color', editable: { type: 'color' } },
+      { field: 'color', text: 'Color', size: '90px', render: 'color', editable: { type: 'color' } },
       { field: 'related_products', text: '# Products', size: '90px', render: 'int' },
     ],
     defaultOperator: {

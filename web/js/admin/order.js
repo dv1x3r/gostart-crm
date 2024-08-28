@@ -138,8 +138,8 @@ export function createOrderLayout() {
       { field: 'payment', html: { label: 'Payment', span: 4, column: 1 }, type: 'list', options: utils.getSelectOptions('/order/payment/dropdown'), required: true },
       { field: 'created_at', html: { label: 'Created at', span: 4, column: 1, attr: 'readonly' }, type: 'datetime' },
       { field: 'updated_at', html: { label: 'Updated at', span: 4, column: 1, attr: 'readonly' }, type: 'datetime' },
-      { field: 'delivery_address', html: { label: '', span: 0, column: 1, group: 'Delivery Address', attr: 'style="width: 100%; height: 56px; resize: none; color: black;" readonly' }, type: 'textarea' },
-      { field: 'comment', html: { label: '', span: 0, column: 1, group: 'Order Comment', attr: 'style="width: 100%; height: 57px; resize: none; color: black;" readonly' }, type: 'textarea' },
+      { field: 'delivery_address', html: { label: '', span: 0, group: 'Delivery Address', attr: 'style="width: 100%; height: 100px; resize: none; color: black;" readonly' }, type: 'textarea' },
+      { field: 'comment', html: { label: '', span: 0, column: 1, group: 'Order Comment', attr: 'style="width: 100%; height: 100px; resize: none; color: black;" readonly' }, type: 'textarea' },
     ],
     actions: {
       async Save() {
@@ -203,8 +203,9 @@ export function openOrderStatusPopup() {
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'name', text: 'Name', size: '155px', render: 'safe', editable: { type: 'text' }, searchable: true },
-      { field: 'color', text: 'Color', size: '85px', render: 'color', editable: { type: 'color' } },
+      { field: 'color', text: 'Color', size: '90px', render: 'color', editable: { type: 'color' } },
       { field: 'related_orders', text: '# Orders', size: '90px', render: 'int' },
+      { field: 'in_counter', text: 'In Counter', size: '90px', editable: { type: 'checkbox' }, tooltip: 'Include to the counter on the top' },
     ],
     defaultOperator: {
       'text': 'contains',
