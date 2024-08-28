@@ -6,10 +6,11 @@ import (
 )
 
 type AttributeValue struct {
-	ID              int64  `json:"id" db:"id"`
-	AttributeSetID  int64  `json:"attribute_set_id" db:"attribute_set_id"`
-	Name            string `json:"name" db:"name" validate:"required,max=128"`
-	RelatedProducts int64  `json:"related_products" db:"related_products"`
+	ID                int64  `json:"id" db:"id"`
+	AttributeSetID    int64  `json:"attribute_set_id" db:"attribute_set_id"`
+	Name              string `json:"name" db:"name" validate:"required,max=128"`
+	RelatedProducts   int64  `json:"related_products" db:"related_products"`
+	PublishedProducts int64  `json:"published_products" db:"published_products"`
 
 	Partial map[string]struct{} `json:"-" db:"-"`
 }
