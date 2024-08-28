@@ -23,7 +23,7 @@ func (st *Order) getQueryGetCounter() (string, []any) {
 	sb := sqlbuilder.Select("coalesce(count(*), 0) as count")
 	sb.From("order_header as o")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "order_status as os", "os.id = o.order_status_id")
-	sb.Where("os.color = '2693FF'")
+	sb.Where("os.in_counter = 1")
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
@@ -38,14 +38,12 @@ func (st *Order) getQueryFindMany(q storage.FindManyParams) (string, []any) {
 	sb := sqlbuilder.Select(
 		"o.id",
 		"o.email",
-		"o.language",
 		"concat(o.first_name, ' ', o.last_name) as full_name",
 		"o.first_name",
 		"o.last_name",
 		"o.phone_number",
 		"o.delivery_address",
 		"o.comment",
-		"o.notes",
 		"datetime(o.created_at, 'unixepoch', 'localtime') as created_at",
 		"datetime(o.updated_at, 'unixepoch', 'localtime') as updated_at",
 		"o.order_status_id",
@@ -82,11 +80,11 @@ func (st *Order) getQueryFindMany(q storage.FindManyParams) (string, []any) {
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *Order) FindMany(ctx context.Context, q storage.FindManyParams) ([]model.Order, int64, error) {
+func (st *Order) FindMany(ctx context.Context, q storage.FindManyParams) ([]model.OrderHeader, int64, error) {
 	const op = "sqlitedb.Order.FindMany"
 
 	type LocalResult struct {
-		model.Order
+		model.OrderHeader
 		Count int64 `db:"count"`
 	}
 
@@ -96,9 +94,9 @@ func (st *Order) FindMany(ctx context.Context, q storage.FindManyParams) ([]mode
 		return nil, 0, utils.WrapIfErr(op, err)
 	}
 
-	dto, count := make([]model.Order, len(rows)), int64(0)
+	dto, count := make([]model.OrderHeader, len(rows)), int64(0)
 	for i, row := range rows {
-		dto[i], count = row.Order, row.Count
+		dto[i], count = row.OrderHeader, row.Count
 	}
 
 	return dto, count, nil
@@ -146,7 +144,7 @@ func (st *Order) FindManyLinesByOrderID(ctx context.Context, orderID int64, q st
 	return dto, count, summary, nil
 }
 
-func (st *Order) getQueryUpdateByID(dto model.Order) (string, []any) {
+func (st *Order) getQueryUpdateByID(dto model.OrderHeader) (string, []any) {
 	ub := sqlbuilder.Update("order_header")
 	ub.Where(ub.EQ("id", dto.ID))
 	ub.SetMore("updated_at = unixepoch()")
@@ -154,14 +152,12 @@ func (st *Order) getQueryUpdateByID(dto model.Order) (string, []any) {
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "FirstName", "first_name", dto.FirstName)
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "LastName", "last_name", dto.LastName)
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "PhoneNumber", "phone_number", dto.PhoneNumber)
-	storage.ApplyUpdateSetPartial(ub, dto.Partial, "Language", "language", dto.Language)
-	storage.ApplyUpdateSetPartial(ub, dto.Partial, "Notes", "notes", dto.Notes)
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "OrderStatusEmbed.StatusID", "order_status_id", dto.StatusID)
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "PaymentMethodEmbed.PaymentMethodID", "payment_method_id", dto.PaymentMethodID)
 	return ub.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *Order) UpdateByID(ctx context.Context, dto model.Order) error {
+func (st *Order) UpdateByID(ctx context.Context, dto model.OrderHeader) error {
 	const op = "sqlitedb.Order.UpdateByID"
 	query, args := st.getQueryUpdateByID(dto)
 	if _, err := runExecAffected(ctx, st.db, query, args); err != nil {

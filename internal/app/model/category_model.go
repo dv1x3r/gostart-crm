@@ -24,21 +24,18 @@ type CategoryAttributeGroupEmbed struct {
 
 type Category struct {
 	ID              int64   `json:"id" db:"id" validate:"number"`
-	Slug            string  `json:"-" db:"slug"`
 	Name            string  `json:"name" db:"name" validate:"required,max=64"`
 	Icon            *string `json:"icon" db:"icon" validate:"omitempty,max=128"`
 	IsPublished     bool    `json:"is_published" db:"is_published"`
 	RelatedProducts int64   `json:"related_products" db:"related_products"`
-	MpPath          *string `json:"-" db:"mp_path"`
 	Hierarchy       string  `json:"hierarchy" db:"hierarchy"`
 	CategoryURL     string  `json:"-" db:"category_url"`
 
 	CategoryParentEmbed         `json:"parent"`
 	CategoryAttributeGroupEmbed `json:"attribute_group"`
 
-	Partial map[string]struct{} `json:"-" db:"-"`
-
-	Children []Category `json:"children" db:"-"`
+	Partial  map[string]struct{} `json:"-" db:"-"`
+	Children []Category          `json:"children" db:"-"`
 }
 
 func (dto *Category) Slugify() string {

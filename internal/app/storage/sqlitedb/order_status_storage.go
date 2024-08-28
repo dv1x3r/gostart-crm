@@ -68,13 +68,6 @@ func (st *OrderStatus) FindMany(ctx context.Context, q storage.FindManyParams) (
 	return dto, count, nil
 }
 
-func (st *OrderStatus) FindAll(ctx context.Context) ([]model.OrderStatus, error) {
-	const op = "sqlitedb.OrderStatus.FindAll"
-	query, args := st.getQuerySelectBase().BuildWithFlavor(sqlbuilder.SQLite)
-	rows, err := runSelect[model.OrderStatus](ctx, st.db, query, args)
-	return rows, utils.WrapIfErr(op, err)
-}
-
 func (st *OrderStatus) getQueryGetDropdown(search string, max int) (string, []any) {
 	sb := sqlbuilder.Select("id", "name as text")
 	sb.From("order_status")

@@ -9,7 +9,6 @@ import (
 
 type Supplier struct {
 	ID                int64   `json:"id" db:"id" validate:"number"`
-	Slug              string  `json:"-" db:"slug"`
 	Code              string  `json:"code" db:"code" validate:"required,max=8"`
 	Name              string  `json:"name" db:"name" validate:"required,max=16"`
 	Description       *string `json:"description" db:"description" validate:"omitempty,max=256"`

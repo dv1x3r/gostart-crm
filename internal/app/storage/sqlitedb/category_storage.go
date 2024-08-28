@@ -27,6 +27,7 @@ const CategoryCTE = `
 		select
 			id,
 			name,
+			slug || '/' as slug,
 			attribute_group_id,
 			printf('%04d', mp_position) || '.' as mp_position
 		from category
@@ -37,6 +38,7 @@ const CategoryCTE = `
 		select
 			c.id,
 			category_cte.name || ' > ' || c.name,
+			category_cte.slug || c.slug || '/',
 			c.attribute_group_id,
 			category_cte.mp_position || printf('%04d', c.mp_position) || '.'
 		from category c
@@ -47,16 +49,15 @@ const CategoryCTE = `
 func (st *Category) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBuilder {
 	columns := []string{
 		"c.id",
-		"c.slug",
 		"c.name",
 		"c.icon",
 		"c.is_published",
-		"c.mp_path",
 		"c.parent_id",
-		"pc.name_lv as parent_text",
+		"pc.name as parent_text",
 		"c.attribute_group_id",
 		"ag.name as attribute_group_text",
 		"c_cte.name as hierarchy",
+		"c_cte.slug as category_url",
 	}
 
 	sb := sqlbuilder.NewSelectBuilder()

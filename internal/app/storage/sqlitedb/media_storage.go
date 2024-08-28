@@ -24,9 +24,9 @@ func (st *Media) GetProductIDs(ctx context.Context) ([]int, error) {
 	return ids, utils.WrapIfErr(op, err)
 }
 
-func (st *Media) GetProductMediaFiles(ctx context.Context, productID int) ([]model.ProductMediaFile, error) {
+func (st *Media) GetProductMediaFiles(ctx context.Context, productID int) ([]model.MediaFile, error) {
 	const op = "sqlitedb.Media.GetProductMediaFiles"
 	query := "select name, file, thumbnail from product_media where product_id = ?"
-	rows, err := runSelect[model.ProductMediaFile](ctx, st.db, query, []any{productID})
+	rows, err := runSelect[model.MediaFile](ctx, st.db, query, []any{productID})
 	return rows, utils.WrapIfErr(op, err)
 }

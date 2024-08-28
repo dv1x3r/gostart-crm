@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"maps"
+	"slices"
 	"strconv"
 
 	"gostart-crm/internal/app/model"
@@ -21,7 +22,7 @@ func NewFilter(db *sqlx.DB) *Filter {
 	return &Filter{db: db}
 }
 
-func (st *Filter) getQueryFindFiltersByCategoryID(categoryID int64) (string, []any) {
+func (st *Filter) getQueryFindFacetsByCategoryID(categoryID int64) (string, []any) {
 	sb0 := sqlbuilder.Select("'S' as id", "'Supplier' as name", "-1 as position")
 	sb1 := sqlbuilder.Select("'B' as id", "'Brand' as name", "-2 as position")
 
@@ -35,66 +36,77 @@ func (st *Filter) getQueryFindFiltersByCategoryID(categoryID int64) (string, []a
 	return b.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *Filter) FindFiltersByCategoryID(ctx context.Context, categoryID int64, applied model.FilterCombination) ([]model.Filter, error) {
-	const op = "sqlitedb.Filter.FindFiltersByCategoryID"
-	query, args := st.getQueryFindFiltersByCategoryID(categoryID)
-	rows, err := runSelect[model.Filter](ctx, st.db, query, args)
+func (st *Filter) FindFacetsByCategoryID(ctx context.Context, categoryID int64, applied model.FilterCombination) ([]model.FilterFacet, error) {
+	const op = "sqlitedb.Filter.FindFacetsByCategoryID"
+
+	query, args := st.getQueryFindFacetsByCategoryID(categoryID)
+	rows, err := runSelect[model.FilterFacet](ctx, st.db, query, args)
+	if err != nil {
+		return rows, utils.WrapIfErr(op, err)
+	}
+
 	for i := range rows {
-		if err := st.fillFilterFacets(ctx, &rows[i], categoryID, applied); err != nil {
+		if err := st.fillFilterFacetsByCategoryID(ctx, &rows[i], categoryID, applied); err != nil {
 			return rows, utils.WrapIfErr(op, err)
 		}
 	}
+
 	return rows, utils.WrapIfErr(op, err)
 }
 
-func (st *Filter) fillFilterFacets(ctx context.Context, filter *model.Filter, categoryID int64, applied model.FilterCombination) error {
-	const op = "sqlitedb.Filter.fillFilterFacets"
+func (st *Filter) fillFilterFacetsByCategoryID(ctx context.Context, facet *model.FilterFacet, categoryID int64, applied model.FilterCombination) error {
+	const op = "sqlitedb.Filter.fillFilterFacetsByCategoryID"
 
-	var facets []model.FilterFacet
+	var values []model.FilterFacetValue
 	var err error
 
-	if filter.ID == "S" {
-		query, args := st.getQueryFindSupplierFacets(categoryID, applied)
-		facets, err = runSelect[model.FilterFacet](ctx, st.db, query, args)
-	} else if filter.ID == "B" {
-		query, args := st.getQueryFindBrandFacets(categoryID, applied)
-		facets, err = runSelect[model.FilterFacet](ctx, st.db, query, args)
+	if facet.ID == "S" {
+		query, args := st.getQueryFindSupplierFacetsByCategoryID(categoryID, applied)
+		values, err = runSelect[model.FilterFacetValue](ctx, st.db, query, args)
+	} else if facet.ID == "B" {
+		query, args := st.getQueryFindBrandFacetsByCategoryID(categoryID, applied)
+		values, err = runSelect[model.FilterFacetValue](ctx, st.db, query, args)
 	} else {
-		query, args := st.getQueryFindAttributeFacets(categoryID, filter.ID, applied)
-		facets, err = runSelect[model.FilterFacet](ctx, st.db, query, args)
+		query, args := st.getQueryFindAttributeFacetsByCategoryID(categoryID, facet.ID, applied)
+		values, err = runSelect[model.FilterFacetValue](ctx, st.db, query, args)
 	}
 
 	if err != nil {
 		return utils.WrapIfErr(op, err)
 	}
 
-	for i := range facets {
+	for i := range values {
 		// if there is something selected in this filter group
-		if len(applied[filter.ID]) > 0 {
+		if len(applied[facet.ID]) > 0 {
 			// if current value is selected
-			if _, ok := applied[filter.ID][facets[i].ID]; ok {
-				facets[i].IsSelected = true
+			if _, ok := applied[facet.ID][values[i].ID]; ok {
+				values[i].IsSelected = true
 			}
 		}
 	}
 
-	filter.Facets = facets
-	filter.Selected = len(applied[filter.ID])
+	facet.Values = values
+	facet.Selected = len(applied[facet.ID])
 
 	return nil
 }
 
-func (st *Filter) getQueryFindSupplierFacets(selectedCategoryID int64, applied model.FilterCombination) (string, []any) {
+func (st *Filter) getQueryFindSupplierFacetsByCategoryID(categoryID int64, applied model.FilterCombination) (string, []any) {
 	facet := sqlbuilder.Select("p.id").From("product as p")
 	for filterKey, facets := range applied {
+		facetKeys := slices.Collect(maps.Keys(facets))
 		if filterKey == "S" {
 			continue
 		} else if filterKey == "B" {
-			facet.Where(facet.In("p.brand_id", sqlbuilder.List(maps.Keys(facets))))
+			facet.Where(facet.In("p.brand_id", sqlbuilder.List(facetKeys)))
+		} else if filterKey == "PF" && len(facetKeys) == 1 {
+			facet.Where(facet.GTE("p.web_actual", facetKeys[0]))
+		} else if filterKey == "PT" && len(facetKeys) == 1 {
+			facet.Where(facet.LTE("p.web_actual", facetKeys[0]))
 		} else if attributeSetID, err := strconv.Atoi(filterKey); err == nil {
 			joinTable := fmt.Sprintf("product_attribute as pa_%d", attributeSetID)
 			joinExpr1 := fmt.Sprintf("pa_%d.product_id = p.id", attributeSetID)
-			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(maps.Keys(facets)))
+			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(facetKeys))
 			facet.JoinWithOption(sqlbuilder.InnerJoin, joinTable, facet.And(joinExpr1, joinExpr2))
 		}
 	}
@@ -106,24 +118,29 @@ func (st *Filter) getQueryFindSupplierFacets(selectedCategoryID int64, applied m
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c", "c.id = p.category_id")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c_parent", "c.mp_path like c_parent.mp_path || '%'")
 	sb.JoinWithOption(sqlbuilder.LeftJoin, sb.Var(sqlbuilder.Buildf("(%v) as facet", facet)), "facet.id = p.id")
-	sb.Where(sb.EQ("c_parent.id", selectedCategoryID), "p.quantity > 0 and p.is_published = 1 and s.is_published = 1")
+	sb.Where(sb.EQ("c_parent.id", categoryID), "p.quantity > 0 and p.is_published = 1 and s.is_published = 1")
 	sb.GroupBy("s.id", "s.name")
 	sb.OrderBy("s.position")
 
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *Filter) getQueryFindBrandFacets(selectedCategoryID int64, applied model.FilterCombination) (string, []any) {
+func (st *Filter) getQueryFindBrandFacetsByCategoryID(categoryID int64, applied model.FilterCombination) (string, []any) {
 	facet := sqlbuilder.Select("p.id").From("product as p")
 	for filterKey, facets := range applied {
+		facetKeys := slices.Collect(maps.Keys(facets))
 		if filterKey == "B" {
 			continue
 		} else if filterKey == "S" {
-			facet.Where(facet.In("p.supplier_id", sqlbuilder.List(maps.Keys(facets))))
+			facet.Where(facet.In("p.supplier_id", sqlbuilder.List(facetKeys)))
+		} else if filterKey == "PF" && len(facetKeys) == 1 {
+			facet.Where(facet.GTE("p.web_actual", facetKeys[0]))
+		} else if filterKey == "PT" && len(facetKeys) == 1 {
+			facet.Where(facet.LTE("p.web_actual", facetKeys[0]))
 		} else if attributeSetID, err := strconv.Atoi(filterKey); err == nil {
 			joinTable := fmt.Sprintf("product_attribute as pa_%d", attributeSetID)
 			joinExpr1 := fmt.Sprintf("pa_%d.product_id = p.id", attributeSetID)
-			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(maps.Keys(facets)))
+			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(facetKeys))
 			facet.JoinWithOption(sqlbuilder.InnerJoin, joinTable, facet.And(joinExpr1, joinExpr2))
 		}
 	}
@@ -135,26 +152,31 @@ func (st *Filter) getQueryFindBrandFacets(selectedCategoryID int64, applied mode
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c", "c.id = p.category_id")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c_parent", "c.mp_path like c_parent.mp_path || '%'")
 	sb.JoinWithOption(sqlbuilder.LeftJoin, sb.Var(sqlbuilder.Buildf("(%v) as facet", facet)), "facet.id = p.id")
-	sb.Where(sb.EQ("c_parent.id", selectedCategoryID), "p.quantity > 0 and p.is_published = 1 and s.is_published = 1")
+	sb.Where(sb.EQ("c_parent.id", categoryID), "p.quantity > 0 and p.is_published = 1 and s.is_published = 1")
 	sb.GroupBy("b.id", "b.name")
 	sb.OrderBy("b.name")
 
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *Filter) getQueryFindAttributeFacets(selectedCategoryID int64, selectedFilterKey string, applied model.FilterCombination) (string, []any) {
+func (st *Filter) getQueryFindAttributeFacetsByCategoryID(categoryID int64, selectedFilterKey string, applied model.FilterCombination) (string, []any) {
 	facet := sqlbuilder.Select("p.id").From("product as p")
 	for filterKey, facets := range applied {
+		facetKeys := slices.Collect(maps.Keys(facets))
 		if filterKey == selectedFilterKey {
 			continue
 		} else if filterKey == "S" {
-			facet.Where(facet.In("p.supplier_id", sqlbuilder.List(maps.Keys(facets))))
+			facet.Where(facet.In("p.supplier_id", sqlbuilder.List(facetKeys)))
 		} else if filterKey == "B" {
-			facet.Where(facet.In("p.brand_id", sqlbuilder.List(maps.Keys(facets))))
+			facet.Where(facet.In("p.brand_id", sqlbuilder.List(facetKeys)))
+		} else if filterKey == "PF" && len(facetKeys) == 1 {
+			facet.Where(facet.GTE("p.web_actual", facetKeys[0]))
+		} else if filterKey == "PT" && len(facetKeys) == 1 {
+			facet.Where(facet.LTE("p.web_actual", facetKeys[0]))
 		} else if attributeSetID, err := strconv.Atoi(filterKey); err == nil {
 			joinTable := fmt.Sprintf("product_attribute as pa_%d", attributeSetID)
 			joinExpr1 := fmt.Sprintf("pa_%d.product_id = p.id", attributeSetID)
-			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(maps.Keys(facets)))
+			joinExpr2 := facet.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(facetKeys))
 			facet.JoinWithOption(sqlbuilder.InnerJoin, joinTable, facet.And(joinExpr1, joinExpr2))
 		}
 	}
@@ -166,7 +188,7 @@ func (st *Filter) getQueryFindAttributeFacets(selectedCategoryID int64, selected
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "attribute_value as atv", "atv.id = pa.attribute_value_id")
 	sb.JoinWithOption(sqlbuilder.LeftJoin, sb.Var(sqlbuilder.Buildf("(%v) as facet", facet)), "facet.id = p.id")
 	sb.Where(
-		sb.EQ("p.category_id", selectedCategoryID),
+		sb.EQ("p.category_id", categoryID),
 		sb.EQ("pa.attribute_set_id", selectedFilterKey),
 		"p.quantity > 0 and p.is_published = 1 and s.is_published = 1",
 	)
@@ -174,4 +196,25 @@ func (st *Filter) getQueryFindAttributeFacets(selectedCategoryID int64, selected
 	sb.OrderBy("atv.position")
 
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
+}
+
+func (st *Filter) getQueryFindPriceLimitByCategoryID(selectedCategoryID int64) (string, []any) {
+	sb := sqlbuilder.Select(
+		"coalesce(cast(min(p.web_actual) as int), 0) as price_from",
+		"coalesce(round(max(p.web_actual + 0.4)), 0) as price_to",
+	)
+	sb.From("product as p")
+	sb.JoinWithOption(sqlbuilder.InnerJoin, "supplier as s", "s.id = p.supplier_id")
+	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c", "c.id = p.category_id")
+	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c_parent", "c.mp_path like c_parent.mp_path || '%'")
+	sb.Where(sb.EQ("c_parent.id", selectedCategoryID), "p.quantity > 0 and p.is_published = 1 and s.is_published = 1")
+
+	return sb.BuildWithFlavor(sqlbuilder.SQLite)
+}
+
+func (st *Filter) FindPriceLimitByCategoryID(ctx context.Context, categoryID int64) (model.FilterPrice, error) {
+	const op = "sqlitedb.Filter.FindPriceLimitByCategoryID"
+	query, args := st.getQueryFindPriceLimitByCategoryID(categoryID)
+	price, _, err := runGet[model.FilterPrice](ctx, st.db, query, args)
+	return price, utils.WrapIfErr(op, err)
 }

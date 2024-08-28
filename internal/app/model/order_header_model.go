@@ -24,8 +24,6 @@ type OrderHeader struct {
 	PhoneNumber     *string `json:"phone_number" db:"phone_number" validate:"required,max=256"`
 	DeliveryAddress *string `json:"delivery_address" db:"delivery_address" validate:"omitempty,max=32768"`
 	Comment         *string `json:"comment" db:"comment" validate:"omitempty,max=32768"`
-	Language        *string `json:"language" db:"language" validate:"omitempty,max=32768"`
-	Notes           *string `json:"notes" db:"notes" validate:"omitempty,max=32768"`
 	FullName        *string `json:"full_name" db:"full_name"`
 	CreatedAt       string  `json:"created_at" db:"created_at"`
 	UpdatedAt       string  `json:"updated_at" db:"updated_at"`
@@ -53,8 +51,6 @@ func (t *OrderHeader) UnmarshalJSON(data []byte) error {
 	t.FirstName = getValuePtr[string](raw, "first_name", t.Partial, "FirstName")
 	t.LastName = getValuePtr[string](raw, "last_name", t.Partial, "LastName")
 	t.PhoneNumber = getValuePtr[string](raw, "phone_number", t.Partial, "PhoneNumber")
-	t.Language = getValuePtr[string](raw, "language", t.Partial, "Language")
-	t.Notes = getValuePtr[string](raw, "notes", t.Partial, "Notes")
 	t.OrderStatusEmbed = getValue[OrderStatusEmbed](raw, "status", t.Partial, "OrderStatusEmbed.StatusID")
 	t.PaymentMethodEmbed = getValue[PaymentMethodEmbed](raw, "payment", t.Partial, "PaymentMethodEmbed.PaymentMethodID")
 

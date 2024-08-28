@@ -25,7 +25,6 @@ func (st *Product) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBuilder
 	columns := []string{
 		"p.id",
 		"p.code",
-		"p.slug",
 		"p.name",
 		"p.description",
 		"p.quantity",
@@ -43,6 +42,7 @@ func (st *Product) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBuilder
 		"p.status_id",
 		"ps.name as status_name",
 		"ps.color as status_color",
+		"concat(s.slug, '/', p.slug, '/') as product_url",
 		"iif(p.quantity > 0 and p.is_published = 1 and c.is_published = 1 and s.is_published = 1, 1, 0) as is_available",
 	}
 

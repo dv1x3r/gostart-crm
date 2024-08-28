@@ -22,7 +22,6 @@ func NewSupplier(db *sqlx.DB) *Supplier {
 func (st *Supplier) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBuilder {
 	columns := []string{
 		"s.id",
-		"s.slug",
 		"s.code",
 		"s.name",
 		"s.description",
