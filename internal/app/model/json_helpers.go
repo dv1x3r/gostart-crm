@@ -49,8 +49,7 @@ func getValuePtr[T any](jsonMap map[string]json.RawMessage, jsonKey string, part
 	}
 
 	if strValue, ok := any(value).(string); ok {
-		trimmed := strings.TrimSpace(strValue)
-		value = any(trimmed).(T)
+		value = any(strings.TrimSpace(strValue)).(T)
 	}
 
 	return &value
