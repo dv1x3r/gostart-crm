@@ -383,7 +383,7 @@ export function openProductStatusPopup() {
       toolbarDelete: true,
       toolbarSave: true,
       toolbarSearch: true,
-      toolbarReload: true,
+      toolbarReload: false,
       searchSave: false,
     },
     columns: [

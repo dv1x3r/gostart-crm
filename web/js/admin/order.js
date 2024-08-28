@@ -197,7 +197,7 @@ export function openOrderStatusPopup() {
       toolbarDelete: true,
       toolbarSave: true,
       toolbarSearch: true,
-      toolbarReload: true,
+      toolbarReload: false,
       searchSave: false,
     },
     columns: [
@@ -248,7 +248,7 @@ export function openPaymentMethodPopup() {
       toolbarDelete: true,
       toolbarSave: true,
       toolbarSearch: true,
-      toolbarReload: true,
+      toolbarReload: false,
       searchSave: false,
     },
     columns: [
