@@ -156,6 +156,7 @@ create table order_status (
     [deleted_at] integer,
     [name] text not null,
     [color] text not null,
+    [in_counter] integer not null,
     [position] integer not null default 0,
     unique ([name] collate nocase)
 ) strict;
@@ -169,13 +170,11 @@ create table order_header (
     [order_status_id] integer not null references order_status(id) on delete restrict,
     [payment_method_id] integer not null references payment_method(id) on delete restrict,
     [email] text not null,
-    [language] text not null,
     [first_name] text not null,
     [last_name] text not null,
     [phone_number] text not null,
     [delivery_address] text not null,
-    [comment] text,
-    [notes] text
+    [comment] text
 ) strict;
 
 create table order_line (
