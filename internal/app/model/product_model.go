@@ -41,13 +41,19 @@ type Product struct {
 	CreatedAt   string   `json:"created_at" db:"created_at"`
 	UpdatedAt   string   `json:"updated_at" db:"updated_at"`
 	IsAvailable bool     `json:"is_available" db:"is_available"`
+	ProductURL  string   `json:"product_url" db:"product_url"`
 
 	ProductCategoryEmbed `json:"category"`
 	ProductSupplierEmbed `json:"supplier"`
 	ProductBrandEmbed    `json:"brand"`
 	ProductStatusEmbed   `json:"status"`
 
-	Partial map[string]struct{} `json:"-" db:"-"`
+	Partial        map[string]struct{} `json:"-" db:"-"`
+	Media          []ProductMedia      `json:"-" db:"-"`
+	MediaImages    []ProductMedia      `json:"-" db:"-"`
+	MediaDocuments []ProductMedia      `json:"-" db:"-"`
+	Attributes     []ProductAttribute  `json:"attributes,omitempty" db:"-"`
+	ThumbnailURL   *string             `json:"thumbnail_url,omitempty" db:"-"`
 }
 
 func (dto *Product) Slugify() string {
