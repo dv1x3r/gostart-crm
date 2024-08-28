@@ -16,7 +16,7 @@ type PaymentMethodEmbed struct {
 	PaymentMethodName *string `json:"text" db:"payment_method_name"`
 }
 
-type Order struct {
+type OrderHeader struct {
 	ID              int64   `json:"id" db:"id"`
 	Email           string  `json:"email" db:"email" validate:"required,max=256"`
 	FirstName       *string `json:"first_name" db:"first_name" validate:"required,max=256"`
@@ -37,7 +37,7 @@ type Order struct {
 	Partial map[string]struct{} `json:"-" db:"-"`
 }
 
-func (t *Order) UnmarshalJSON(data []byte) error {
+func (t *OrderHeader) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" || string(data) == `""` {
 		return nil
 	}
@@ -61,6 +61,6 @@ func (t *Order) UnmarshalJSON(data []byte) error {
 	return utils.GetValidator().ValidatePartial(t, t.Partial)
 }
 
-type OrderW2GridResponse = W2GridDataResponse[Order, any]
-type OrderW2FormRequest = W2FormRequest[Order]
-type OrderW2FormResponse = W2FormResponse[Order]
+type OrderHeaderW2GridResponse = W2GridDataResponse[OrderHeader, any]
+type OrderHeaderW2FormRequest = W2FormRequest[OrderHeader]
+type OrderHeaderW2FormResponse = W2FormResponse[OrderHeader]
