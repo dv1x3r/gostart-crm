@@ -125,9 +125,14 @@ func New() (*App, error) {
 
 	attributeEndpoint := endpoint.NewAttribute(attributeGroupService, attributeSetService, attributeValueService)
 
+	brandStorage := sqlitedb.NewBrand(a.db)
+	brandService := service.NewBrand(brandStorage)
+	brandEndpoint := endpoint.NewBrand(brandService)
+
 	adminEndpoint := endpoint.NewAdmin(
 		staticVersion,
 		attributeEndpoint,
+		brandEndpoint,
 	)
 
 	adminEndpoint.Register(a.echo)

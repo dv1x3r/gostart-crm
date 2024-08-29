@@ -10,16 +10,19 @@ import (
 type Admin struct {
 	staticVersion     string
 	attributeEndpoint *Attribute
+	brandEndpoint     *Brand
 }
 
 func NewAdmin(
 	staticVersion string,
 	attributeEndpoint *Attribute,
+	brandEndpoint *Brand,
 
 ) *Admin {
 	return &Admin{
 		staticVersion:     staticVersion,
 		attributeEndpoint: attributeEndpoint,
+		brandEndpoint:     brandEndpoint,
 	}
 }
 
@@ -35,4 +38,5 @@ func (ep *Admin) Register(c *echo.Echo) {
 	})
 
 	ep.attributeEndpoint.Register(c.Group("/attribute"))
+	ep.brandEndpoint.Register(c.Group("/brand"))
 }
