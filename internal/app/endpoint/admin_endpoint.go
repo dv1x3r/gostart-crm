@@ -8,12 +8,18 @@ import (
 )
 
 type Admin struct {
-	staticVersion string
+	staticVersion     string
+	attributeEndpoint *Attribute
 }
 
-func NewAdmin(staticVersion string) *Admin {
+func NewAdmin(
+	staticVersion string,
+	attributeEndpoint *Attribute,
+
+) *Admin {
 	return &Admin{
-		staticVersion: staticVersion,
+		staticVersion:     staticVersion,
+		attributeEndpoint: attributeEndpoint,
 	}
 }
 
@@ -27,4 +33,6 @@ func (ep *Admin) Register(c *echo.Echo) {
 		}
 		return render(c, component.Admin(cp))
 	})
+
+	ep.attributeEndpoint.Register(c.Group("/attribute"))
 }

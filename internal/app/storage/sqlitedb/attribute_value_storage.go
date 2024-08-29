@@ -86,7 +86,7 @@ func (st *AttributeValue) getQueryGetDropdownBySetID(setID int64, search string,
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
-func (st *AttributeValue) GetValueDropdownBySetID(ctx context.Context, setID int64, search string, max int) ([]model.W2Dropdown, error) {
+func (st *AttributeValue) GetDropdownBySetID(ctx context.Context, setID int64, search string, max int) ([]model.W2Dropdown, error) {
 	const op = "sqlitedb.AttributeValue.GetDropdownBySetID"
 	query, args := st.getQueryGetDropdownBySetID(setID, search, max)
 	rows, err := runSelect[model.W2Dropdown](ctx, st.db, query, args)

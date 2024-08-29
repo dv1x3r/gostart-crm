@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"gostart-crm/internal/app/endpoint"
+	"gostart-crm/internal/app/service"
+	"gostart-crm/internal/app/storage/sqlitedb"
 	"gostart-crm/internal/app/utils"
 
 	"github.com/jmoiron/sqlx"
@@ -110,12 +112,24 @@ func New() (*App, error) {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
-	// todoStorage := sqlitedb.NewTodo(a.db)
-	// todoService := service.NewTodo(todoStorage)
-
 	staticVersion := fmt.Sprint(time.Now().Unix())
 
-	adminEndpoint := endpoint.NewAdmin(staticVersion)
+	attributeGroupStorage := sqlitedb.NewAttributeGroup(a.db)
+	attributeGroupService := service.NewAttributeGroup(attributeGroupStorage)
+
+	attributeSetStorage := sqlitedb.NewAttributeSet(a.db)
+	attributeSetService := service.NewAttributeSet(attributeSetStorage)
+
+	attributeValueStorage := sqlitedb.NewAttributeValue(a.db)
+	attributeValueService := service.NewAttributeValue(attributeValueStorage)
+
+	attributeEndpoint := endpoint.NewAttribute(attributeGroupService, attributeSetService, attributeValueService)
+
+	adminEndpoint := endpoint.NewAdmin(
+		staticVersion,
+		attributeEndpoint,
+	)
+
 	adminEndpoint.Register(a.echo)
 
 	return a, nil
