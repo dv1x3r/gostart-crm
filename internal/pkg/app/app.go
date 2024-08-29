@@ -129,10 +129,15 @@ func New() (*App, error) {
 	brandService := service.NewBrand(brandStorage)
 	brandEndpoint := endpoint.NewBrand(brandService)
 
+	supplierStorage := sqlitedb.NewSupplier(a.db)
+	supplierService := service.NewSupplier(supplierStorage)
+	supplierEndpoint := endpoint.NewSupplier(supplierService)
+
 	adminEndpoint := endpoint.NewAdmin(
 		staticVersion,
 		attributeEndpoint,
 		brandEndpoint,
+		supplierEndpoint,
 	)
 
 	adminEndpoint.Register(a.echo)
