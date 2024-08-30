@@ -12,8 +12,7 @@ import (
 )
 
 type ProductStatus struct {
-	db    *sqlx.DB
-	cache []model.ProductStatus
+	db *sqlx.DB
 }
 
 func NewProductStatus(db *sqlx.DB) *ProductStatus {
@@ -69,20 +68,6 @@ func (st *ProductStatus) FindMany(ctx context.Context, q storage.FindManyParams)
 	return dto, count, nil
 }
 
-func (st *ProductStatus) FindAll(ctx context.Context) ([]model.ProductStatus, error) {
-	const op = "sqlitedb.ProductStatus.FindAll"
-
-	if len(st.cache) > 0 {
-		return st.cache, nil
-	}
-
-	query, args := st.getQuerySelectBase().BuildWithFlavor(sqlbuilder.SQLite)
-	rows, err := runSelect[model.ProductStatus](ctx, st.db, query, args)
-
-	st.cache = rows
-	return rows, utils.WrapIfErr(op, err)
-}
-
 func (st *ProductStatus) getQueryGetDropdown(search string, max int) (string, []any) {
 	sb := sqlbuilder.Select("id", "name as text", "color")
 	sb.From("product_status")
@@ -134,7 +119,6 @@ func (st *ProductStatus) UpsertMany(ctx context.Context, dtos []model.ProductSta
 		return 0, utils.WrapIfErr(op, err)
 	}
 
-	st.cache = st.cache[:0] // invalidate cache
 	return affected, nil
 }
 
@@ -148,7 +132,6 @@ func (st *ProductStatus) DeleteManyByID(ctx context.Context, ids []int64) (int64
 	const op = "sqlitedb.ProductStatus.DeleteManyByID"
 	query, args := st.getQueryDeleteManyByID(ids)
 	affected, err := runExecAffected(ctx, st.db, query, args)
-	st.cache = st.cache[:0] // invalidate cache
 	return affected, utils.WrapIfErr(op, err)
 }
 
@@ -173,6 +156,5 @@ func (st *ProductStatus) UpdatePositions(ctx context.Context, orderedIDs []int64
 		return 0, utils.WrapIfErr(op, err)
 	}
 
-	st.cache = st.cache[:0] // invalidate cache
 	return affected, nil
 }
