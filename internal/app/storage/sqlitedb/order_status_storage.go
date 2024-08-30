@@ -24,6 +24,7 @@ func (st *OrderStatus) getQuerySelectBase(extra ...string) *sqlbuilder.SelectBui
 		"os.id",
 		"os.name",
 		"os.color",
+		"os.in_counter",
 		"coalesce(o.count, 0) as related_orders",
 	}
 
@@ -88,8 +89,8 @@ func (st *OrderStatus) GetDropdown(ctx context.Context, search string, max int) 
 
 func (st *OrderStatus) getQueryInsert(dto model.OrderStatus) (string, []any) {
 	ib := sqlbuilder.InsertInto("order_status")
-	ib.Cols("name", "color")
-	ib.Values(dto.Name, dto.Color)
+	ib.Cols("name", "color", "in_counter")
+	ib.Values(dto.Name, dto.Color, dto.InCounter)
 	return ib.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
@@ -99,6 +100,7 @@ func (st *OrderStatus) getQueryUpdateByID(dto model.OrderStatus) (string, []any)
 	ub.SetMore("updated_at = unixepoch()")
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "Name", "name", dto.Name)
 	storage.ApplyUpdateSetPartial(ub, dto.Partial, "Color", "color", dto.Color)
+	storage.ApplyUpdateSetPartial(ub, dto.Partial, "InCounter", "in_counter", dto.InCounter)
 	return ub.BuildWithFlavor(sqlbuilder.SQLite)
 }
 

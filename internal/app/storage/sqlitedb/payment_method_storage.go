@@ -67,13 +67,6 @@ func (st *PaymentMethod) FindMany(ctx context.Context, q storage.FindManyParams)
 	return dto, count, nil
 }
 
-func (st *PaymentMethod) FindAll(ctx context.Context) ([]model.PaymentMethod, error) {
-	const op = "sqlitedb.PaymentMethod.FindAll"
-	query, args := st.getQuerySelectBase().BuildWithFlavor(sqlbuilder.SQLite)
-	rows, err := runSelect[model.PaymentMethod](ctx, st.db, query, args)
-	return rows, utils.WrapIfErr(op, err)
-}
-
 func (st *PaymentMethod) getQueryGetDropdown(search string, max int) (string, []any) {
 	sb := sqlbuilder.Select("id", "name as text")
 	sb.From("payment_method")

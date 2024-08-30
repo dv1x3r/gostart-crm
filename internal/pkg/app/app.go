@@ -133,11 +133,23 @@ func New() (*App, error) {
 	supplierService := service.NewSupplier(supplierStorage)
 	supplierEndpoint := endpoint.NewSupplier(supplierService)
 
+	orderStorage := sqlitedb.NewOrder(a.db)
+	orderService := service.NewOrder(orderStorage)
+
+	orderStatusStorage := sqlitedb.NewOrderStatus(a.db)
+	orderStatusService := service.NewOrderStatus(orderStatusStorage)
+
+	paymentMethodStorage := sqlitedb.NewPaymentMethod(a.db)
+	paymentMethodService := service.NewPaymentMethod(paymentMethodStorage)
+
+	orderEndpoint := endpoint.NewOrder(orderService, orderStatusService, paymentMethodService)
+
 	adminEndpoint := endpoint.NewAdmin(
 		staticVersion,
 		attributeEndpoint,
 		brandEndpoint,
 		supplierEndpoint,
+		orderEndpoint,
 	)
 
 	adminEndpoint.Register(a.echo)

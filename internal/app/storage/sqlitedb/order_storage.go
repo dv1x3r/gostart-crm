@@ -108,12 +108,12 @@ func (st *Order) getQueryFindManyLinesByOrderID(orderID int64, q storage.FindMan
 		"product_code as code",
 		"product_snapshot as product",
 		"quantity",
-		"price as price",
+		"price",
 		"price * quantity as total",
 		"sum(price * quantity) over () as summary",
 		"count(*) over () as count",
 	).From("order_line")
-	sb.OrderBy("price_private desc, quantity desc")
+	sb.OrderBy("price desc, quantity desc")
 	sb.Where(sb.EQ("order_id", orderID))
 	storage.ApplyLimitOffset(sb, q.Limit, q.Offset)
 	return sb.BuildWithFlavor(sqlbuilder.SQLite)
