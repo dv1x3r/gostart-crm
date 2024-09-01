@@ -194,9 +194,8 @@ func (st *Product) getQueryUpdateByID(dto model.Product) (string, []any) {
 }
 
 func (st *Product) getQueryDeleteInvalidAttributes(productID int64) (string, []any) {
-	sb := sqlbuilder.Select("atv.id")
-	sb.From("attribute_value as atv")
-	sb.JoinWithOption(sqlbuilder.InnerJoin, "attribute_set as ats", "ats.id = atv.attribute_set_id")
+	sb := sqlbuilder.Select("ats.id")
+	sb.From("attribute_set as ats")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "attribute_group as atg", "atg.id = ats.attribute_group_id")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c", "c.attribute_group_id = atg.id")
 	sb.JoinWithOption(sqlbuilder.InnerJoin, "product as p", "p.category_id = c.id")
@@ -204,7 +203,7 @@ func (st *Product) getQueryDeleteInvalidAttributes(productID int64) (string, []a
 
 	dlb := sqlbuilder.DeleteFrom("product_attribute")
 	dlb.Where(dlb.EQ("product_id", productID))
-	dlb.Where(dlb.NotIn("attribute_value_id", sb))
+	dlb.Where(dlb.NotIn("attribute_set_id", sb))
 	return dlb.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
