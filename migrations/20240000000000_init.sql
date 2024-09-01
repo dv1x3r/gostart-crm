@@ -50,7 +50,6 @@ create table category (
     [slug] text not null,
     [name] text not null,
     [icon] text,
-    [no_tax] integer not null,
     [is_published] integer not null,
     [attribute_group_id] integer references attribute_group(id) on delete restrict,
     [parent_id] integer references category(id) on delete restrict,
