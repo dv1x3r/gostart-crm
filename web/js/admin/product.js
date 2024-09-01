@@ -29,7 +29,6 @@ export function createProductGrid() {
     },
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
-      { field: 'thumbnail_url', text: x => x.field ? '' : 'Image', size: '36px', render: 'thumb-slim', hidden: true },
       { field: 'code', text: 'Code', size: '100px', render: 'safe', sortable: true, clipboardCopy: true },
       {
         field: 'name', text: 'Name', size: '385px', render: 'hover', sortable: true,
@@ -109,8 +108,7 @@ async function openProductPageTab(event) {
 function createProductPageLayout(id) {
   const tabID = Date.now()
   const attributeGrid = createProductAttributeGrid(tabID, id)
-  const mediaGrid = createProductMediaGrid(tabID, id)
-  const detailsForm = createProductDetailsForm(tabID, id, attributeGrid, mediaGrid)
+  const detailsForm = createProductDetailsForm(tabID, id, attributeGrid)
 
   return new w2layout({
     name: `productPageLayout_${tabID}`,
@@ -120,17 +118,15 @@ function createProductPageLayout(id) {
       await event.complete
       detailsForm.render(`#product-details-form-${tabID}`)
       attributeGrid.render(`#product-attribute-grid-${tabID}`)
-      mediaGrid.render(`#product-media-grid-${tabID}`)
     },
     onDestroy: () => {
       detailsForm.destroy()
       attributeGrid.destroy()
-      mediaGrid.destroy()
     }
   })
 }
 
-function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
+function createProductDetailsForm(tabID, id, attributeGrid) {
   const selectedCategory = category.categorySidebar.get(category.categorySidebar.selected)
   const detailsForm = new w2form({
     name: `productDetailsForm_${tabID}`,
@@ -140,26 +136,17 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
     style: 'height:auto;',
     fields: [
       { field: 'code', html: { label: 'Code', span: 3, column: 0, group: 'Details', attr: 'style="width: 100%; min-width:203px;"' }, type: 'text', required: true },
-      { field: 'name_lv', html: { label: 'Name LV', span: 3, column: 0, attr: 'style="width: 100%; min-width:203px;"' }, type: 'text', required: true },
-      { field: 'name_ru', html: { label: 'Name RU', span: 3, column: 0, attr: 'style="width: 100%; min-width:203px;"' }, type: 'text' },
-      { field: 'category', html: { label: 'Category', span: 3, column: 1, group: 'Catalog', attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/category/dropdown?leafs=1'), required: true },
-      { field: 'supplier', html: { label: 'Supplier', span: 3, column: 1, attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/supplier/dropdown'), required: true },
-      { field: 'brand', html: { label: 'Brand', span: 3, column: 1, attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/brand/dropdown'), required: true },
-      { field: 'status', html: { label: 'Status', span: 4, column: 2, group: 'Status' }, type: 'list', options: utils.getSelectOptions('/product/status/dropdown') },
-      { field: 'status_expire_at', html: { label: 'Expire at', span: 4, column: 2, attr: 'autocomplete="off"', }, type: 'date' },
-      { field: 'is_published', html: { label: 'Is Published', span: 4, column: 2, attr: 'style="height: 21px"' }, type: 'checkbox' },
-      { field: 'quantity', html: { label: 'Quantity', span: 4, column: 2, group: 'Quantity and Prices' }, type: 'float', options: { precision: 2 }, required: true },
-      { field: 'input_no_tax', html: { label: 'Input No Tax', span: 4, column: 2 }, type: 'float', options: { precision: 2 } },
-      { field: 'fixed_actual', html: { label: 'Fixed Actual', span: 4, column: 2 }, type: 'float', options: { precision: 2 } },
-      { field: 'fixed_old', html: { label: 'Fixed Old', span: 4, column: 2 }, type: 'float', options: { precision: 2 } },
-      { field: 'web_actual', html: { label: 'Web Actual', span: 4, column: 2, attr: 'readonly' }, type: 'float', options: { precision: 2 } },
-      { field: 'web_no_tax', html: { label: 'Web No Tax', span: 4, column: 2, attr: 'readonly' }, type: 'float', options: { precision: 2 } },
-      { field: 'created_at', html: { label: 'Created at', span: 4, column: 2, attr: 'readonly', group: 'System' }, type: 'datetime' },
-      { field: 'updated_at', html: { label: 'Updated at', span: 4, column: 2, attr: 'readonly' }, type: 'datetime' },
-      { html: { html: `<div id="product-attribute-grid-${tabID}" style="height: 780px;"></div>`, span: -1, column: 0, group: 'Attributes' }, type: 'html' },
-      { html: { html: `<div id="product-media-grid-${tabID}" style="height: 369px;"></div>`, span: -1, column: 1, group: 'Media' }, type: 'html' },
-      { field: 'description_lv', html: { label: '', span: 0, column: 1, group: 'Description LV', attr: 'style="width: 100%; height: 338px; resize: none;"' }, type: 'textarea' },
-      { field: 'description_ru', html: { label: '', span: 0, column: 2, group: 'Description RU', attr: 'style="width: 100%; height: 338px; resize: none;"' }, type: 'textarea' },
+      { field: 'name', html: { label: 'Name', span: 3, column: 0, attr: 'style="width: 100%; min-width:203px;"' }, type: 'text', required: true },
+      { field: 'category', html: { label: 'Category', span: 3, column: 0, group: 'Catalog', attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/category/dropdown?leafs=1'), required: true },
+      { field: 'supplier', html: { label: 'Supplier', span: 3, column: 0, attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/supplier/dropdown'), required: true },
+      { field: 'brand', html: { label: 'Brand', span: 3, column: 0, attr: 'style="width: 100%; min-width:203px;"' }, type: 'list', options: utils.getSelectOptions('/brand/dropdown'), required: true },
+      { field: 'quantity', html: { label: 'Quantity', span: 4, column: 1, group: 'Quantity and Prices' }, type: 'float', options: { precision: 2 }, required: true },
+      { field: 'price', html: { label: 'Price', span: 4, column: 1 }, type: 'float', options: { precision: 2 } },
+      { field: 'status', html: { label: 'Status', span: 4, column: 1, group: 'Status' }, type: 'list', options: utils.getSelectOptions('/product/status/dropdown') },
+      { field: 'status_expire_at', html: { label: 'Expire at', span: 4, column: 1, attr: 'autocomplete="off"', }, type: 'date' },
+      { field: 'is_published', html: { label: 'Is Published', span: 4, column: 1, attr: 'style="height: 21px"' }, type: 'checkbox' },
+      { html: { html: `<div id="product-attribute-grid-${tabID}" style="height: 300px;"></div>`, span: -1, column: 0, group: 'Attributes' }, type: 'html' },
+      { field: 'description', html: { label: '', span: 0, column: 1, group: 'Description', attr: 'style="width: 100%; height: 300px; resize: none;"' }, type: 'textarea' },
     ],
     record: {
       category: selectedCategory.nodes.length > 0 ? null : {
@@ -170,7 +157,6 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
     },
     toolbar: {
       items: [
-        { id: 'save-close', type: 'button', text: 'Save and close', icon: 'fa-regular fa-floppy-disk', onClick: async () => await detailsForm._saveAndClose() },
         { id: 'save', type: 'button', text: 'Save', icon: 'fa-regular fa-floppy-disk', onClick: async () => await detailsForm._save() },
         { id: 'reset', type: 'button', text: 'Refresh', icon: 'fa-solid fa-rotate-left', onClick: async () => await detailsForm._reset() },
         { id: 'spacer', type: 'spacer' },
@@ -182,17 +168,11 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
       // save the attribute_group_id to compare it on next save
       event.owner._attribute_group_id = event.owner.record.category.attribute_group_id
     },
-    _saveAndClose: async () => {
-      await detailsForm._save()
-      const fn = x => x.component.name.startsWith('productPageLayout_') && x.component._detailsForm.recid == detailsForm.recid
-      admin.tabManager.CloseTab(fn)
-    },
     _save: async () => {
       const _saveDetailsForm = async () => {
         const res = await detailsForm.save()
         detailsForm.recid = res.recid
         attributeGrid.routeData.productID = res.recid
-        mediaGrid.routeData.productID = res.recid
         await detailsForm.reload()
 
         // set tab name based on code and name
@@ -212,18 +192,15 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
         }).yes(async () => {
           await _saveDetailsForm()
           await attributeGrid.reload()
-          await mediaGrid.reload()
         })
       } else {
         // save attribute grid only if record was already in the db, with attribute group and there are changes
         if (detailsForm.recid != null && detailsForm._attribute_group_id != null && attributeGrid.getChanges().length) {
           await _saveDetailsForm()
           await attributeGrid.save()
-          await mediaGrid.reload()
         } else {
           await _saveDetailsForm()
           await attributeGrid.reload()
-          await mediaGrid.reload()
         }
       }
     },
@@ -237,12 +214,10 @@ function createProductDetailsForm(tabID, id, attributeGrid, mediaGrid) {
           if (detailsForm.recid == null) {
             detailsForm.clear()
             await attributeGrid.reload()
-            await mediaGrid.reload()
             utils.fetchShowSuccess('Form has been cleared!')
           } else {
             await detailsForm.reload()
             await attributeGrid.reload()
-            await mediaGrid.reload()
             utils.fetchShowSuccess('Form has been restored to the initial state!')
           }
         })
@@ -298,68 +273,6 @@ function createProductAttributeGrid(tabID, id) {
     },
     onDelete: event => event.preventDefault(),
     onError: _ => w2utils.notify(`Failed to save new attributes, please revalidate`, { timeout: 4000, error: true }),
-  })
-}
-
-function createProductMediaGrid(tabID, id) {
-  return new w2grid({
-    name: `productMediaGrid_${tabID}`,
-    url: {
-      get: '/product/:productID/media',
-      remove: '/product/media/delete',
-    },
-    httpHeaders: { 'X-CSRF-Token': utils.getCsrfToken() },
-    routeData: { productID: id ?? 0 },
-    recid: 'id',
-    recordHeight: 80,
-    reorderRows: true,
-    show: {
-      footer: false,
-      toolbar: true,
-      toolbarAdd: true,
-      toolbarEdit: false,
-      toolbarDelete: true,
-      toolbarSave: false,
-      toolbarSearch: false,
-      toolbarReload: false,
-    },
-    columns: [
-      { field: 'id', text: 'ID', size: '60px', hidden: true },
-      { field: 'name', text: 'File name', size: '100%', min: '100px', render: 'safe', clipboardCopy: row => utils.getURI(`/media/${row.file_url}`) },
-      { field: 'thumbnail_url', text: 'Thumbnail', size: '80px', render: 'thumb' },
-    ],
-    onAdd: async event => {
-      const inputFile = document.createElement('input')
-      inputFile.type = 'file';
-      inputFile.onchange = async ev => {
-        const formData = new FormData()
-        formData.append('file', ev.target.files[0]);
-        formData.append('productID', event.owner.routeData.productID);
-        const res = await fetch(`/product/media/upload`, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-Token': utils.getCsrfToken(),
-          },
-          body: formData,
-        })
-        if (res.status != 200) {
-          await utils.fetchShowError('Failed to upload the file', res)
-          return
-        }
-        utils.fetchShowSuccess('File has been successfully uploaded!')
-        await event.owner.reload()
-      }
-      inputFile.click()
-    },
-    onDelete: async event => await utils.gridShowDeleted(event),
-    onReorderRow: async event => await utils.gridPostReorderRow(event, `/product/media/reorder`),
-    onRequest: async event => {
-      if (event.owner.routeData.productID == 0) {
-        event.owner.toolbar.disable('w2ui-add')
-      } else {
-        event.owner.toolbar.enable('w2ui-add')
-      }
-    },
   })
 }
 

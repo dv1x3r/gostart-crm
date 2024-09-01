@@ -125,19 +125,6 @@ create table product_attribute (
 
 create index product_attribute_ix on product_attribute(attribute_set_id, product_id, attribute_value_id); -- Filter.getQueryFindAttributeFacets
 
-create table product_media (
-    [id] integer primary key autoincrement,
-    [created_at] integer not null default (unixepoch()),
-    [updated_at] integer not null default (unixepoch()),
-    [deleted_at] integer,
-    [product_id] integer not null references product(id) on delete cascade,
-    [name] text not null,
-    [position] integer not null default 0,
-    [file] blob not null,
-    [thumbnail] blob,
-    unique ([product_id], [name] collate nocase)
-) strict;
-
 create table payment_method (
     [id] integer primary key autoincrement,
     [created_at] integer not null default (unixepoch()),
@@ -201,7 +188,6 @@ drop table supplier;
 drop table product_status;
 drop table product;
 drop table product_attribute;
-drop table product_media;
 drop table payment_method;
 drop table order_status;
 drop table order_header;

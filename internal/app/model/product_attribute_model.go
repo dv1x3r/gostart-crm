@@ -11,8 +11,10 @@ type ProductAttributeValueEmbed struct {
 }
 
 type ProductAttribute struct {
-	AttributeSetID   int64  `json:"id" db:"id"`
-	AttributeSetName string `json:"name" db:"name"`
+	AttributeSetID       int64  `json:"id" db:"id"`
+	AttributeSetName     string `json:"name" db:"name"`
+	AttributeSetInBox    bool   `json:"in_box" db:"in_box"`
+	AttributeSetInFilter bool   `json:"in_filter" db:"in_filter"`
 
 	ProductAttributeValueEmbed `json:"value"`
 

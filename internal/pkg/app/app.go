@@ -116,13 +116,10 @@ func New() (*App, error) {
 
 	attributeGroupStorage := sqlitedb.NewAttributeGroup(a.db)
 	attributeGroupService := service.NewAttributeGroup(attributeGroupStorage)
-
 	attributeSetStorage := sqlitedb.NewAttributeSet(a.db)
 	attributeSetService := service.NewAttributeSet(attributeSetStorage)
-
 	attributeValueStorage := sqlitedb.NewAttributeValue(a.db)
 	attributeValueService := service.NewAttributeValue(attributeValueStorage)
-
 	attributeEndpoint := endpoint.NewAttribute(attributeGroupService, attributeSetService, attributeValueService)
 
 	brandStorage := sqlitedb.NewBrand(a.db)
@@ -137,15 +134,18 @@ func New() (*App, error) {
 	supplierService := service.NewSupplier(supplierStorage)
 	supplierEndpoint := endpoint.NewSupplier(supplierService)
 
+	productStorage := sqlitedb.NewProduct(a.db)
+	productService := service.NewProduct(productStorage)
+	productStatusStorage := sqlitedb.NewProductStatus(a.db)
+	productStatusService := service.NewProductStatus(productStatusStorage)
+	productEndpoint := endpoint.NewProduct(productService, productStatusService)
+
 	orderStorage := sqlitedb.NewOrder(a.db)
 	orderService := service.NewOrder(orderStorage)
-
 	orderStatusStorage := sqlitedb.NewOrderStatus(a.db)
 	orderStatusService := service.NewOrderStatus(orderStatusStorage)
-
 	paymentMethodStorage := sqlitedb.NewPaymentMethod(a.db)
 	paymentMethodService := service.NewPaymentMethod(paymentMethodStorage)
-
 	orderEndpoint := endpoint.NewOrder(orderService, orderStatusService, paymentMethodService)
 
 	adminEndpoint := endpoint.NewAdmin(
@@ -154,6 +154,7 @@ func New() (*App, error) {
 		brandEndpoint,
 		categoryEndpoint,
 		supplierEndpoint,
+		productEndpoint,
 		orderEndpoint,
 	)
 

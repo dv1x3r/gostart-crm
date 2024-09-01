@@ -13,6 +13,7 @@ type Admin struct {
 	brandEndpoint     *Brand
 	categoryEndpoint  *Category
 	supplierEndpoint  *Supplier
+	productEndpoint   *Product
 	orderEndpoint     *Order
 }
 
@@ -22,6 +23,7 @@ func NewAdmin(
 	brandEndpoint *Brand,
 	categoryEndpoint *Category,
 	supplierEndpoint *Supplier,
+	productEndpoint *Product,
 	orderEndpoint *Order,
 
 ) *Admin {
@@ -31,6 +33,7 @@ func NewAdmin(
 		brandEndpoint:     brandEndpoint,
 		categoryEndpoint:  categoryEndpoint,
 		supplierEndpoint:  supplierEndpoint,
+		productEndpoint:   productEndpoint,
 		orderEndpoint:     orderEndpoint,
 	}
 }
@@ -50,5 +53,6 @@ func (ep *Admin) Register(c *echo.Echo) {
 	ep.brandEndpoint.Register(c.Group("/brand"))
 	ep.categoryEndpoint.Register(c.Group("/category"))
 	ep.supplierEndpoint.Register(c.Group("/supplier"))
+	ep.productEndpoint.Register(c.Group("/product"))
 	ep.orderEndpoint.Register(c.Group("/order"))
 }

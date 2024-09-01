@@ -47,12 +47,8 @@ type Product struct {
 	ProductBrandEmbed    `json:"brand"`
 	ProductStatusEmbed   `json:"status"`
 
-	Partial        map[string]struct{} `json:"-" db:"-"`
-	Media          []ProductMedia      `json:"-" db:"-"`
-	MediaImages    []ProductMedia      `json:"-" db:"-"`
-	MediaDocuments []ProductMedia      `json:"-" db:"-"`
-	Attributes     []ProductAttribute  `json:"attributes,omitempty" db:"-"`
-	ThumbnailURL   *string             `json:"thumbnail_url,omitempty" db:"-"`
+	Partial    map[string]struct{} `json:"-" db:"-"`
+	Attributes []ProductAttribute  `json:"attributes,omitempty" db:"-"`
 }
 
 func (dto *Product) Slugify() string {

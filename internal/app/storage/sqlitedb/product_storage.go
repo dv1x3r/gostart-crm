@@ -2,8 +2,6 @@ package sqlitedb
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 
 	"gostart-crm/internal/app/model"
 	"gostart-crm/internal/app/storage"
@@ -116,6 +114,9 @@ func (st *Product) FindMany(ctx context.Context, q storage.FindManyParams, categ
 	dto, count := make([]model.Product, len(rows)), int64(0)
 	for i, row := range rows {
 		dto[i], count = row.Product, row.Count
+		if err = st.fillDtoDetails(ctx, &dto[i]); err != nil {
+			return dto, count, utils.WrapIfErr(op, err)
+		}
 	}
 
 	return dto, count, nil
@@ -139,6 +140,13 @@ func (st *Product) GetByID(ctx context.Context, id int64) (model.Product, bool, 
 	}
 
 	return row, true, nil
+}
+
+func (st *Product) fillDtoDetails(ctx context.Context, dto *model.Product) error {
+	const op = "sqlitedb.Product.fillDtoDetails"
+	attributes, _, err := st.FindManyAttributesByProductID(ctx, dto.ID, storage.FindManyParams{})
+	dto.Attributes = attributes
+	return utils.WrapIfErr(op, err)
 }
 
 func (st *Product) getQueryInsert(dto model.Product) (string, []any) {
@@ -263,123 +271,6 @@ func (st *Product) DeleteManyByID(ctx context.Context, ids []int64) (int64, erro
 	query, args := st.getQueryDeleteManyByID(ids)
 	affected, err := runExecAffected(ctx, st.db, query, args)
 	return affected, utils.WrapIfErr(op, err)
-}
-
-func (st *Product) getQueryFindManyMediaByProductID(productID int64, q storage.FindManyParams) (string, []any) {
-	sb := sqlbuilder.Select("id", "product_id", "name", "iif(thumbnail is null, 0, 1) as has_thumbnail", "count(*) over () as count")
-	sb.From("product_media")
-	sb.Where(sb.EQ("product_id", productID))
-	sb.OrderBy("position", "id DESC")
-	storage.ApplyLimitOffset(sb, q.Limit, q.Offset)
-	return sb.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) FindManyMediaByProductID(ctx context.Context, productID int64, q storage.FindManyParams) ([]model.ProductMedia, int64, error) {
-	const op = "sqlitedb.Product.FindManyMediaByProductID"
-	folderName := fmt.Sprintf("product_%d", productID)
-
-	type LocalResult struct {
-		model.ProductMedia
-		Count int64 `db:"count"`
-	}
-
-	query, args := st.getQueryFindManyMediaByProductID(productID, q)
-	rows, err := runSelect[LocalResult](ctx, st.db, query, args)
-	if err != nil {
-		return nil, 0, utils.WrapIfErr(op, err)
-	}
-
-	dto, count := make([]model.ProductMedia, len(rows)), int64(0)
-	for i, row := range rows {
-		dto[i], count = row.ProductMedia, row.Count
-		dto[i].FileURL = folderName + "/" + url.PathEscape(row.Name)
-
-		if dto[i].HasThumbnail {
-			thumbnailURL := folderName + "/" + url.PathEscape(row.Name+".tb.jpg")
-			dto[i].ThumbnailURL = &thumbnailURL
-		}
-	}
-
-	return dto, count, nil
-}
-
-func (st *Product) getQueryFindAllMediaByID(ids []int64) (string, []any) {
-	sb := sqlbuilder.Select("id", "product_id", "name")
-	sb.From("product_media")
-	sb.Where(sb.In("id", sqlbuilder.List(ids)))
-	return sb.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) FindAllMediaByID(ctx context.Context, ids []int64) ([]model.ProductMedia, error) {
-	const op = "sqlitedb.Product.FindAllMediaByID"
-	query, args := st.getQueryFindAllMediaByID(ids)
-	rows, err := runSelect[model.ProductMedia](ctx, st.db, query, args)
-	return rows, utils.WrapIfErr(op, err)
-}
-
-func (st *Product) getQueryGetMediaByID(id int64) (string, []any) {
-	sb := sqlbuilder.Select("id", "product_id", "name")
-	sb.From("product_media")
-	sb.Where(sb.EQ("id", id))
-	return sb.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) GetMediaByID(ctx context.Context, id int64) (model.ProductMedia, bool, error) {
-	const op = "sqlitedb.Product.GetMediaByID"
-	query, args := st.getQueryGetMediaByID(id)
-	row, ok, err := runGet[model.ProductMedia](ctx, st.db, query, args)
-	return row, ok, utils.WrapIfErr(op, err)
-}
-
-func (st *Product) getQueryInsertMedia(dto model.ProductMedia) (string, []any) {
-	ib := sqlbuilder.InsertInto("product_media")
-	ib.Cols("product_id", "name", "file", "thumbnail")
-	ib.Values(dto.ProductID, dto.Name, dto.File, dto.Thumbnail)
-	return ib.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) InsertMedia(ctx context.Context, dto model.ProductMedia) (int64, error) {
-	const op = "sqlitedb.Product.InsertMedia"
-	query, args := st.getQueryInsertMedia(dto)
-	id, err := runExecInsert(ctx, st.db, query, args)
-	return id, utils.WrapIfErr(op, err)
-}
-
-func (st *Product) getQueryDeleteManyMediaByID(ids []int64) (string, []any) {
-	dlb := sqlbuilder.DeleteFrom("product_media")
-	dlb.Where(dlb.In("id", sqlbuilder.List(ids)))
-	return dlb.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) DeleteManyMediaByID(ctx context.Context, ids []int64) (int64, error) {
-	const op = "sqlitedb.Product.DeleteManyMediaByID"
-	query, args := st.getQueryDeleteManyMediaByID(ids)
-	affected, err := runExecAffected(ctx, st.db, query, args)
-	return affected, utils.WrapIfErr(op, err)
-}
-
-func (st *Product) getQueryUpdateMediaPosition(id int64, position int64) (string, []any) {
-	ub := sqlbuilder.Update("product_media")
-	ub.Where(ub.EQ("id", id))
-	ub.SetMore("updated_at = unixepoch()")
-	ub.SetMore(ub.EQ("position", position))
-	return ub.BuildWithFlavor(sqlbuilder.SQLite)
-}
-
-func (st *Product) UpdateMediaPositions(ctx context.Context, orderedIDs []int64) (int64, error) {
-	const op = "sqlitedb.Product.UpdateMediaPositions"
-
-	queries, args := make([]string, len(orderedIDs)), make([][]any, len(orderedIDs))
-	for i, id := range orderedIDs {
-		queries[i], args[i] = st.getQueryUpdateMediaPosition(id, int64(i))
-	}
-
-	affected, err := runExecAffectedRangeNewTx(ctx, st.db, queries, args)
-	if err != nil {
-		return 0, utils.WrapIfErr(op, err)
-	}
-
-	return affected, nil
 }
 
 func (st *Product) getQueryFindManyAttributesByProductID(productID int64, q storage.FindManyParams) (string, []any) {
