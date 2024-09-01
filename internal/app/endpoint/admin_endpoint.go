@@ -11,6 +11,7 @@ type Admin struct {
 	staticVersion     string
 	attributeEndpoint *Attribute
 	brandEndpoint     *Brand
+	categoryEndpoint  *Category
 	supplierEndpoint  *Supplier
 	orderEndpoint     *Order
 }
@@ -19,6 +20,7 @@ func NewAdmin(
 	staticVersion string,
 	attributeEndpoint *Attribute,
 	brandEndpoint *Brand,
+	categoryEndpoint *Category,
 	supplierEndpoint *Supplier,
 	orderEndpoint *Order,
 
@@ -27,6 +29,7 @@ func NewAdmin(
 		staticVersion:     staticVersion,
 		attributeEndpoint: attributeEndpoint,
 		brandEndpoint:     brandEndpoint,
+		categoryEndpoint:  categoryEndpoint,
 		supplierEndpoint:  supplierEndpoint,
 		orderEndpoint:     orderEndpoint,
 	}
@@ -45,6 +48,7 @@ func (ep *Admin) Register(c *echo.Echo) {
 
 	ep.attributeEndpoint.Register(c.Group("/attribute"))
 	ep.brandEndpoint.Register(c.Group("/brand"))
+	ep.categoryEndpoint.Register(c.Group("/category"))
 	ep.supplierEndpoint.Register(c.Group("/supplier"))
 	ep.orderEndpoint.Register(c.Group("/order"))
 }

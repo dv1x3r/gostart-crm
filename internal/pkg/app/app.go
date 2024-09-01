@@ -129,6 +129,10 @@ func New() (*App, error) {
 	brandService := service.NewBrand(brandStorage)
 	brandEndpoint := endpoint.NewBrand(brandService)
 
+	categoryStorage := sqlitedb.NewCategory(a.db)
+	categoryService := service.NewCategory(categoryStorage)
+	categoryEndpoint := endpoint.NewCategory(categoryService)
+
 	supplierStorage := sqlitedb.NewSupplier(a.db)
 	supplierService := service.NewSupplier(supplierStorage)
 	supplierEndpoint := endpoint.NewSupplier(supplierService)
@@ -148,6 +152,7 @@ func New() (*App, error) {
 		staticVersion,
 		attributeEndpoint,
 		brandEndpoint,
+		categoryEndpoint,
 		supplierEndpoint,
 		orderEndpoint,
 	)
