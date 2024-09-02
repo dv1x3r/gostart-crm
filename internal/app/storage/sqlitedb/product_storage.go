@@ -318,11 +318,10 @@ func (st *Product) FindManyAttributesByProductID(ctx context.Context, productID 
 }
 
 func (st *Product) getQueryUpsertAttribute(productID int64, dto model.ProductAttribute) (string, []any) {
-	ib := sqlbuilder.InsertInto("product_attribute")
+	ib := sqlbuilder.ReplaceInto("product_attribute")
 	ib.Cols("product_id", "attribute_set_id", "attribute_value_id")
 	ib.Values(productID, dto.AttributeSetID, dto.AttributeValueID)
-	b := sqlbuilder.Build("$? on conflict do update set attribute_value_id = excluded.attribute_value_id, updated_at = unixepoch()", ib)
-	return b.BuildWithFlavor(sqlbuilder.SQLite)
+	return ib.BuildWithFlavor(sqlbuilder.SQLite)
 }
 
 func (st *Product) UpsertManyAttributes(ctx context.Context, productID int64, dtos []model.ProductAttribute) (int64, error) {
