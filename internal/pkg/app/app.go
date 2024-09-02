@@ -160,7 +160,7 @@ func New() (*App, error) {
 
 	adminEndpoint.Register(a.echo.Group(""))
 
-	clientEndpoint := endpoint.NewClient(staticVersion)
+	clientEndpoint := endpoint.NewClient(staticVersion, categoryService)
 	clientEndpoint.Register(a.echo.Group("/client"))
 
 	return a, nil

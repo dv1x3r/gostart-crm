@@ -2,21 +2,24 @@ package endpoint
 
 import (
 	"gostart-crm/internal/app/component"
+	"gostart-crm/internal/app/service"
 	"gostart-crm/internal/app/utils"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Client struct {
-	staticVersion string
+	staticVersion   string
+	categoryService *service.Category
 }
 
 func NewClient(
 	staticVersion string,
-
+	categoryService *service.Category,
 ) *Client {
 	return &Client{
-		staticVersion: staticVersion,
+		staticVersion:   staticVersion,
+		categoryService: categoryService,
 	}
 }
 
@@ -25,16 +28,20 @@ func (ep *Client) Register(g *echo.Group) {
 }
 
 func (ep *Client) GetRoot(c echo.Context) error {
-	// ctx := c.Request().Context()
-	// var params component.MainPageParams
-	// var err error
+	ctx := c.Request().Context()
+	var params component.ClientMainPageParams
+	var err error
 
-	cp := component.CoreParams{
+	params.Core = component.CoreParams{
 		DebugMode:     utils.GetConfig().Debug,
 		CsrfToken:     c.Get("csrf").(string),
 		StaticVersion: ep.staticVersion,
 		Title:         "Client | Demo CRM",
 	}
 
-	return render(c, component.Client(cp))
+	if params.CategoryTree, err = ep.categoryService.FetchTree(ctx); err != nil {
+		return err
+	}
+
+	return render(c, component.ClientMainPage(params))
 }
