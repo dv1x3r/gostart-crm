@@ -38,8 +38,8 @@ func NewAdmin(
 	}
 }
 
-func (ep *Admin) Register(c *echo.Echo) {
-	c.GET("/", func(c echo.Context) error {
+func (ep *Admin) Register(g *echo.Group) {
+	g.GET("", func(c echo.Context) error {
 		cp := component.CoreParams{
 			DebugMode:     utils.GetConfig().Debug,
 			CsrfToken:     c.Get("csrf").(string),
@@ -49,10 +49,10 @@ func (ep *Admin) Register(c *echo.Echo) {
 		return render(c, component.Admin(cp))
 	})
 
-	ep.attributeEndpoint.Register(c.Group("/attribute"))
-	ep.brandEndpoint.Register(c.Group("/brand"))
-	ep.categoryEndpoint.Register(c.Group("/category"))
-	ep.supplierEndpoint.Register(c.Group("/supplier"))
-	ep.productEndpoint.Register(c.Group("/product"))
-	ep.orderEndpoint.Register(c.Group("/order"))
+	ep.attributeEndpoint.Register(g.Group("/attribute"))
+	ep.brandEndpoint.Register(g.Group("/brand"))
+	ep.categoryEndpoint.Register(g.Group("/category"))
+	ep.supplierEndpoint.Register(g.Group("/supplier"))
+	ep.productEndpoint.Register(g.Group("/product"))
+	ep.orderEndpoint.Register(g.Group("/order"))
 }
