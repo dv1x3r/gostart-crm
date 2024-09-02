@@ -2,9 +2,6 @@ package sqlitedb
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"regexp"
 
 	"gostart-crm/internal/app/model"
 	"gostart-crm/internal/app/storage"
@@ -276,15 +273,7 @@ func (st *Category) insert(ctx context.Context, tx *sqlx.Tx, dto model.Category)
 		return 0, utils.WrapIfErr(op, err)
 	}
 
-	// step 1. update mp_path = parent path + new id
-	query, args = st.getQueryUpdatePath(id, dto.ParentID)
-	if _, err = runExecAffected(ctx, tx, query, args); err != nil {
-		return 0, utils.WrapIfErr(op, err)
-	}
-
-	// step 2. update mp_level = count of '.' in the path
-	query, args = st.getQueryUpdateLevel(id)
-	if _, err = runExecAffected(ctx, tx, query, args); err != nil {
+	if err := st.updateMaterializedPath(ctx, tx, id, dto.ParentID); err != nil {
 		return 0, utils.WrapIfErr(op, err)
 	}
 
@@ -301,6 +290,13 @@ func (st *Category) update(ctx context.Context, tx *sqlx.Tx, dto model.Category)
 	}
 
 	if _, ok := dto.Partial["CategoryParentEmbed.ParentID"]; ok {
+		ok, err := st.validateCategoryTree(ctx, tx, dto.ID, make(map[int64]struct{}))
+		if err != nil {
+			return 0, utils.WrapIfErr(op, err)
+		} else if !ok {
+			return 0, utils.WrapIfErr(op, storage.ErrInvalidTreeCircular)
+		}
+
 		if err := st.updateMaterializedPath(ctx, tx, dto.ID, dto.ParentID); err != nil {
 			return 0, utils.WrapIfErr(op, err)
 		}
@@ -309,76 +305,54 @@ func (st *Category) update(ctx context.Context, tx *sqlx.Tx, dto model.Category)
 	return affected, nil
 }
 
-func (st *Category) getQueryUpdatePath(id int64, parentID *int64) (string, []any) {
-	sbPath := sqlbuilder.Select("mp_path")
-	sbPath.From("category")
-	sbPath.Where(sbPath.EQ("id", parentID))
+func (st *Category) validateCategoryTree(ctx context.Context, tx *sqlx.Tx, id int64, traversed map[int64]struct{}) (bool, error) {
+	const op = "sqlitedb.Category.validateCategoryTree"
 
-	ub := sqlbuilder.Update("category")
-	ub.Where(ub.EQ("id", id))
-	ub.SetMore("updated_at = unixepoch()")
-	ub.SetMore(ub.EQ("mp_path", sqlbuilder.Build("coalesce(($0) || $1 || '.', $1 || '.')", sbPath, id)))
-	return ub.BuildWithFlavor(sqlbuilder.SQLite)
-}
+	// root node
+	if id == 0 {
+		return true, nil
+	}
 
-func (st *Category) getQueryUpdateLevel(id int64) (string, []any) {
-	ub := sqlbuilder.Update("category")
-	ub.Where(ub.EQ("id", id))
-	ub.SetMore("updated_at = unixepoch()")
-	ub.SetMore("mp_level = length(mp_path) - length(replace(mp_path, '.', '')) - 1")
-	return ub.BuildWithFlavor(sqlbuilder.SQLite)
+	// node has been already visited (circular)
+	if _, ok := traversed[id]; ok {
+		return false, nil
+	}
+
+	// visit the node
+	traversed[id] = struct{}{}
+
+	// select the parent node
+	parentID, _, err := runGet[int64](ctx, tx, "select coalesce(parent_id, 0) from category where id = ?;", []any{id})
+	if err != nil {
+		return false, utils.WrapIfErr(op, err)
+	}
+
+	return st.validateCategoryTree(ctx, tx, parentID, traversed)
 }
 
 func (st *Category) updateMaterializedPath(ctx context.Context, tx *sqlx.Tx, id int64, parentID *int64) error {
 	const op = "sqlitedb.Category.updateMaterializedPath"
 
 	// step 1. update mp_path = parent path + new id
-	query, args := st.getQueryUpdatePath(id, parentID)
-	if _, err := runExecAffected(ctx, tx, query, args); err != nil {
+	const updatePathSQL = "update category set mp_path = coalesce( (select mp_path from category where id = ?) || ? || '.', ? || '.' ) where id = ?;"
+	if _, err := runExecAffected(ctx, tx, updatePathSQL, []any{parentID, id, id, id}); err != nil {
 		return utils.WrapIfErr(op, err)
 	}
 
 	// step 2. update mp_level = count of '.' in the path
-	query, args = st.getQueryUpdateLevel(id)
-	if _, err := runExecAffected(ctx, tx, query, args); err != nil {
+	const updateLevelSQL = "update category set mp_level = length(mp_path) - length(replace(mp_path, '.', '')) - 1 where id = ?;"
+	if _, err := runExecAffected(ctx, tx, updateLevelSQL, []any{id}); err != nil {
 		return utils.WrapIfErr(op, err)
 	}
 
-	// step 3. read updated mp_path
-	sb := sqlbuilder.Select("mp_path")
-	sb.From("category")
-	sb.Where(sb.EQ("id", id))
-	query, args = sb.BuildWithFlavor(sqlbuilder.SQLite)
-
-	updatedMpPath, ok, err := runGet[string](ctx, tx, query, args)
-	if err != nil {
-		return utils.WrapIfErr(op, err)
-	} else if !ok {
-		return utils.WrapIfErr(op, errors.New("category not found"))
-	}
-
-	// step 4. validation: do not allow circular references
-	pattern := fmt.Sprintf(`\b%[1]d\b.*\b%[1]d\b`, id)
-	matched, err := regexp.MatchString(pattern, updatedMpPath)
-	if err != nil {
-		return utils.WrapIfErr(op, err)
-	} else if matched {
-		return utils.WrapIfErr(op, storage.ErrInvalidTreeCircular)
-	}
-
-	// step 5. set materialized path for child nodes
+	// step 3. set materialized path for child nodes
 	type LocalChild struct {
 		ID       int64  `db:"id"`
 		ParentID *int64 `db:"parent_id"`
 	}
 
-	sb = sqlbuilder.Select("c.id", "c.parent_id")
-	sb.From("category as c")
-	sb.Where(sb.EQ("c.parent_id", id))
-	sb.OrderBy("c.mp_position", "c.id DESC")
-	query, args = sb.BuildWithFlavor(sqlbuilder.SQLite)
-
-	childs, err := runSelect[LocalChild](ctx, tx, query, args)
+	const selectChildsSQL = "select id, parent_id from category where parent_id = ?;"
+	childs, err := runSelect[LocalChild](ctx, tx, selectChildsSQL, []any{id})
 	if err != nil {
 		return utils.WrapIfErr(op, err)
 	}
