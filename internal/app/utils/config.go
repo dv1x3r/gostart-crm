@@ -17,6 +17,9 @@ type Config struct {
 	DebugSQL      bool
 	CORS          bool
 	GZIP          bool
+	ReadOnly      bool
+	AdminLogin    string
+	AdminPassword string
 	SessionKey    string
 	ServerAddress string
 	DBDriver      string
@@ -41,6 +44,18 @@ func GetConfig() Config {
 
 		if os.Getenv("GZIP") == "1" {
 			config.GZIP = true
+		}
+
+		if os.Getenv("READ_ONLY") == "1" {
+			config.ReadOnly = true
+		}
+
+		if config.AdminLogin = os.Getenv("ADMIN_LOGIN"); config.AdminLogin == "" {
+			panic("config: ADMIN_LOGIN variable is required but not set")
+		}
+
+		if config.AdminPassword = os.Getenv("ADMIN_PASSWORD"); config.AdminPassword == "" {
+			panic("config: ADMIN_PASSWORD variable is required but not set")
 		}
 
 		if config.SessionKey = os.Getenv("SESSION_KEY"); config.SessionKey == "" {
