@@ -164,8 +164,8 @@ export function createAttributeLayout() {
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'name', text: 'Value', size: '100%', render: 'safe', editable: { type: 'text' }, searchable: true },
-      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products' },
       { field: 'published_products', text: '# Pub', size: '60px', render: 'int', tooltip: 'Number of published products' },
+      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products' },
     ],
     defaultOperator: {
       'text': 'contains',

@@ -29,8 +29,8 @@ export function createBrandGrid() {
     columns: [
       { field: 'id', text: 'ID', size: '60px', hidden: true },
       { field: 'name', text: 'Name', size: '340px', render: 'safe', editable: { type: 'text' }, sortable: true },
-      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products', sortable: true },
       { field: 'published_products', text: '# Pub', size: '60px', render: 'int', tooltip: 'Number of published products', sortable: true },
+      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products', sortable: true },
     ],
     searches: [
       { field: 'code', label: 'Code', type: 'text', _all: true },
