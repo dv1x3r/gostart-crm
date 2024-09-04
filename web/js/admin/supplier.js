@@ -29,8 +29,8 @@ export function createSupplierGrid() {
       { field: 'code', text: 'Code', size: '88px', render: 'safe', editable: { type: 'text' } },
       { field: 'name', text: 'Name', size: '120px', render: 'safe', editable: { type: 'text' } },
       { field: 'description', text: 'Description', size: '300px', render: 'safe', editable: { type: 'text' } },
-      { field: 'published_products', text: '# Pub', size: '60px', render: 'int', tooltip: 'Number of published products', sortable: true },
-      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products in the local catalog', sortable: true },
+      { field: 'published_products', text: '# Pub', size: '60px', render: 'int', tooltip: 'Number of published products' },
+      { field: 'related_products', text: '# All', size: '60px', render: 'int', tooltip: 'Total number of products in the local catalog' },
       { field: 'is_published', text: 'Is Pub', size: '60px', editable: { type: 'checkbox' }, tooltip: 'Show this supplier' },
     ],
     searches: [
