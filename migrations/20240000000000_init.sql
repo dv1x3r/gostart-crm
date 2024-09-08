@@ -119,7 +119,7 @@ create table product_attribute (
     [deleted_at] integer,
     [product_id] integer not null references product(id) on delete cascade,
     [attribute_set_id] integer not null references attribute_set(id) on delete restrict,
-    [attribute_value_id] integer not null references attribute_value(id) on delete restrict,
+    [attribute_value_id] integer not null references attribute_value(id) on delete cascade,
     unique ([product_id], [attribute_set_id])
 ) strict;
 

@@ -25,7 +25,6 @@ type Config struct {
 	DBDriver      string
 	DBString      string
 	StaticPath    string
-	LogPath       string
 }
 
 func GetConfig() Config {
@@ -76,10 +75,6 @@ func GetConfig() Config {
 
 		if config.StaticPath = os.Getenv("STATIC_PATH"); config.StaticPath != "" {
 			os.MkdirAll(config.StaticPath, os.ModePerm)
-		}
-
-		if config.LogPath = os.Getenv("LOG_PATH"); config.LogPath != "" {
-			os.MkdirAll(config.LogPath, os.ModePerm)
 		}
 	})
 

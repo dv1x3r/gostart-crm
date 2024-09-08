@@ -2,13 +2,11 @@ package utils
 
 import (
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var (
@@ -18,19 +16,8 @@ var (
 
 func GetLogger() zerolog.Logger {
 	logOnce.Do(func() {
-		if logPath := GetConfig().LogPath; logPath != "" {
-			writer := &lumberjack.Logger{
-				Filename:   filepath.Join(logPath, "log.txt"),
-				MaxSize:    5,
-				MaxBackups: 10,
-				MaxAge:     14,
-				Compress:   true,
-			}
-			log = zerolog.New(writer).With().Timestamp().Logger()
-		} else {
-			writer := zerolog.ConsoleWriter{Out: os.Stdout}
-			log = zerolog.New(writer).With().Timestamp().Logger()
-		}
+		writer := zerolog.ConsoleWriter{Out: os.Stdout}
+		log = zerolog.New(writer).With().Timestamp().Logger()
 	})
 
 	return log
