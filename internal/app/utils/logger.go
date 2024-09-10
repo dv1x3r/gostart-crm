@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"sync"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,7 +17,7 @@ var (
 
 func GetLogger() zerolog.Logger {
 	logOnce.Do(func() {
-		writer := zerolog.ConsoleWriter{Out: os.Stdout}
+		writer := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 		log = zerolog.New(writer).With().Timestamp().Logger()
 	})
 

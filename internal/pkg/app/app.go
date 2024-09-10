@@ -52,10 +52,8 @@ func New() (*App, error) {
 	if a.config.Debug {
 		a.echo.Debug = true
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-		zerolog.TimeFieldFormat = time.TimeOnly
 	} else {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-		zerolog.TimeFieldFormat = time.RFC3339
 	}
 
 	if a.config.StaticPath != "" {
