@@ -19,14 +19,14 @@
     "watch:notify": "sleep 4; ./build/tools/air --build.cmd \"./build/tools/templ generate --notify-proxy\" --build.bin \"true\" --build.delay \"100\" --build.include_dir \"build/static\" --build.include_ext \"js,css\"",
     "test": "concurrently bun:test:*",
     "test:server": "go test -v ./...",
-    "db:up": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db up",
-    "db:up-to": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db up-to",
-    "db:up-by-one": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db up-by-one",
-    "db:down": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db down",
-    "db:down-to": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db down-to",
-    "db:status": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db status",
-    "db:reset": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db reset",
-    "db:create": "go run ./build/tools/goose -dir ./migrations sqlite ./build/data.db create"
+    "db:up": "./build/tools/goose -dir ./migrations sqlite ./build/data.db up",
+    "db:up-to": "./build/tools/goose -dir ./migrations sqlite ./build/data.db up-to",
+    "db:up-by-one": "./build/tools/goose -dir ./migrations sqlite ./build/data.db up-by-one",
+    "db:down": "./build/tools/goose -dir ./migrations sqlite ./build/data.db down",
+    "db:down-to": "./build/tools/goose -dir ./migrations sqlite ./build/data.db down-to",
+    "db:status": "./build/tools/goose -dir ./migrations sqlite ./build/data.db status",
+    "db:reset": "./build/tools/goose -dir ./migrations sqlite ./build/data.db reset",
+    "db:create": "./build/tools/goose -dir ./migrations sqlite ./build/data.db create"
   },
   "devDependencies": {
     "@csstools/postcss-sass": "^5.1.1",
