@@ -2,8 +2,6 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
-/bin
-/tmp
 *.exe
 *.exe~
 *.dll
@@ -13,25 +11,23 @@
 # Test binary, built with `go test -c`
 *.test
 
+# Compiled go templates
+*_templ.go
+*_templ.txt
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
-
 # Go workspace file
 go.work
+go.work.sum
 
-# Compiled go templates
-*_templ.go
+# Binaries
+/tmp
+/build
+/node_modules
 
-# Node
-node_modules
-/dist
-
-# Environment files
+# env files
 .env
-
-# Trash
 .DS_Store
 
