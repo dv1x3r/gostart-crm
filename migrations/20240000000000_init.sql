@@ -99,7 +99,7 @@ create table product (
     [name] text not null,
     [description] text,
     [quantity] real not null,
-    [price] real,
+    [price] real not null,
     [brand_id] integer not null references brand(id) on delete restrict,
     [category_id] integer not null references category(id) on delete restrict,
     [supplier_id] integer not null references supplier(id) on delete restrict,

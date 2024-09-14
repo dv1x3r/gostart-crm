@@ -30,17 +30,17 @@ type ProductStatusEmbed struct {
 }
 
 type Product struct {
-	ID          int64    `json:"id" db:"id" validate:"number"`
-	Code        string   `json:"code" db:"code" validate:"required,max=32"`
-	Name        string   `json:"name" db:"name" validate:"required,max=1024"`
-	Description *string  `json:"description" db:"description" validate:"omitempty,max=32768"`
-	Quantity    float64  `json:"quantity" db:"quantity" validate:"number,min=-2147483647,max=2147483647"`
-	Price       *float64 `json:"price" db:"price" validate:"omitempty,number,min=-2147483647,max=2147483647"`
-	IsPublished bool     `json:"is_published" db:"is_published"`
-	CreatedAt   string   `json:"created_at" db:"created_at"`
-	UpdatedAt   string   `json:"updated_at" db:"updated_at"`
-	IsAvailable bool     `json:"is_available" db:"is_available"`
-	ProductURL  string   `json:"product_url" db:"product_url"`
+	ID          int64   `json:"id" db:"id" validate:"number"`
+	Code        string  `json:"code" db:"code" validate:"required,max=32"`
+	Name        string  `json:"name" db:"name" validate:"required,max=1024"`
+	Description *string `json:"description" db:"description" validate:"omitempty,max=32768"`
+	Quantity    float64 `json:"quantity" db:"quantity" validate:"number,min=-2147483647,max=2147483647"`
+	Price       float64 `json:"price" db:"price" validate:"omitempty,number,min=-2147483647,max=2147483647"`
+	IsPublished bool    `json:"is_published" db:"is_published"`
+	CreatedAt   string  `json:"created_at" db:"created_at"`
+	UpdatedAt   string  `json:"updated_at" db:"updated_at"`
+	IsAvailable bool    `json:"is_available" db:"is_available"`
+	ProductURL  string  `json:"product_url" db:"product_url"`
 
 	ProductCategoryEmbed `json:"category"`
 	ProductSupplierEmbed `json:"supplier"`
@@ -80,7 +80,7 @@ func (t *Product) UnmarshalJSON(data []byte) error {
 	t.Name = getValue[string](raw, "name", t.Partial, "Name")
 	t.Description = getValuePtr[string](raw, "description", t.Partial, "Description")
 	t.Quantity = getValue[float64](raw, "quantity", t.Partial, "Quantity")
-	t.Price = getValuePtr[float64](raw, "price", t.Partial, "Price")
+	t.Price = getValue[float64](raw, "price", t.Partial, "Price")
 	t.IsPublished = getValue[bool](raw, "is_published", t.Partial, "IsPublished")
 	t.ProductCategoryEmbed = getValue[ProductCategoryEmbed](raw, "category", t.Partial, "ProductCategoryEmbed.CategoryID")
 	t.ProductSupplierEmbed = getValue[ProductSupplierEmbed](raw, "supplier", t.Partial, "ProductSupplierEmbed.SupplierID")

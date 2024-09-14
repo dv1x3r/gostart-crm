@@ -145,7 +145,7 @@ function createProductDetailsForm(tabID, id, attributeGrid) {
       { field: 'status_expire_at', html: { label: 'Expire at', span: 4, column: 2, attr: 'autocomplete="off"', }, type: 'date' },
       { field: 'is_published', html: { label: 'Is Published', span: 4, column: 2, attr: 'style="height: 21px"' }, type: 'checkbox' },
       { field: 'quantity', html: { label: 'Quantity', span: 4, column: 2, group: 'Quantity and Prices' }, type: 'float', options: { precision: 2 }, required: true },
-      { field: 'price', html: { label: 'Price', span: 4, column: 2 }, type: 'float', options: { precision: 2 } },
+      { field: 'price', html: { label: 'Price', span: 4, column: 2 }, type: 'float', options: { precision: 2 }, required: true },
       { field: 'created_at', html: { label: 'Created at', span: 4, column: 2, attr: 'readonly', group: 'System' }, type: 'datetime' },
       { field: 'updated_at', html: { label: 'Updated at', span: 4, column: 2, attr: 'readonly' }, type: 'datetime' },
       { html: { html: `<div id="product-attribute-grid-${tabID}" style="height: 302px;"></div>`, span: -1, column: 0, group: 'Attributes' }, type: 'html' },
