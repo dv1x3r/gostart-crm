@@ -9,16 +9,13 @@ import (
 )
 
 type Client struct {
-	staticVersion   string
 	categoryService *service.Category
 }
 
 func NewClient(
-	staticVersion string,
 	categoryService *service.Category,
 ) *Client {
 	return &Client{
-		staticVersion:   staticVersion,
 		categoryService: categoryService,
 	}
 }
@@ -33,10 +30,9 @@ func (ep *Client) GetRoot(c echo.Context) error {
 	var err error
 
 	params.Core = component.CoreParams{
-		DebugMode:     utils.GetConfig().Debug,
-		CsrfToken:     c.Get("csrf").(string),
-		StaticVersion: ep.staticVersion,
-		Title:         "Client | Demo CRM",
+		DebugMode: utils.GetConfig().Debug,
+		CsrfToken: c.Get("csrf").(string),
+		Title:     "Client | Demo CRM",
 	}
 
 	if params.CategoryTree, err = ep.categoryService.FetchTree(ctx); err != nil {

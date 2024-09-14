@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"gostart-crm/internal/app/model"
 	"strconv"
+	"time"
 )
 
 templ ClientHead(cp CoreParams) {
-	<link rel="stylesheet" href={ fmt.Sprintf("/css/client.css?v=%s", cp.StaticVersion) }/>
-	<script type="module" src={ fmt.Sprintf("/js/client.js?v=%s", cp.StaticVersion) }></script>
+	if cp.DebugMode {
+		<link rel="stylesheet" href={ fmt.Sprintf("/css/client.css?v=%d", time.Now().Unix()) }/>
+		<script type="module" src={ fmt.Sprintf("/js/client.js?v=%d", time.Now().Unix()) }></script>
+	} else {
+		<link rel="stylesheet" href={ fmt.Sprintf("/css/client.css?v=%d", startTime) }/>
+		<script type="module" src={ fmt.Sprintf("/js/client.js?v=%d", startTime) }></script>
+	}
 }
 
 templ Client(cp CoreParams) {

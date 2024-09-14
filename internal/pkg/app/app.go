@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -18,9 +18,9 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog"
-
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/pressly/goose/v3"
+	"github.com/rs/zerolog"
 )
 
 type App struct {
@@ -37,16 +37,25 @@ func New() (*App, error) {
 		logger: utils.GetLogger(),
 	}
 
-	a.echo.Validator = utils.GetValidator()
-
 	if a.config.DBDriver == "sqlite3" {
+		// mattn/go-sqlite3 (cgo)
 		a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_journal=WAL&_fk=1&_busy_timeout=10000")
 		a.db.SetMaxOpenConns(1)
 	} else if a.config.DBDriver == "sqlite" {
-		a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_pragma=journal_mode(WAL)&_pragma=foreign_keys(1)&_pragma=busy_timeout(10000)")
-		a.db.SetMaxOpenConns(1)
+		// modernc.org/sqlite (cgo-free)
+		// a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_pragma=journal_mode(WAL)&_pragma=foreign_keys(1)&_pragma=busy_timeout(10000)")
+		// a.db.SetMaxOpenConns(1)
+		panic(errors.New("modernc.org/sqlite (cgo-free) is not supported, switch to mattn/go-sqlite3"))
 	} else {
-		a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString)
+		panic(errors.New(a.config.DBDriver + " (db driver) is not supported, switch to mattn/go-sqlite3"))
+	}
+
+	if err := goose.SetDialect(a.config.DBDriver); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(a.db.DB, "./migrations"); err != nil {
+		panic(err)
 	}
 
 	if a.config.Debug {
@@ -110,7 +119,7 @@ func New() (*App, error) {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
-	staticVersion := fmt.Sprint(time.Now().Unix())
+	a.echo.Validator = utils.GetValidator()
 
 	attributeGroupStorage := sqlitedb.NewAttributeGroup(a.db)
 	attributeGroupService := service.NewAttributeGroup(attributeGroupStorage)
@@ -147,7 +156,6 @@ func New() (*App, error) {
 	orderEndpoint := endpoint.NewOrder(orderService, orderStatusService, paymentMethodService)
 
 	adminEndpoint := endpoint.NewAdmin(
-		staticVersion,
 		attributeEndpoint,
 		brandEndpoint,
 		categoryEndpoint,
@@ -158,7 +166,7 @@ func New() (*App, error) {
 
 	adminEndpoint.Register(a.echo.Group(""))
 
-	clientEndpoint := endpoint.NewClient(staticVersion, categoryService)
+	clientEndpoint := endpoint.NewClient(categoryService)
 	clientEndpoint.Register(a.echo.Group("/client"))
 
 	return a, nil

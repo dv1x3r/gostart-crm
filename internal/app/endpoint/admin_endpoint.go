@@ -8,7 +8,6 @@ import (
 )
 
 type Admin struct {
-	staticVersion     string
 	attributeEndpoint *Attribute
 	brandEndpoint     *Brand
 	categoryEndpoint  *Category
@@ -18,7 +17,6 @@ type Admin struct {
 }
 
 func NewAdmin(
-	staticVersion string,
 	attributeEndpoint *Attribute,
 	brandEndpoint *Brand,
 	categoryEndpoint *Category,
@@ -28,7 +26,6 @@ func NewAdmin(
 
 ) *Admin {
 	return &Admin{
-		staticVersion:     staticVersion,
 		attributeEndpoint: attributeEndpoint,
 		brandEndpoint:     brandEndpoint,
 		categoryEndpoint:  categoryEndpoint,
@@ -41,10 +38,9 @@ func NewAdmin(
 func (ep *Admin) Register(g *echo.Group) {
 	g.GET("", func(c echo.Context) error {
 		cp := component.CoreParams{
-			DebugMode:     utils.GetConfig().Debug,
-			CsrfToken:     c.Get("csrf").(string),
-			StaticVersion: ep.staticVersion,
-			Title:         "Admin | Demo CRM",
+			DebugMode: utils.GetConfig().Debug,
+			CsrfToken: c.Get("csrf").(string),
+			Title:     "Admin | Demo CRM",
 		}
 		return render(c, component.Admin(cp))
 	})

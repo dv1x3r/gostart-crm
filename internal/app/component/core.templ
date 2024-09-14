@@ -1,13 +1,17 @@
 package component
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+var startTime = time.Now().Unix()
 
 type CoreParams struct {
-	DebugMode     bool
-	Title         string
-	StaticVersion string
-	CsrfToken     string
-	GoogleTag     string
+	DebugMode bool
+	Title     string
+	CsrfToken string
+	GoogleTag string
 }
 
 templ Core(cp CoreParams, extraHead templ.Component) {

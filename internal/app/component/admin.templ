@@ -1,10 +1,18 @@
 package component
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 templ AdminHead(cp CoreParams) {
-	<link rel="stylesheet" href={ fmt.Sprintf("/css/admin.css?v=%s", cp.StaticVersion) }/>
-	<script type="module" src={ fmt.Sprintf("/js/admin.js?v=%s", cp.StaticVersion) }></script>
+	if cp.DebugMode {
+		<link rel="stylesheet" href={ fmt.Sprintf("/css/admin.css?v=%d", time.Now().Unix()) }/>
+		<script type="module" src={ fmt.Sprintf("/js/admin.js?v=%d", time.Now().Unix()) }></script>
+	} else {
+		<link rel="stylesheet" href={ fmt.Sprintf("/css/admin.css?v=%d", startTime) }/>
+		<script type="module" src={ fmt.Sprintf("/js/admin.js?v=%d", startTime) }></script>
+	}
 }
 
 templ Admin(cp CoreParams) {
