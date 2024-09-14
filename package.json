@@ -10,9 +10,10 @@
     "build:fonts": "mkdir -p ./build/static/fonts && cp ./node_modules/@fontsource/inter/files/* ./node_modules/@fortawesome/fontawesome-free/webfonts/* ./build/static/fonts",
     "build:templ": "go run github.com/a-h/templ/cmd/templ@v0.2.778 generate",
     "watch:templ": "go run github.com/a-h/templ/cmd/templ@v0.2.778 generate --watch --proxy=\"http://localhost:1323\" --open-browser=false",
+    "notify:templ": "go run github.com/a-h/templ/cmd/templ@v0.2.778 generate --notify-proxy",
     "build:server": "go build -o ./build/server ./cmd/server/main.go",
     "watch:server": "sleep 2; go run github.com/air-verse/air@v1.52.3 --build.cmd \"bun run build:server\" --build.bin \"./build/server\" --build.delay \"100\" --build.include_dir \"cmd,internal\" --build.include_ext \"go\" --build.stop_on_error \"false\" --misc.clean_on_exit true",
-    "watch:notify": "sleep 4; go run github.com/air-verse/air@v1.52.3 --build.cmd \"templ generate --notify-proxy\" --build.bin \"true\" --build.delay \"100\" --build.include_dir \"build/static\" --build.include_ext \"js,css\"",
+    "watch:notify": "sleep 4; go run github.com/air-verse/air@v1.52.3 --build.cmd \"bun run notify:templ\" --build.bin \"true\" --build.delay \"100\" --build.include_dir \"build/static\" --build.include_ext \"js,css\"",
     "test": "concurrently bun:test:*",
     "test:server": "go test -v ./...",
     "db:up": "go run github.com/pressly/goose/v3/cmd/goose@v3.22.0 -dir ./migrations sqlite ./build/data.db up",
@@ -26,17 +27,17 @@
   },
   "devDependencies": {
     "@csstools/postcss-sass": "^5.1.1",
-    "@fontsource/inter": "^5.0.21",
+    "@fontsource/inter": "^5.1.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "alpinejs": "^3.14.1",
     "autoprefixer": "^10.4.20",
-    "concurrently": "^9.0.0",
+    "concurrently": "^9.0.1",
     "cssnano": "^7.0.6",
     "htmx.org": "^2.0.1",
-    "postcss": "^8.4.45",
+    "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",
     "postcss-import": "^16.1.0",
-    "tailwindcss": "^3.4.10",
+    "tailwindcss": "^3.4.11",
     "w2ui": "github:vitmalina/w2ui#b69aeda"
   }
 }
