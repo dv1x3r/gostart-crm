@@ -26,12 +26,13 @@ templ AdminLogin(cp CoreParams) {
 		<form
 			hx-post="/login/"
 			hx-headers={ fmt.Sprintf(`{ "X-CSRF-Token": "%s" }`, cp.CsrfToken) }
-			class="relative top-[20vh] mx-auto px-2 space-y-2 w-full sm:w-80 *:block *:w-full *:text-sm *:border-gray-300 *:rounded-md"
+			class="relative top-[20vh] mx-auto px-2 space-y-2 w-full sm:w-80 text-sm *:block *:w-full"
 		>
-			<h1>{ cp.Title }</h1>
-			<input type="email" name="email" autocomplete="on" placeholder="E-mail" required/>
-			<input type="password" name="password" autocomplete="on" placeholder="Password" required/>
-			<input type="submit" value="Login" class="!font-normal cursor-pointer px-3 py-1.5 flex items-center rounded-lg bg-blue-900 text-white hover:bg-black transition"/>
+			<h1>eCommerce CRM Demo</h1>
+			<input type="email" name="email" autocomplete="off" placeholder="E-mail" required value="demo@weasel.dev" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
+			<input type="password" name="password" autocomplete="off" placeholder="Password" required value="password" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"/>
+			<input type="submit" value="Login" class="cursor-pointer px-3 py-1.5 flex items-center rounded-lg bg-blue-900 text-white hover:bg-black transition"/>
+			<a href="https://github.com/dv1x3r/gostart-crm" target="_blank" class="text-center"><span class="fa-brands fa-github text-xl"></span></a>
 		</form>
 	}
 }

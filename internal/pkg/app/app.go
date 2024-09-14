@@ -15,7 +15,9 @@ import (
 	"gostart-crm/internal/app/storage/sqlitedb"
 	"gostart-crm/internal/app/utils"
 
+	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
@@ -119,6 +121,10 @@ func New() (*App, error) {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
+	a.echo.Use(session.Middleware(
+		sessions.NewCookieStore([]byte(a.config.SessionKey))),
+	)
+
 	a.echo.Validator = utils.GetValidator()
 
 	attributeGroupStorage := sqlitedb.NewAttributeGroup(a.db)
@@ -164,12 +170,39 @@ func New() (*App, error) {
 		orderEndpoint,
 	)
 
-	adminEndpoint.Register(a.echo.Group(""))
+	adminEndpoint.Register(a.echo.Group("", demoAuthorizationMiddleware()))
 
 	clientEndpoint := endpoint.NewClient(categoryService)
-	clientEndpoint.Register(a.echo.Group("/client"))
+	clientEndpoint.Register(a.echo.Group("/client", demoAuthorizationMiddleware()))
 
 	return a, nil
+}
+
+func demoAuthorizationMiddleware() echo.MiddlewareFunc {
+	config := struct{ Skipper middleware.Skipper }{
+		Skipper: func(c echo.Context) bool {
+			return c.Path() == "/login/"
+		},
+	}
+
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if config.Skipper(c) {
+				return next(c)
+			}
+
+			userSession, _ := session.Get("sessionid", c)
+			if userSession.Values["authenticated"] == true {
+				return next(c)
+			}
+
+			if c.Path() == "/" || c.Path() == "/client" {
+				return c.Redirect(http.StatusFound, "/login/")
+			} else {
+				return c.JSON(http.StatusUnauthorized, map[string]string{"status": "error", "message": "Not authorized"})
+			}
+		}
+	}
 }
 
 func (a *App) MustRun() {
