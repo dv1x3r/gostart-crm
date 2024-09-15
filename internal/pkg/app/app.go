@@ -170,15 +170,15 @@ func New() (*App, error) {
 		orderEndpoint,
 	)
 
-	adminEndpoint.Register(a.echo.Group("", demoAuthorizationMiddleware()))
+	adminEndpoint.Register(a.echo.Group("", demoAuthorizationMiddleware(a.config.ReadOnly)))
 
 	clientEndpoint := endpoint.NewClient(categoryService)
-	clientEndpoint.Register(a.echo.Group("/client", demoAuthorizationMiddleware()))
+	clientEndpoint.Register(a.echo.Group("/client", demoAuthorizationMiddleware(a.config.ReadOnly)))
 
 	return a, nil
 }
 
-func demoAuthorizationMiddleware() echo.MiddlewareFunc {
+func demoAuthorizationMiddleware(readOnly bool) echo.MiddlewareFunc {
 	config := struct{ Skipper middleware.Skipper }{
 		Skipper: func(c echo.Context) bool {
 			return c.Path() == "/login/"
@@ -189,6 +189,10 @@ func demoAuthorizationMiddleware() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			if config.Skipper(c) {
 				return next(c)
+			}
+
+			if readOnly && c.Request().Method != "GET" {
+				return c.JSON(http.StatusUnauthorized, map[string]string{"status": "error", "message": "Demo works in read-only mode"})
 			}
 
 			userSession, _ := session.Get("sessionid", c)
