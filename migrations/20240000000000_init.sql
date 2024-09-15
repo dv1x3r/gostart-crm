@@ -169,7 +169,6 @@ create table order_line (
     [updated_at] integer not null default (unixepoch()),
     [deleted_at] integer,
     [order_id] integer not null references order_header(id) on delete cascade,
-    [product_id] integer references product(id) on delete set null,
     [product_code] text not null,
     [product_snapshot] text not null,
     [quantity] integer not null,
