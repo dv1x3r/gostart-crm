@@ -35,25 +35,22 @@ type ClientMainPageParams struct {
 templ ClientMainPage(params ClientMainPageParams) {
 	@Client(params.Core) {
 		for _, category := range params.CategoryTree.Children {
-			{ category.Name }
-			<br/>
+			@Todos(category.Children)
 		}
 	}
 }
 
-templ Todos(cp CoreParams, todos []model.Brand) {
-	@Client(cp) {
-		<div class="flex items-center gap-4 p-4 h-full">
-			<div class="mx-auto">
-				for _, todo := range todos {
-					@TodoCard(todo)
-				}
-			</div>
+templ Todos(todos []model.Category) {
+	<div class="flex items-center gap-4 p-4 h-full">
+		<div class="mx-auto">
+			for _, todo := range todos {
+				@TodoCard(todo)
+			}
 		</div>
-	}
+	</div>
 }
 
-templ TodoCard(todo model.Brand) {
+templ TodoCard(todo model.Category) {
 	<div class="flex flex-col p-4 rounded shadow-lg ">
 		<div class="border border-gray-800 border-opacity-30 bg-gradient-radial-dark rounded-lg p-2">
 			<p class="text-slate-100 font-medium">{ todo.Name }</p>
