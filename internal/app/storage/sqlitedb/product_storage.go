@@ -82,6 +82,7 @@ func (st *Product) getQueryFindMany(q storage.FindManyParams, categoryID int64) 
 		"code":         "p.code",
 		"name":         "p.name",
 		"supplier":     "s.name",
+		"brand":        "b.name",
 		"status":       "ps.name",
 		"quantity":     "p.quantity",
 		"price":        "p.price",
