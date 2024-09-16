@@ -3,7 +3,6 @@ package component
 import (
 	"fmt"
 	"gostart-crm/internal/app/model"
-	"strconv"
 	"time"
 )
 
@@ -19,7 +18,7 @@ templ ClientHead(cp CoreParams) {
 
 templ Client(cp CoreParams) {
 	@Core(cp, ClientHead(cp)) {
-		<div class="bg-gradient-to-r from-slate-950 from-10% to-gray-900 text-white flex items-center justify-center h-screen">
+		<div class="bg-gradient-to-r from-slate-950 from-10% to-gray-900 text-white h-screen">
 			{ children... }
 		</div>
 	}
@@ -34,30 +33,36 @@ type ClientMainPageParams struct {
 
 templ ClientMainPage(params ClientMainPageParams) {
 	@Client(params.Core) {
-		for _, category := range params.CategoryTree.Children {
-			@Todos(category.Children)
-		}
+		<div class="flex items-center justify-center h-full">
+			// for _, category := range params.CategoryTree.Children {
+			@Categories(params.CategoryTree)
+			// }
+		</div>
 	}
 }
 
-templ Todos(todos []model.Category) {
+templ Categories(root model.Category) {
 	<div class="flex items-center gap-4 p-4 h-full">
 		<div class="mx-auto">
-			for _, todo := range todos {
-				@TodoCard(todo)
+			for _, category := range root.Children {
+				@CategoryCard(category)
 			}
 		</div>
 	</div>
 }
 
-templ TodoCard(todo model.Category) {
-	<div class="flex flex-col p-4 rounded shadow-lg ">
-		<div class="border border-gray-800 border-opacity-30 bg-gradient-radial-dark rounded-lg p-2">
-			<p class="text-slate-100 font-medium">{ todo.Name }</p>
+templ CategoryCard(category model.Category) {
+	<div class="flex flex-col p-4 rounded shadow-lg">
+		<section class="border-2 border-gray-700 rounded-lg p-2">
+			<header class="text-slate-100">
+				if category.Icon != nil {
+					<span class={ *category.Icon }></span>
+				}
+				<span>{ category.Name } </span>
+			</header>
 			<div class="">
-				<p class="text-slate-600 text-sm">Description: { todo.Name }</p>
-				<p class="text-slate-600 text-sm">Quantity: { strconv.FormatInt(todo.ID, 10) }</p>
+				<p class="text-slate-600 text-sm">Description: { category.Name }</p>
 			</div>
-		</div>
+		</section>
 	</div>
 }
