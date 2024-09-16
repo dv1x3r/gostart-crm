@@ -15,16 +15,7 @@ insert into attribute_set([id], [attribute_group_id], [name], [in_box], [in_filt
 (6, 1, 'Disk Capacity', 1, 1, 6),
 (7, 1, 'Disk Type', 1, 1, 7),
 (8, 1, 'Video Card', 1, 0, 8),
-(9, 1, 'Power Supply', 1, 0, 9),
-(10, 2, 'Generation', 0, 1, 1),
-(11, 2, 'CPU Type', 0, 1, 2),
-(12, 2, 'CPU Model', 1, 0, 3),
-(13, 2, 'RAM Amount', 1, 1, 4),
-(14, 2, 'RAM Type', 1, 1, 5),
-(16, 2, 'Disk Capacity', 1, 1, 6),
-(17, 2, 'Disk Type', 1, 1, 7),
-(18, 2, 'Video Card', 1, 0, 8),
-(19, 2, 'Screen Size', 1, 1, 9);
+(9, 1, 'Power Supply', 1, 0, 9);
 
 -- Generation attribute_set_id = 1
 insert into attribute_value ([id], [attribute_set_id], [name], [position]) values
