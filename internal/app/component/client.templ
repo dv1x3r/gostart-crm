@@ -35,13 +35,13 @@ type ClientMainPageParams struct {
 templ ClientMainPage(params ClientMainPageParams) {
 	@Client(params.Core) {
 		<main class="flex items-center justify-center gap-4 min-h-screen">
-			<nav id="hx-categories" hx-swap-oob="true" class="space-y-4">
+			<nav id="hx-categories" class="space-y-4">
 				for _, root := range params.CategoryTree.Children {
 					@CategoriesBlock(root, params.SelectedCategoryID)
 				}
 			</nav>
 			<div class="w-[800px] min-h-[600px] container border border-gray-800 rounded-lg">
-				<div id="hx-filters" hx-swap-oob="true">
+				<div id="hx-filters">
 					if len(params.FilterFacets) > 0 {
 						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
 					}
@@ -75,6 +75,7 @@ templ CategoriesBlock(root model.Category, selectedCategoryID int64) {
 					hx-select="#hx-products"
 					hx-target="#hx-products"
 					hx-swap="outerHTML"
+					hx-select-oob="#hx-categories,#hx-filters"
 					class="block space-y-1 px-2 py-1 cursor-pointer"
 				>
 					<div class="text-sm text-slate-100">{ category.Name }</div>
