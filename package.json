@@ -29,6 +29,8 @@
     "db:create": "./build/tools/goose -dir ./migrations sqlite ./build/data.db create"
   },
   "devDependencies": {
+    "@alpinejs/collapse": "^3.14.1",
+    "@alpinejs/morph": "^3.14.1",
     "@csstools/postcss-sass": "^5.1.1",
     "@fontsource/inter": "^5.1.0",
     "@fortawesome/fontawesome-free": "^6.6.0",

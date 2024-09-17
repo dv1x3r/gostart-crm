@@ -7,12 +7,12 @@ insert into attribute_group([id], [name]) values
 (1, 'Computer Attributes');
 
 insert into attribute_set([id], [attribute_group_id], [name], [in_box], [in_filter], [position]) values
-(1, 1, 'Generation', 0, 1, 1),
+(1, 1, 'Generation', 0, 0, 1),
 (2, 1, 'CPU Type', 0, 1, 2),
 (3, 1, 'CPU Model', 1, 0, 3),
 (4, 1, 'RAM Amount', 1, 1, 4),
 (5, 1, 'RAM Type', 1, 1, 5),
-(6, 1, 'Disk Capacity', 1, 1, 6),
+(6, 1, 'Disk Capacity', 1, 0, 6),
 (7, 1, 'Disk Type', 1, 1, 7),
 (8, 1, 'Video Card', 1, 0, 8),
 (9, 1, 'Power Supply', 1, 0, 9);

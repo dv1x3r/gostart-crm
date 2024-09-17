@@ -1,6 +1,8 @@
 package endpoint
 
 import (
+	"strconv"
+
 	"gostart-crm/internal/app/component"
 	"gostart-crm/internal/app/service"
 	"gostart-crm/internal/app/utils"
@@ -10,13 +12,16 @@ import (
 
 type Client struct {
 	categoryService *service.Category
+	filterService   *service.Filter
 }
 
 func NewClient(
 	categoryService *service.Category,
+	filterService *service.Filter,
 ) *Client {
 	return &Client{
 		categoryService: categoryService,
+		filterService:   filterService,
 	}
 }
 
@@ -37,6 +42,15 @@ func (ep *Client) GetRoot(c echo.Context) error {
 
 	if params.CategoryTree, err = ep.categoryService.FetchTree(ctx); err != nil {
 		return err
+	}
+
+	params.SelectedCategoryID, _ = strconv.ParseInt(c.QueryParam("category"), 10, 64)
+	if params.SelectedCategoryID != 0 {
+		appliedFilters := ep.filterService.ParseAppliedFilters(c.QueryParam("filters"))
+		params.FilterFacets, err = ep.filterService.GetFacetsByCategoryID(ctx, params.SelectedCategoryID, appliedFilters)
+		if err != nil {
+			return err
+		}
 	}
 
 	return render(c, component.ClientMainPage(params))

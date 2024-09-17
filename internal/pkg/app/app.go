@@ -172,7 +172,10 @@ func New() (*App, error) {
 
 	adminEndpoint.Register(a.echo.Group("", demoAuthorizationMiddleware(a.config.ReadOnly)))
 
-	clientEndpoint := endpoint.NewClient(categoryService)
+	filterStorage := sqlitedb.NewFilter(a.db)
+	filterService := service.NewFilter(filterStorage)
+
+	clientEndpoint := endpoint.NewClient(categoryService, filterService)
 	clientEndpoint.Register(a.echo.Group("/client", demoAuthorizationMiddleware(a.config.ReadOnly)))
 
 	return a, nil

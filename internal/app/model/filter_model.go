@@ -15,14 +15,3 @@ type FilterFacet struct {
 	Values   []FilterFacetValue
 	Selected int
 }
-
-type FilterPrice struct {
-	From int64 `db:"price_from"`
-	To   int64 `db:"price_to"`
-}
-
-type Filter struct {
-	Facets        []FilterFacet
-	PriceLimit    FilterPrice
-	PriceSelected FilterPrice
-}
