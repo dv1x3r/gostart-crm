@@ -175,7 +175,7 @@ func New() (*App, error) {
 	filterStorage := sqlitedb.NewFilter(a.db)
 	filterService := service.NewFilter(filterStorage)
 
-	clientEndpoint := endpoint.NewClient(categoryService, filterService)
+	clientEndpoint := endpoint.NewClient(categoryService, productService, filterService)
 	clientEndpoint.Register(a.echo.Group("/client", demoAuthorizationMiddleware(a.config.ReadOnly)))
 
 	return a, nil

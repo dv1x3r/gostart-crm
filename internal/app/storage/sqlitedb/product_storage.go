@@ -2,6 +2,10 @@ package sqlitedb
 
 import (
 	"context"
+	"fmt"
+	"maps"
+	"slices"
+	"strconv"
 
 	"gostart-crm/internal/app/model"
 	"gostart-crm/internal/app/storage"
@@ -121,6 +125,45 @@ func (st *Product) FindMany(ctx context.Context, q storage.FindManyParams, categ
 	}
 
 	return dto, count, nil
+}
+
+func (st *Product) getQueryFindAvailableByCategoryID(categoryID int64, filters model.FilterCombination) (string, []any) {
+	sb := st.getQuerySelectBase()
+	sb.JoinWithOption(sqlbuilder.InnerJoin, "category as c_selected", "c.mp_path like c_selected.mp_path || '%'")
+	sb.Where("p.quantity > 0 and p.is_published = 1 and c.is_published = 1 and s.is_published = 1")
+	sb.Where(sb.EQ("c_selected.id", categoryID))
+
+	for filterKey, facets := range filters {
+		facetKeys := slices.Collect(maps.Keys(facets))
+		if filterKey == "B" {
+			sb.Where(sb.In("p.brand_id", sqlbuilder.List(facetKeys)))
+		} else if attributeSetID, err := strconv.Atoi(filterKey); err == nil {
+			joinTable := fmt.Sprintf("product_attribute as pa_%d", attributeSetID)
+			joinExpr1 := fmt.Sprintf("pa_%d.product_id = p.id", attributeSetID)
+			joinExpr2 := sb.In(fmt.Sprintf("pa_%d.attribute_value_id", attributeSetID), sqlbuilder.List(facetKeys))
+			sb.JoinWithOption(sqlbuilder.InnerJoin, joinTable, sb.And(joinExpr1, joinExpr2))
+		}
+	}
+
+	return sb.BuildWithFlavor(sqlbuilder.SQLite)
+}
+
+func (st *Product) FindAvailableByCategoryID(ctx context.Context, categoryID int64, filters model.FilterCombination) ([]model.Product, error) {
+	const op = "sqlitedb.Product.FindAvailableByCategoryID"
+
+	query, args := st.getQueryFindAvailableByCategoryID(categoryID, filters)
+	rows, err := runSelect[model.Product](ctx, st.db, query, args)
+	if err != nil {
+		return nil, utils.WrapIfErr(op, err)
+	}
+
+	for i := range rows {
+		if err = st.fillDtoDetails(ctx, &rows[i]); err != nil {
+			return rows, utils.WrapIfErr(op, err)
+		}
+	}
+
+	return rows, nil
 }
 
 func (st *Product) getQueryGetByID(id int64) (string, []any) {

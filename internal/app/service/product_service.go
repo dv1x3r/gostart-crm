@@ -18,6 +18,7 @@ var (
 
 type ProductStorager interface {
 	FindMany(context.Context, storage.FindManyParams, int64) ([]model.Product, int64, error)
+	FindAvailableByCategoryID(context.Context, int64, model.FilterCombination) ([]model.Product, error)
 	GetByID(context.Context, int64) (model.Product, bool, error)
 	UpsertOne(context.Context, model.Product) (int64, error)
 	UpdateMany(context.Context, []model.Product) (int64, error)
@@ -49,6 +50,12 @@ func (sc *Product) FetchByID(ctx context.Context, id int64) (model.Product, erro
 		return product, utils.WrapIfErr(op, ErrProductNotFound)
 	}
 	return product, nil
+}
+
+func (sc *Product) FetchAvailableByCategoryID(ctx context.Context, categoryID int64, filters model.FilterCombination) ([]model.Product, error) {
+	const op = "service.Product.FetchAvailableByCategoryID"
+	rows, err := sc.productStorage.FindAvailableByCategoryID(ctx, categoryID, filters)
+	return rows, utils.WrapIfErr(op, err)
 }
 
 func (sc *Product) SaveForm(ctx context.Context, dto model.Product) (int64, error) {

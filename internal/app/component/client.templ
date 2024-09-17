@@ -40,17 +40,22 @@ templ ClientMainPage(params ClientMainPageParams) {
 					@CategoriesBlock(root, params.SelectedCategoryID)
 				}
 			</nav>
-			<div class="w-[800px] min-h-[600px] container border border-gray-700 rounded-lg">
+			<div class="w-[800px] h-[600px] flex flex-col border border-gray-800 rounded-lg">
 				<div id="hx-filters-oob">
 					if len(params.FilterFacets) > 0 {
 						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
 					}
 				</div>
-				<div id="hx-products" class="flex items-center justify-center0">
-					if len(params.Products) == 0 {
-						select category
+				<div id="hx-products" class="h-full">
+					if params.SelectedCategoryID == 0 {
+						<div class="flex items-center justify-center h-full text-slate-400">
+							select category
+						</div>
 					} else {
-						TBD
+						<div>
+							TBD
+							// { params.Products[0].Name }
+						</div>
 					}
 				</div>
 			</div>
@@ -67,9 +72,7 @@ templ CategoriesBlock(root model.Category, selectedCategoryID int64) {
 			<span>{ root.Name }</span>
 		</div>
 		for _, category := range root.Children {
-			<li
-				class={ "shadow-lg border border-gray-800 rounded-lg hover:bg-slate-900", templ.KV("bg-slate-900", category.ID == selectedCategoryID) }
-			>
+			<li class={ "shadow-lg border border-gray-800 rounded-lg hover:bg-slate-900", templ.KV("bg-slate-900", category.ID == selectedCategoryID) }>
 				<a
 					hx-get={ string(templ.URL(fmt.Sprintf("?category=%d", category.ID))) }
 					hx-select="#hx-products"
@@ -103,28 +106,23 @@ templ FilterBlock(facets []model.FilterFacet, selectedCategoryID int64) {
 			hx-target="#hx-products"
 			hx-swap="outerHTML"
 			hx-trigger="updated"
-			hx-indicator="#hx-indicator-filters"
 		/>
-		<span id="hx-indicator-filters" class="htmx-indicator animate-spin fa fa-spinner text-sm"></span>
 	</section>
 }
 
 templ FilterItem(facet model.FilterFacet) {
 	<li x-data={ fmt.Sprintf("{ open: %t }", facet.Selected > 0) } class="relative">
-		<button @click.prevent="open = !open" type="button" class="w-full p-0.5 flex items-center justify-between rounded-lg hover:bg-slate-900 active:bg-slate-800 transition">
-			<div class="flex items-center truncate">
-				<span x-cloak x-show="!open" class="fa fa-plus flex-none w-8 text-center"></span>
-				<span x-cloak x-show="open" class="fa fa-minus flex-none w-8 text-center"></span>
-				<h3 class="truncate">{ facet.Name }</h3>
-			</div>
-			<span id={ fmt.Sprintf("hx-filter-sel-%s", facet.ID) } hx-swap-oob="true" class="flex-none px-2 bg-blue-900 text-xs rounded-lg">
+		<button @click.prevent="open = !open" type="button" class="py-0.5 px-1 flex items-center justify-between space-x-2 rounded-lg hover:bg-slate-900 active:bg-slate-800 transition">
+			<span x-cloak class="fa flex-none text-center" :class="open ? 'fa-minus' : 'fa-plus'"></span>
+			<span>{ facet.Name }</span>
+			<span id={ fmt.Sprintf("hx-filter-sel-%s", facet.ID) } hx-swap-oob="true" class="min-w-6 px-2 bg-slate-800 text-xs rounded-lg">
 				if facet.Selected > 0 {
-					{ fmt.Sprintf("%d Selected", facet.Selected ) }
+					{ fmt.Sprint(facet.Selected ) }
 				}
 			</span>
 		</button>
 		<div x-cloak x-show="open" x-collapse class="absolute">
-			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 border-b select-none">
+			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 select-none bg-slate-800 rounded-lg border border-white">
 				for _, value := range facet.Values {
 					<li class="flex items-center *:cursor-pointer">
 						<input
@@ -133,11 +131,10 @@ templ FilterItem(facet model.FilterFacet) {
 							checked?={ value.IsSelected }
 							type="checkbox"
 							@click="filtersSet"
-							class="h-4 w-4 rounded border-gray-300 focus:ring-blue-800"
 						/>
 						<label
 							for={ fmt.Sprintf("filter-cb-%s-%d", facet.ID, value.ID) }
-							class={ "ml-2 w-full text-sm truncate", templ.KV("text-slate-100", value.Products != 0), templ.KV("text-slate-400", value.Products == 0) }
+							class={ "ml-2 w-full text-sm truncate", templ.KV("text-slate-400", value.Products == 0) }
 						>
 							{ fmt.Sprintf("%s (%d)", value.Name, value.Products) }
 						</label>
