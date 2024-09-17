@@ -41,21 +41,18 @@ templ ClientMainPage(params ClientMainPageParams) {
 				}
 			</nav>
 			<div class="w-[800px] h-[600px] flex flex-col border border-gray-800 rounded-lg">
-				<div id="hx-filters-oob">
+				<div id="hx-filters-oob" class="p-2">
 					if len(params.FilterFacets) > 0 {
 						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
 					}
 				</div>
-				<div id="hx-products" class="h-full">
+				<div id="hx-products" class="p-2 h-full">
 					if params.SelectedCategoryID == 0 {
 						<div class="flex items-center justify-center h-full text-slate-400">
 							select category
 						</div>
 					} else {
-						<div>
-							TBD
-							// { params.Products[0].Name }
-						</div>
+						@ProductsTable(params.Products)
 					}
 				</div>
 			</div>
@@ -90,7 +87,7 @@ templ CategoriesBlock(root model.Category, selectedCategoryID int64) {
 }
 
 templ FilterBlock(facets []model.FilterFacet, selectedCategoryID int64) {
-	<section class="p-2 flex items-center space-x-1.5">
+	<section class="flex items-center space-x-1.5">
 		<span class="fa fa-filter flex-none w-8 text-center"></span>
 		<ul class="flex flex-wrap space-x-1.5">
 			for _, facet := range facets {
@@ -122,7 +119,7 @@ templ FilterItem(facet model.FilterFacet) {
 			</span>
 		</button>
 		<div x-cloak x-show="open" x-collapse class="absolute">
-			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 select-none bg-slate-800 rounded-lg border border-white">
+			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 select-none bg-slate-800 rounded-lg border border-gray-700">
 				for _, value := range facet.Values {
 					<li class="flex items-center *:cursor-pointer">
 						<input
@@ -143,4 +140,37 @@ templ FilterItem(facet model.FilterFacet) {
 			</ul>
 		</div>
 	</li>
+}
+
+templ ProductsTable(products []model.Product) {
+	<table class="overflow-x-auto w-full text-left text-sm text-gray-400">
+		<thead class="text-xs uppercase bg-gray-700 text-gray-400">
+			<tr>
+				<th scope="col" class="px-6 py-3">Product name</th>
+				<th scope="col" class="px-6 py-3">Color</th>
+				<th scope="col" class="px-6 py-3">Category</th>
+				<th scope="col" class="px-6 py-3">Price</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, product := range products {
+				<tr class="border-b bg-gray-800 border-gray-700 hover:bg-gray-600">
+					<th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+						{ product.Code } - { product.Name }
+					</th>
+					<td class="px-6 py-4">
+						if product.Description != nil {
+							{ *product.Description }
+						}
+					</td>
+					<td class="px-6 py-4">
+						{ product.Name }
+					</td>
+					<td class="px-6 py-4">
+						$2999
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
