@@ -40,11 +40,13 @@ templ ClientMainPage(params ClientMainPageParams) {
 					@CategoriesBlock(root, params.SelectedCategoryID)
 				}
 			</nav>
-			<div id="hx-products" class="w-[800px] min-h-[600px] container border border-gray-800 rounded-lg">
-				if len(params.FilterFacets) > 0 {
-					@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
-				}
-				<div class="flex items-center justify-center text-slate-600">
+			<div class="w-[800px] min-h-[600px] container border border-gray-800 rounded-lg">
+				<div id="hx-filters" hx-swap-oob="true">
+					if len(params.FilterFacets) > 0 {
+						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
+					}
+				</div>
+				<div id="hx-products" class="flex items-center justify-center text-slate-600">
 					if len(params.Products) == 0 {
 						select category
 					} else {
