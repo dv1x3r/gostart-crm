@@ -35,18 +35,18 @@ type ClientMainPageParams struct {
 templ ClientMainPage(params ClientMainPageParams) {
 	@Client(params.Core) {
 		<main class="flex items-center justify-center gap-4 min-h-screen">
-			<nav id="hx-categories" class="space-y-4">
+			<nav id="hx-categories-oob" class="space-y-4">
 				for _, root := range params.CategoryTree.Children {
 					@CategoriesBlock(root, params.SelectedCategoryID)
 				}
 			</nav>
-			<div class="w-[800px] min-h-[600px] container border border-gray-800 rounded-lg">
-				<div id="hx-filters">
+			<div class="w-[800px] min-h-[600px] container border border-gray-700 rounded-lg">
+				<div id="hx-filters-oob">
 					if len(params.FilterFacets) > 0 {
 						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
 					}
 				</div>
-				<div id="hx-products" class="flex items-center justify-center text-slate-600">
+				<div id="hx-products" class="flex items-center justify-center0">
 					if len(params.Products) == 0 {
 						select category
 					} else {
@@ -75,11 +75,11 @@ templ CategoriesBlock(root model.Category, selectedCategoryID int64) {
 					hx-select="#hx-products"
 					hx-target="#hx-products"
 					hx-swap="outerHTML"
-					hx-select-oob="#hx-categories,#hx-filters"
+					hx-select-oob="#hx-categories-oob,#hx-filters-oob"
 					class="block space-y-1 px-2 py-1 cursor-pointer"
 				>
 					<div class="text-sm text-slate-100">{ category.Name }</div>
-					<div class="text-sm text-slate-600">Products available: { fmt.Sprint(category.RelatedProducts) }</div>
+					<div class="text-sm text-slate-400">Products available: { fmt.Sprint(category.RelatedProducts) }</div>
 				</a>
 			</li>
 		}
@@ -98,7 +98,6 @@ templ FilterBlock(facets []model.FilterFacet, selectedCategoryID int64) {
 			id="hx-filters"
 			name="filters"
 			type="hidden"
-			x-init="filtersSet(false)"
 			hx-get={ string(templ.URL(fmt.Sprintf("?category=%d", selectedCategoryID))) }
 			hx-select="#hx-products"
 			hx-target="#hx-products"
@@ -118,7 +117,7 @@ templ FilterItem(facet model.FilterFacet) {
 				<span x-cloak x-show="open" class="fa fa-minus flex-none w-8 text-center"></span>
 				<h3 class="truncate">{ facet.Name }</h3>
 			</div>
-			<span id={ fmt.Sprintf("hx-filter-sel-%s", facet.ID) } hx-swap-oob="true" class="flex-none px-2 bg-blue-900 text-white text-xs rounded-lg">
+			<span id={ fmt.Sprintf("hx-filter-sel-%s", facet.ID) } hx-swap-oob="true" class="flex-none px-2 bg-blue-900 text-xs rounded-lg">
 				if facet.Selected > 0 {
 					{ fmt.Sprintf("%d Selected", facet.Selected ) }
 				}
@@ -133,12 +132,12 @@ templ FilterItem(facet model.FilterFacet) {
 							value={ fmt.Sprintf("%s-%d", facet.ID, value.ID) }
 							checked?={ value.IsSelected }
 							type="checkbox"
-							onClick="filtersSet(true)"
-							class="h-4 w-4 rounded border-gray-300 text-blue-900 focus:ring-blue-800"
+							@click="filtersSet"
+							class="h-4 w-4 rounded border-gray-300 focus:ring-blue-800"
 						/>
 						<label
 							for={ fmt.Sprintf("filter-cb-%s-%d", facet.ID, value.ID) }
-							class={ "ml-2 w-full text-sm truncate", templ.KV("text-gray-600", value.Products != 0), templ.KV("text-gray-400", value.Products == 0) }
+							class={ "ml-2 w-full text-sm truncate", templ.KV("text-slate-100", value.Products != 0), templ.KV("text-slate-400", value.Products == 0) }
 						>
 							{ fmt.Sprintf("%s (%d)", value.Name, value.Products) }
 						</label>
