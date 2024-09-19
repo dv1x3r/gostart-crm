@@ -36,7 +36,7 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
 
 COPY --from=build /app/migrations /app/migrations
-COPY --from=build /app/build/server /app/server
+COPY --from=build /app/build/server /app/gostart-crm
 COPY --from=web /app/build/static /app/static
 
-CMD ["/app/server"]
+CMD ["/app/gostart-crm"]
