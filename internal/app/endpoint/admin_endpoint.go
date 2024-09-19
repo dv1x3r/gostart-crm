@@ -48,6 +48,7 @@ func (ep *Admin) Register(g *echo.Group) {
 			DebugMode: utils.GetConfig().Debug,
 			CsrfToken: c.Get("csrf").(string),
 			Title:     "Admin | Demo CRM",
+			GoogleTag: utils.GetConfig().GoogleTag,
 		}
 		return render(c, component.Admin(cp))
 	})
@@ -63,6 +64,7 @@ func (ep *Admin) Register(g *echo.Group) {
 			DebugMode: utils.GetConfig().Debug,
 			CsrfToken: c.Get("csrf").(string),
 			Title:     "Login | Demo CRM",
+			GoogleTag: utils.GetConfig().GoogleTag,
 		}
 		return render(c, component.AdminLogin(cp))
 	})

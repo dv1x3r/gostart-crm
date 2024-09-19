@@ -41,6 +41,7 @@ func (ep *Client) GetRoot(c echo.Context) error {
 		DebugMode: utils.GetConfig().Debug,
 		CsrfToken: c.Get("csrf").(string),
 		Title:     "Client | Demo CRM",
+		GoogleTag: utils.GetConfig().GoogleTag,
 	}
 
 	if params.CategoryTree, err = ep.categoryService.FetchTree(ctx); err != nil {

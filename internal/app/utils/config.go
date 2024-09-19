@@ -25,6 +25,7 @@ type Config struct {
 	DBDriver      string
 	DBString      string
 	StaticPath    string
+	GoogleTag     string
 }
 
 func GetConfig() Config {
@@ -76,6 +77,8 @@ func GetConfig() Config {
 		if config.StaticPath = os.Getenv("STATIC_PATH"); config.StaticPath != "" {
 			os.MkdirAll(config.StaticPath, os.ModePerm)
 		}
+
+		config.GoogleTag = os.Getenv("GOOGLE_TAG")
 	})
 
 	return config
