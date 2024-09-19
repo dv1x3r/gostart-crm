@@ -14,8 +14,8 @@ templ ClientHead(cp CoreParams) {
 		<link rel="stylesheet" href={ fmt.Sprintf("/css/client.css?v=%d", startTime) }/>
 		<script type="module" src={ fmt.Sprintf("/js/client.js?v=%d", startTime) }></script>
 		<!-- Google tag (gtag.js) -->
-		<script async data-src={ fmt.Sprintf("https://www.googletagmanager.com/gtag/js?id=%s", cp.GoogleTag) }></script>
-		<script type="text/javascript" data-tag={ cp.GoogleTag }>
+		<script async src={ fmt.Sprintf("https://www.googletagmanager.com/gtag/js?id=%s", cp.GoogleTag) }></script>
+		<script data-tag={ cp.GoogleTag }>
 			const tag = document.currentScript.getAttribute('data-tag');
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
