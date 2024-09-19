@@ -1,9 +1,6 @@
 package component
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 var startTime = time.Now().Unix()
 
@@ -27,16 +24,6 @@ templ Core(cp CoreParams, extraHead templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<meta name="csrf-token" content={ cp.CsrfToken }/>
 			@extraHead
-			if cp.GoogleTag != "" && !cp.DebugMode {
-				<!-- Google tag (gtag.js) -->
-				<script async src={ fmt.Sprintf("https://www.googletagmanager.com/gtag/js?id=%s", cp.GoogleTag) }></script>
-				<script>
-				  window.dataLayer = window.dataLayer || [];
-				  function gtag(){dataLayer.push(arguments);}
-				  gtag('js', new Date());
-				  gtag('config', cp.GoogleTag);
-				</script>
-			}
 		</head>
 		<body>
 			{ children... }
