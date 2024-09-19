@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION="1.23"
+ARG GO_VERSION="1.23-alpine"
 
 FROM golang:${GO_VERSION} AS build
+
+RUN apk add --no-cache --update build-base
 
 ARG TEMPL_VERSION="v0.2.778"
 RUN go install github.com/a-h/templ/cmd/templ@${TEMPL_VERSION}
@@ -27,9 +29,9 @@ RUN bun install --frozen-lockfile
 COPY . .
 RUN bun build:js && bun build:css && bun build:static && bun build:fonts
 
-FROM debian:bookworm-slim
+FROM alpine:latest
 
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app
 
