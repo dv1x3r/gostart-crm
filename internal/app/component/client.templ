@@ -46,7 +46,7 @@ templ ClientMainPage(params ClientMainPageParams) {
 						@FilterBlock(params.FilterFacets, params.SelectedCategoryID)
 					}
 				</div>
-				<div id="hx-products" class="p-2 h-full">
+				<div id="hx-products" class="p-2 h-full overflow-y-auto">
 					if params.SelectedCategoryID == 0 {
 						<div class="flex items-center justify-center h-full text-slate-400">
 							select category
@@ -119,7 +119,7 @@ templ FilterItem(facet model.FilterFacet) {
 			</span>
 		</button>
 		<div x-cloak x-show="open" x-collapse class="absolute">
-			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 select-none bg-slate-800 rounded-lg border border-gray-700">
+			<ul id={ fmt.Sprintf("hx-filter-ul-%s", facet.ID) } hx-swap-oob="true" class="space-y-1.5 p-2 select-none bg-slate-800 rounded-lg border border-gray-800">
 				for _, value := range facet.Values {
 					<li class="flex items-center *:cursor-pointer">
 						<input
@@ -143,20 +143,24 @@ templ FilterItem(facet model.FilterFacet) {
 }
 
 templ ProductsTable(products []model.Product) {
-	<table class="overflow-x-auto w-full text-left text-sm text-gray-400">
-		<thead class="text-xs uppercase bg-gray-700 text-gray-400">
+	<table class="text-left text-sm text-gray-400">
+		<thead class="text-xs uppercase bg-slate-800">
 			<tr>
+				<th scope="col" class="px-6 py-3">SKU</th>
 				<th scope="col" class="px-6 py-3">Product name</th>
-				<th scope="col" class="px-6 py-3">Color</th>
-				<th scope="col" class="px-6 py-3">Category</th>
+				<th scope="col" class="px-6 py-3">Description</th>
+				<th scope="col" class="px-6 py-3">Qty</th>
 				<th scope="col" class="px-6 py-3">Price</th>
 			</tr>
 		</thead>
 		<tbody>
 			for _, product := range products {
-				<tr class="border-b bg-gray-800 border-gray-700 hover:bg-gray-600">
-					<th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
-						{ product.Code } - { product.Name }
+				<tr class="border-b bg-slate-900 border-gray-800 hover:bg-slate-800">
+					<th scope="row" class="px-6 py-4 font-medium text-white">
+						{ product.Code }
+					</th>
+					<th scope="row" class="px-6 py-4 font-medium text-white">
+						{ product.Name }
 					</th>
 					<td class="px-6 py-4">
 						if product.Description != nil {
@@ -164,10 +168,10 @@ templ ProductsTable(products []model.Product) {
 						}
 					</td>
 					<td class="px-6 py-4">
-						{ product.Name }
+						{ fmt.Sprint(product.Quantity) }
 					</td>
 					<td class="px-6 py-4">
-						$2999
+						${ fmt.Sprint(product.Price) }
 					</td>
 				</tr>
 			}
