@@ -42,7 +42,7 @@ func New() (*App, error) {
 	if a.config.DBDriver == "sqlite3" {
 		// mattn/go-sqlite3 (cgo)
 		a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_journal=WAL&_fk=1&_busy_timeout=10000")
-		a.db.SetMaxOpenConns(1)
+		// a.db.SetMaxOpenConns(1) // should be fine with wal
 	} else if a.config.DBDriver == "sqlite" {
 		// modernc.org/sqlite (cgo-free)
 		// a.db = sqlx.MustConnect(a.config.DBDriver, a.config.DBString+"?_pragma=journal_mode(WAL)&_pragma=foreign_keys(1)&_pragma=busy_timeout(10000)")
