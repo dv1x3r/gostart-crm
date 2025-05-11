@@ -11,12 +11,11 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Compiled go templates
-*_templ.go
-*_templ.txt
-
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# a-h/templ go templates
+*_templ.txt
 
 # Go workspace file
 go.work
@@ -30,4 +29,5 @@ go.work.sum
 # env files
 .env
 .DS_Store
+.ipynb_checkpoints
 

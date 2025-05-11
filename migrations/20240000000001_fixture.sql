@@ -6,16 +6,16 @@
 insert into attribute_group([id], [name]) values
 (1, 'Computer Attributes');
 
-insert into attribute_set([id], [attribute_group_id], [name], [in_box], [in_filter], [position]) values
-(1, 1, 'Generation', 0, 0, 1),
-(2, 1, 'CPU Type', 0, 1, 2),
-(3, 1, 'CPU Model', 1, 0, 3),
-(4, 1, 'RAM Amount', 1, 1, 4),
-(5, 1, 'RAM Type', 1, 1, 5),
-(6, 1, 'Disk Capacity', 1, 0, 6),
-(7, 1, 'Disk Type', 1, 1, 7),
-(8, 1, 'Video Card', 1, 0, 8),
-(9, 1, 'Power Supply', 1, 0, 9);
+insert into attribute_set([id], [attribute_group_id], [name], [position]) values
+(1, 1, 'Generation', 1),
+(2, 1, 'CPU Type', 2),
+(3, 1, 'CPU Model', 3),
+(4, 1, 'RAM Amount', 4),
+(5, 1, 'RAM Type', 5),
+(6, 1, 'Disk Capacity', 6),
+(7, 1, 'Disk Type', 7),
+(8, 1, 'Video Card', 8),
+(9, 1, 'Power Supply', 9);
 
 -- Generation attribute_set_id = 1
 insert into attribute_value ([id], [attribute_set_id], [name], [position]) values
@@ -188,15 +188,15 @@ insert into brand ([id], [name]) values
 
 insert into category([id], [slug], [name], [icon], [is_published], [attribute_group_id], [parent_id], [mp_path], [mp_level], [mp_position]) values
 (1, 'computers', 'Computers', 'fa fa-computer', 1, null, null, '1.', 0, 1),
-(2, 'desktops', 'Desktops', null, 1, 1, 1, '1.2.', 1, 1),
-(3, 'laptops', 'Laptops', null, 1, 1, 1, '1.3', 1, 2),
-(4, 'components', 'Components', 'fa fa-memory', 1, null, null, '4.', 0, 2),
-(5, 'processors', 'Processors', null, 1, null, 4, '4.5.', 1, 1),
-(6, 'motherboards', 'Motherboards', null, 1, null, 4, '4.6.', 1, 2),
-(7, 'memory', 'Memory', null, 1, null, 4, '4.7.', 1, 3),
-(8, 'storage', 'Storage', null, 1, null, 4, '4.8.', 1, 4),
-(9, 'video', 'Video', null, 1, null, 4, '4.9.', 1, 5),
-(10, 'power-supplies', 'Power Supplies', null, 1, null, 4, '4.10.', 1, 6);
+(2, 'desktops', 'Desktops', 'fa fa-desktop', 1, 1, 1, '1.2.', 1, 1),
+(3, 'laptops', 'Laptops', 'fa fa-laptop', 1, 1, 1, '1.3', 1, 2),
+(4, 'components', 'Components', 'fa fa-gear', 1, null, null, '4.', 0, 2),
+(5, 'processors', 'Processors', 'fa fa-microchip', 1, null, 4, '4.5.', 1, 1),
+(6, 'motherboards', 'Motherboards', 'fa fa-server', 1, null, 4, '4.6.', 1, 2),
+(7, 'memory', 'Memory', 'fa fa-memory', 1, null, 4, '4.7.', 1, 3),
+(8, 'storage', 'Storage', 'fa fa-hard-drive', 1, null, 4, '4.8.', 1, 4),
+(9, 'video', 'Video', 'fa fa-gamepad', 1, null, 4, '4.9.', 1, 5),
+(10, 'power-supplies', 'Power Supplies', 'fa fa-plug', 1, null, 4, '4.10.', 1, 6);
 
 insert into supplier([id], [slug], [code], [name], [description], [is_published], [position]) values
 (1, 'stk', 'stk', 'Stock', 'Available in stock', 1, 1),
@@ -456,11 +456,11 @@ insert into payment_method([id], [name], [position]) values
 (1, 'Cash', 1),
 (2, 'Bank', 2);
 
-insert into order_status([id], [name], [color], [in_counter], [position]) values
-(1, 'Created', '0ea5e9', 1, 1),
-(2, 'In progress', '0ea5e9', 1, 2),
-(3, 'Canceled', 'a9a9a9', 0, 3),
-(4, 'Successful', '000000', 0, 4);
+insert into order_status([id], [name], [color], [position]) values
+(1, 'Created', '0ea5e9', 1),
+(2, 'In progress', '0ea5e9', 2),
+(3, 'Canceled', 'a9a9a9', 3),
+(4, 'Successful', '000000', 4);
 
 INSERT INTO order_header (order_status_id, payment_method_id, email, first_name, last_name, phone_number, delivery_address, comment, created_at, updated_at) VALUES
 (4, 1, 'john.doe@example.com', 'John', 'Doe', '555-1234', '123 Main St', 'Please deliver in the morning.', 1680000000, 1680003600),

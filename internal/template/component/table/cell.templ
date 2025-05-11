@@ -1,0 +1,56 @@
+package table
+
+templ Cell() {
+	<td class="p-2">
+		{ children... }
+	</td>
+}
+
+templ CellWithCheckbox(value string) {
+	<td class="p-2">
+		<input type="checkbox" x-model="_model.selected" name="checkbox" value={ value } class="rounded text-sky-600 bg-transparent cursor-pointer"/>
+	</td>
+}
+
+templ CellWithValue(value string) {
+	<td class="p-2">
+		<div class="text-xs line-clamp-2">{ value }</div>
+	</td>
+}
+
+templ CellWithValueAndID(value string, id string, idLabel string) {
+	<td class="p-2 text-xs">
+		<div class="mb-1 text-zinc-400 truncate">{ value }</div>
+		<button
+			title="Copy to clipboard"
+			aria-label="Copy to clipboard"
+			data-id={ id }
+			data-value={ value }
+			class="cursor-pointer inline-flex items-center"
+			@click="navigator.clipboard.writeText($el.dataset.id)"
+		>
+			<strong class="truncate">{ idLabel }</strong>
+			<span aria-hidden="true" class="fa fa-copy ml-2"></span>
+		</button>
+	</td>
+}
+
+templ CellWithDropdown() {
+	<td x-data="{ open: false }" x-init="$refs.scrollableArea.addEventListener('scroll', () => open = false)" class="p-2">
+		<button x-ref="button" @click="open = !open" :class="{ 'bg-zinc-700': open }" class="p-2 size-8 flex items-center justify-center transition rounded hover:bg-zinc-700 active:bg-zinc-700/75">
+			<span aria-hidden="true" class="fa fa-ellipsis"></span>
+		</button>
+		<div
+			x-cloak
+			x-show="open"
+			x-transition
+			x-trap.noautofocus="open"
+			x-anchor.offset.5.left-start="$refs.button"
+			@click.outside="open = false"
+			@keydown.escape.window="open = false"
+			class="p-1 space-y-1 bg-zinc-900 border border-zinc-700 rounded-lg select-none"
+		>
+			{ children... }
+		</div>
+	</td>
+}

@@ -16,8 +16,6 @@ create table attribute_set (
     [deleted_at] integer,
     [attribute_group_id] integer not null references attribute_group(id) on delete restrict,
     [name] text not null,
-    [in_box] integer not null,
-    [in_filter] integer not null,
     [position] integer not null default 0,
     unique ([attribute_group_id], [name] collate nocase)
 ) strict;
@@ -142,7 +140,6 @@ create table order_status (
     [deleted_at] integer,
     [name] text not null,
     [color] text not null,
-    [in_counter] integer not null,
     [position] integer not null default 0,
     unique ([name] collate nocase)
 ) strict;
