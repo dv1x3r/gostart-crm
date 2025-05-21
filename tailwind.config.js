@@ -7,6 +7,7 @@ module.exports = {
     "./pkg/**/*.templ",
     "./web/**/*.{html,js}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -14,6 +15,8 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
 

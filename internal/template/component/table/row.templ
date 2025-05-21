@@ -1,0 +1,31 @@
+package table
+
+import "fmt"
+
+type HXInfiniteScrollProps struct {
+	IsLastRow  bool
+	NextURL    string
+	NextParam  string
+	NextValue  string
+	Attributes templ.Attributes
+}
+
+type RowProps struct {
+	HXInfiniteScroll *HXInfiniteScrollProps
+}
+
+templ Row(props RowProps) {
+	// revealed: triggered when an element is scrolled into the viewport
+	// intersect once: if you are using overflow
+	<tr
+		if props.HXInfiniteScroll != nil && props.HXInfiniteScroll.IsLastRow {
+			hx-get={ string(templ.URL(fmt.Sprintf("%s?%s=%s", props.HXInfiniteScroll.NextURL, props.HXInfiniteScroll.NextParam, props.HXInfiniteScroll.NextValue))) }
+			hx-trigger="intersect once"
+			hx-swap="afterend"
+			{ props.HXInfiniteScroll.Attributes... }
+		}
+		class="hover:bg-zinc-800/50 has-[:checked]:bg-zinc-800"
+	>
+		{ children... }
+	</tr>
+}

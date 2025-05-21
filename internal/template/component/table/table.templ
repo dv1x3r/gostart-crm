@@ -1,0 +1,100 @@
+package table
+
+type Column struct {
+	Field      string
+	Label      string
+	AddClass   string
+	IsBlank    bool
+	IsCheckbox bool
+	IsSortable bool
+	Filters    []Filter
+}
+
+type Filter struct {
+	Value string
+	Label string
+	Icon  string
+}
+
+type TableProps struct {
+	Columns          []Column
+	Attributes       templ.Attributes
+	ColumnAttributes templ.Attributes
+	FooterXText      string
+}
+
+templ Table(props TableProps) {
+	<div x-data="tableComponent" x-modelable="_model" { props.Attributes... } class="flex flex-col max-h-full space-y-2">
+		<div x-ref="scrollableArea" class="overflow-auto border border-zinc-700 rounded-lg">
+			<table class="w-full text-sm text-zinc-100">
+				<thead class="sticky top-0 bg-zinc-800/75 backdrop-blur rounded-lg">
+					<tr class="text-left">
+						for _, column := range props.Columns {
+							if column.IsSortable || len(column.Filters) > 0 {
+								@dropdownColumn(column, props.ColumnAttributes)
+							} else if column.IsBlank {
+								<th scope="col" class={ "p-2 w-12 min-w-12", column.AddClass }></th>
+							} else if column.IsCheckbox {
+								<th scope="col" class={ "p-2 w-8 min-w-8", column.AddClass }>
+									<input type="checkbox" name="checkbox-all" x-bind="checkboxAll" class="rounded text-sky-600 bg-transparent cursor-pointer"/>
+								</th>
+							} else {
+								<th scope="col" class={ "p-2 select-none", column.AddClass }>
+									{ column.Label }
+								</th>
+							}
+						}
+					</tr>
+				</thead>
+				<tbody x-bind="body" class="divide-y divide-zinc-700">
+					{ children... }
+				</tbody>
+			</table>
+		</div>
+		<footer class="px-2 flex justify-between gap-2">
+			<div x-bind="footer" class="text-xs">Loading...</div>
+			if props.FooterXText != "" {
+				<div x-text={ props.FooterXText } class="text-xs"></div>
+			}
+		</footer>
+	</div>
+}
+
+templ dropdownColumn(column Column, attributes templ.Attributes) {
+	<th x-data="{ open: false }" data-field={ column.Field } scope="col" class={ "select-none", column.AddClass }>
+		<button x-ref="button" @click="open = !open" class="p-1.5 transition inline-flex items-center justify-between w-full rounded hover:bg-zinc-700 active:bg-zinc-700/75">
+			<span>{ column.Label }</span>
+			<span class="whitespace-nowrap">
+				<span
+					x-cloak
+					x-show="_model.filters[$root.dataset.field] != null"
+					x-text="_model.filters[$root.dataset.field]?.length"
+					class="mr-1.5 text-xs bg-zinc-600 px-1 py-0.5 rounded"
+				></span>
+				<span aria-hidden="true" class="fa fa-ellipsis-vertical"></span>
+			</span>
+		</button>
+		<template x-teleport="table">
+			<div
+				x-cloak
+				x-show="open"
+				x-transition
+				x-trap.noautofocus="open"
+				x-anchor.offset.5="$refs.button"
+				@click.outside="open = false"
+				@keydown.escape.window="open = false"
+				class="p-1 space-y-1 bg-zinc-900 border border-zinc-700 rounded-lg select-none"
+			>
+				for _, filter := range column.Filters {
+					<label class="flex items-center gap-2 px-2 py-1.5 hover:bg-zinc-700 transition rounded cursor-pointer text-sm active:bg-zinc-700/75">
+						<input type="checkbox" name="checkbox-filter" x-bind="checkboxFilter" data-value={ filter.Value } { attributes... } class="rounded text-sky-600 bg-transparent cursor-pointer"/>
+						<span>
+							<span aria-hidden="true" class={ filter.Icon, "text-sm text-zinc-400 text-center w-4" }></span>
+							<span>{ filter.Label }</span>
+						</span>
+					</label>
+				}
+			</div>
+		</template>
+	</th>
+}
