@@ -42,7 +42,7 @@ bun watch
 
 ## Live Demo
 
-- **Live read-only demo**: https://democrm.weasel.dev
+- **Live read-only demo**: https://democrm.sbox.weasel.dev
 
 ## License
 
